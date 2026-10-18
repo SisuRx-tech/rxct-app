@@ -37,7 +37,6 @@
   overflow: hidden;
 }
 
-
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -45,25 +44,9 @@
   gap: 12px;
   font-size: 14px;
 }
-.mobile-brand {
-  display: flex;
-  align-items: center;
 
-  height: 38px;
-  padding: 0 12px;
-
-  background: var(--primary);
-  border-radius: 11px;
-}
-
-.mobile-brand img {
-  display: block;
-  height: 15px;
-  width: auto;
-}
 .sidebar a {
   background-color: transparent;
-
   border: 1px solid var(--border);
   border-radius: 12px;
 
@@ -132,28 +115,17 @@
   margin: 0 auto;
 }
 
-
-
-
-
-
-
-
-
-
-
 /*MOBILE ELEMENTS (hidden on desktop)*/
 
-.mobile-header,
+
 .bottom-nav {
   display: none;
 }
 
-
 /*MOBILE (under 768px) */
 
 @media (max-width: 767px) {
- .app-layout {
+  .app-layout {
     display: block;
     height: auto;
     overflow: visible;
@@ -163,20 +135,6 @@
     display: none;
   }
 
-  .mobile-header {
-    position: sticky;
-    top: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    height: var(--header-height);
-    padding: 0 16px;
-
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-  }
 
   .menu-toggle {
     font-size: 24px;

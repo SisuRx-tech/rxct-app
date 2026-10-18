@@ -1,16 +1,11 @@
 import logo from "../../assets/rxct-logo.png";
+import Topbar from "./Topbar";
 function AppLayout({ children }) {
   return (
     <div className="app-layout">
-      <header className="mobile-header">
-        <div className="mobile-brand">
-          <img src={logo} alt="RxCT" />
-        </div>
-        <button className="menu-toggle" aria-label="Open menu">
-          ☰
-        </button>
-      </header>
+          <Topbar />
       <aside className="sidebar">
+    
         <div className="brand">
           <img className="logo" src={logo} alt="RxCT" />
         </div>
@@ -35,8 +30,6 @@ function AppLayout({ children }) {
             History
           </a>
         </nav>
-
-  
       </aside>
 
       <main className="main-content">{children}</main>
