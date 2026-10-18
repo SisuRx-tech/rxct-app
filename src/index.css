@@ -44,13 +44,14 @@ body {
   --danger: #b3432f;
   --danger-bg: rgba(179, 67, 47, 0.1);
   --danger-border: rgba(179, 67, 47, 0.32);
+  --header-height: 64px;
+  --header-height: 64px;
+  --bottom-nav-height: 64px;
 }
 
 
 
-/* 
-   BASE
-*/
+/*  BASE*/
 
 body {
   font-family: system-ui, "Segoe UI", Roboto, sans-serif;

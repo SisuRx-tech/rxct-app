@@ -18,13 +18,10 @@
   min-height: 0;
 
   margin: 0 auto;
-
+  padding: 32px;
   overflow-y: auto;
 }
-.main-content {
-  flex: 1;
-  padding: 32px;
-}
+
 .sidebar {
   background-color: var(--primary);
   color: var(--text-light);
@@ -48,7 +45,22 @@
   gap: 12px;
   font-size: 14px;
 }
+.mobile-brand {
+  display: flex;
+  align-items: center;
 
+  height: 38px;
+  padding: 0 12px;
+
+  background: var(--primary);
+  border-radius: 11px;
+}
+
+.mobile-brand img {
+  display: block;
+  height: 15px;
+  width: auto;
+}
 .sidebar a {
   background-color: transparent;
 
@@ -130,9 +142,7 @@
 
 
 
-/* ==========================================================================
-   MOBILE ELEMENTS (hidden on desktop)
-   ========================================================================== */
+/*MOBILE ELEMENTS (hidden on desktop)*/
 
 .mobile-header,
 .bottom-nav {
@@ -140,13 +150,13 @@
 }
 
 
-/* ==========================================================================
-   MOBILE (under 768px)
-   ========================================================================== */
+/*MOBILE (under 768px) */
 
 @media (max-width: 767px) {
-  .app-layout {
-    flex-direction: column;
+ .app-layout {
+    display: block;
+    height: auto;
+    overflow: visible;
   }
 
   .sidebar {
