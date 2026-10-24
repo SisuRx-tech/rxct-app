@@ -3,7 +3,6 @@
    Mobile-first: two rows on phones (brand, title, actions, avatar, then
    search). One row from 768px up.
    ========================================================================== */
-
 .topbar {
   position: sticky;
   top: 0;
@@ -11,19 +10,16 @@
 
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
-  grid-template-areas:
-    "brand title actions avatar"
-    "search search search search";
+grid-template-areas: "brand search actions avatar";
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 
-  padding: 10px;
+  padding: 4px 10px 6px;
 
   background-color: var(--surface);
   border-bottom: 1px solid var(--soft);
   box-shadow: 0 2px 8px var(--shadow);
 }
-
 
 /* ==========================================================================
    BRAND TILE (phones only, the sidebar carries the logo on desktop)
@@ -53,13 +49,12 @@
 /* ==========================================================================
    PAGE TITLE
    ========================================================================== */
-
 .pageTitle {
   grid-area: title;
 
-  display: flex;
+  display: none;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 
   min-width: 0;
   margin: 0;
@@ -68,9 +63,9 @@
   white-space: nowrap;
 
   color: var(--primary);
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
 }
 
 .pageTitle i {
@@ -114,6 +109,10 @@
   /* 16px stops iOS from zooming the page when the field is focused */
   font-size: 16px;
   font-weight: 600;
+}
+.searchInput::placeholder {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .searchInput:focus {
@@ -165,7 +164,7 @@
 }
 
 .avatarButton {
-  grid-area: avatar;
+
 
   border-radius: 50%;
 }
@@ -214,4 +213,59 @@
 
     width: min(100%, 280px);
   }
+  .pageTitle{
+    display: flex;
+  }
+}
+@media (max-width: 767px){
+.topbarCollapsed {
+  grid-template-areas: "search search search search";
+}
+
+.topbarCollapsed .brand,
+.topbarCollapsed .actions,
+.topbarCollapsed .profileMenu {
+  display: none;
+}
+}
+/*===============================================================PROFILE MENU ==============================*/
+.profileMenu {
+grid-area: avatar;
+position: relative;
+}
+
+.dropdown {
+position: absolute;
+top: calc(100% + 8px);
+right: 0;
+z-index: 50;
+
+display: flex;
+flex-direction: column;
+min-width: 150px;
+padding: 6px;
+
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 12px;
+box-shadow: 0 8px 24px var(--shadow);
+}
+
+.dropdown a {
+padding: 10px 12px;
+border-radius: 8px;
+
+color: var(--primary);
+text-decoration: none;
+}
+
+.dropdown a:hover {
+background: var(--class-hover);
+color: var(--accent);
+}
+.divider {
+  margin: 4px 0;
+
+  border: none;
+  border-top: 1px solid var(--soft);
 }

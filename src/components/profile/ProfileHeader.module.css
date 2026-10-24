@@ -1,0 +1,63 @@
+/* ==========================================================================
+   PROFILE HEADER
+   ========================================================================== */
+
+.container {
+  position: relative;
+
+  padding: 40px 0 28px;
+  text-align: center;
+}
+
+.header {
+  margin: 0 0 8px;
+
+  color: #24332f;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+  line-height: 1.25;
+}
+
+.subtitle {
+  margin: 0;
+
+  color: #777f7a;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   BACK BUTTON
+   ========================================================================== */
+
+.link {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  padding: 8px 0;
+
+  border: none;
+  background: transparent;
+  color: #c27a3a;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition: color 160ms ease;
+}
+
+.link:hover {
+  color: #9f5d26;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.link:focus-visible {
+  border-radius: 3px;
+  outline: 2px solid #c27a3a;
+  outline-offset: 4px;
+}
