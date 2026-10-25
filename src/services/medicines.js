@@ -1,12 +1,23 @@
-import { supabase } from './supabase'
+import { supabase } from "./supabase";
 
 export async function getMedicineByName(name) {
   const { data, error } = await supabase
-    .from('medicines')
-    .select('name, drug_class, medicine_sections(id, section, body, review_status, sources(name))')
-    .eq('name', name)
-    .single()
+    .from("medicines")
+    .select(
+      "name, drug_class, medicine_sections(id, section, body, review_status, sources(name))",
+    )
+    .eq("name", name)
+    .single();
 
-  if (error) throw error
-  return data
+  if (error) throw error;
+  return data;
+}
+export async function getMedicines() {
+  const { data, error } = await supabase
+    .from("medicines")
+    .select("id, name, drug_class")
+    .order("name");
+
+  if (error) throw error;
+  return data;
 }
