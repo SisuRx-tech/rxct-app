@@ -12,11 +12,8 @@ export async function getMedicineByName(name) {
   if (error) throw error;
   return data;
 }
-export async function getMedicines() {
-  const { data, error } = await supabase
-    .from("medicines")
-    .select("id, name, drug_class")
-    .order("name");
+export async function searchMedicines(q) {
+  const { data, error } = await supabase.rpc("search_medicines", { q });
 
   if (error) throw error;
   return data;

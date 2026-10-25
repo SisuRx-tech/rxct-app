@@ -1,0 +1,2980 @@
+[
+  {
+    "name": "Paracetamol",
+    "fdaName": "ACETAMINOPHEN",
+    "status": "partial",
+    "setId": "7f445de3-30cf-4bd8-892d-05979cd399e7",
+    "effective": "20260909",
+    "sections": [
+      "indications"
+    ],
+    "preview": {
+      "indications": "Uses temporarily: • reduces fever • relieves minor aches and pains due to: • the common cold • flu • headache • sore throat • toothache\n\nSource label: childrens"
+    }
+  },
+  {
+    "name": "Ibuprofen",
+    "fdaName": "IBUPROFEN",
+    "status": "partial",
+    "setId": "0ca02f8b-4413-4e7c-a67b-8c67c53e1343",
+    "effective": "20260909",
+    "sections": [
+      "indications"
+    ],
+    "preview": {
+      "indications": "Uses temporarily relieves minor aches and pains due to: headache muscular aches minor pain of arthritis toothache backache the common cold menstrual cramps temp"
+    }
+  },
+  {
+    "name": "Diclofenac",
+    "fdaName": "DICLOFENAC SODIUM",
+    "status": "full",
+    "setId": "5a852412-69af-6502-e063-6294a90a0748",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Mechanism of Action Diclofenac has analgesic, anti-inflammatory, and antipyretic properties. The mechanism of action of diclofenac sodium ",
+      "indications": "INDICATIONS AND USAGE Carefully consider the potential benefits and risks of diclofenac sodium delayed-release tablets and other treatment options before decidi",
+      "adverse_effects": "ADVERSE REACTIONS The following adverse reactions are discussed in greater detail in other sections of the labeling: Cardiovascular Thrombotic Events (see WARNI",
+      "contraindications": "CONTRAINDICATIONS Diclofenac sodium delayed-release tablets are contraindicated in the following patients: Known hypersensitivity (e.g., anaphylactic reactions ",
+      "interactions": "Drug Interactions See Table 2 for clinically significant drug interactions with diclofenac. Table 2. Clinically Significant Drug Interactions with Diclofenac Dr"
+    }
+  },
+  {
+    "name": "Aspirin",
+    "fdaName": "ASPIRIN",
+    "status": "partial",
+    "setId": "7ce4807e-7bd5-41f1-a9c7-1f3af6acdc09",
+    "effective": "20260909",
+    "sections": [
+      "indications"
+    ],
+    "preview": {
+      "indications": "Uses for the temporary relief of minor aches and pains or as recommended by your doctor. Because of its delayed action, this product will not provide fast relie"
+    }
+  },
+  {
+    "name": "Naproxen",
+    "fdaName": "NAPROXEN",
+    "status": "full",
+    "setId": "5954565a-d9bd-9e26-e063-6294a90a03cb",
+    "effective": "20260818",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Naproxen has analgesic, anti-inflammatory, and antipyretic properties. The mechanism of action of naproxen, like that of other NSAIDs, ",
+      "indications": "1 INDICATIONS AND USAGE Naproxen Tablets are indicated for: the relief of the signs and symptoms of: rheumatoid arthritis osteoarthritis ankylosing spondylitis ",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in greater detail in other sections of the labeling: Cardiovascular Thrombotic Events [ see Wa",
+      "contraindications": "4 CONTRAINDICATIONS Naproxen tablets are contraindicated in the following patients: Known hypersensitivity (e.g., anaphylactic reactions and serious skin reacti",
+      "interactions": "7 DRUG INTERACTIONS See Table 1 for clinically significant drug interactions with naproxen. Table 1: Clinically Significant Drug Interactions with naproxen Drug"
+    }
+  },
+  {
+    "name": "Celecoxib",
+    "fdaName": "CELECOXIB",
+    "status": "full",
+    "setId": "3a1eadd5-c0a7-473e-bde0-6b9450d11c95",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Celecoxib has analgesic, anti-inflammatory, and antipyretic properties. The mechanism of action of celecoxib is believed to be due to i",
+      "indications": "1 INDICATIONS AND USAGE Celecoxib is indicated Celecoxib is a nonsteroidal anti-inflammatory drug indicated for: • Osteoarthritis (OA) ( 1.1 ) • Rheumatoid Arth",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in greater detail in other sections of the labeling: · Cardiovascular Thrombotic Events [see W",
+      "contraindications": "4 CONTRAINDICATIONS Celecoxib is contraindicated in the following patients: • Known hypersensitivity (e.g., anaphylactic reactions and serious skin reactions) t",
+      "interactions": "7 DRUG INTERACTIONS See Table 3 for clinically significant drug interactions with celecoxib. Table 3: Clinically Significant Drug Interactions with Celecoxib Dr"
+    }
+  },
+  {
+    "name": "Ketorolac",
+    "fdaName": "KETOROLAC TROMETHAMINE",
+    "status": "full",
+    "setId": "2a23b0fa-803c-4abb-b588-12cfe83326a9",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Pharmacodynamics Ketorolac tromethamine is a nonsteroidal anti-inflammatory drug (NSAID) that exhibits analgesic activity in animal models",
+      "indications": "INDICATIONS AND USAGE Carefully consider the potential benefits and risks of ketorolac tromethamine and other treatment options before deciding to use ketorolac",
+      "adverse_effects": "ADVERSE REACTIONS Adverse reaction rates increase with higher doses of ketorolac tromethamine. Practitioners should be alert for the severe complications of tre",
+      "contraindications": "CONTRAINDICATIONS ( see also Boxed WARNING ) Ketorolac tromethamine is contraindicated in patients with previously demonstrated hypersensitivity to ketorolac tr",
+      "interactions": "Drug Interactions Ketorolac is highly bound to human plasma protein (mean 99.2%). There is no evidence in animal or human studies that ketorolac tromethamine in"
+    }
+  },
+  {
+    "name": "Meloxicam",
+    "fdaName": "MELOXICAM",
+    "status": "full",
+    "setId": "385b7cf4-976a-4a58-9ebc-def8b6e78b75",
+    "effective": "20260819",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Meloxicam has analgesic, anti-inflammatory, and antipyretic properties. The mechanism of action of meloxicam, like that of other NSAIDs",
+      "indications": "1 INDICATIONS AND USAGE Meloxicam is a non-steroidal anti-inflammatory drug indicated for: Osteoarthritis (OA) (1.1) Rheumatoid Arthritis (RA) (1.2) Juvenile Rh",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in greater detail in other sections of the labeling: Cardiovascular Thrombotic Events [ see Bo",
+      "contraindications": "4 CONTRAINDICATIONS Meloxicam is contraindicated in the following patients: Known hypersensitivity (e.g., anaphylactic reactions and serious skin reactions) to ",
+      "interactions": "7 DRUG INTERACTIONS See Table 3 for clinically significant drug interactions with meloxicam. See also Warnings and Precautions ( 5.2 , 5.6 , 5.12 ) and Clinical"
+    }
+  },
+  {
+    "name": "Tramadol",
+    "fdaName": "TRAMADOL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "c6104e62-5b2c-41a1-afb3-00dcf267a384",
+    "effective": "20260901",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Tramadol hydrochloride tablets contain tramadol, an opioid agonist and inhibitor of norepinephrine and serotonin re- uptake. Although t",
+      "indications": "1 INDICATIONS AND USAGE Tramadol hydrochloride tablets are indicated in adults for the management of pain severe enough to require an opioid analgesic and for w",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described, or described in greater detail, in other sections: Addiction, Abuse, and Misuse [see ",
+      "contraindications": "4 CONTRAINDICATIONS Tramadol hydrochloride tablets are contraindicated for: all children younger than 12 years of age [see Warnings and Precautions (5.6)] . pos",
+      "interactions": "7 DRUG INTERACTIONS Table 2: Clinically Significant Drug Interactions with Tramadol Hydrochloride Tablets Inhibitors of CYP2D6 Clinical Impact: The concomitant "
+    }
+  },
+  {
+    "name": "Morphine",
+    "fdaName": "MORPHINE SULFATE",
+    "status": "full",
+    "setId": "1f53de80-efc8-4930-b3e3-fba0d026af05",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Morphine is a full opioid agonist and is relatively selective for the mu-opioid receptor, although it can bind to other opioid receptor",
+      "indications": "1 INDICATIONS AND USAGE Morphine Sulfate Injection is an opioid agonist indicated for the management of pain severe enough to require an opioid analgesic and fo",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described, or described in greater detail, in other sections: • Addiction, Abuse, and Misuse [se",
+      "contraindications": "4 CONTRAINDICATIONS Morphine Sulfate Injection is contraindicated in patients with: • Significant respiratory depression [see Warnings and Precautions ( 5.2 )] ",
+      "interactions": "7 DRUG INTERACTIONS Table 1 includes clinically significant drug interactions with Morphine Sulfate Injection. Table 1: Clinically Significant Drug Interactions"
+    }
+  },
+  {
+    "name": "Amoxicillin",
+    "fdaName": "AMOXICILLIN",
+    "status": "full",
+    "setId": "4adc198e-39d8-4b3e-bfa4-278aaf4064ae",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Amoxicillin is an antibacterial drug [see Microbiology ( 12.4 )].\n\nSource label: AMOXICILLIN, US FDA prescribing information, effective",
+      "indications": "1 INDICATIONS AND USAGE Amoxicillin is a penicillin-class antibacterial indicated for treatment of infections due to susceptible strains of designated microorga",
+      "adverse_effects": "6 ADVERSE REACTIONS The following are discussed in more detail in other sections of the labeling: Anaphylactic reactions [see Warnings and Precautions ( 5.1 )] ",
+      "contraindications": "4 CONTRAINDICATIONS Amoxicillin is contraindicated in patients who have experienced a serious hypersensitivity reaction (e.g., anaphylaxis or Stevens-Johnson sy",
+      "interactions": "7 DRUG INTERACTIONS Probenicid decreases renal tubular secretion of amoxicillin which may result in increased blood levels of amoxicillin. ( 7.1 ) Concomitant u"
+    }
+  },
+  {
+    "name": "Amoxicillin-clavulanate",
+    "fdaName": "AMOXICILLIN AND CLAVULANATE POTASSIUM",
+    "status": "full",
+    "setId": "77b82fac-3f6e-44c9-8dcc-362f01ad7a4b",
+    "effective": "20260924",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Amoxicillin and clavulanate potassium is an antibacterial drug [see Clinical Pharmacology (12.4) ].\n\nSource label: Amoxicillin and Clav",
+      "indications": "1 INDICATIONS AND USAGE Amoxicillin and clavulanate potassium tablets are a combination of amoxicillin, a penicillin-class antibacterial and clavulanate potassi",
+      "adverse_effects": "6 ADVERSE REACTIONS The following clinically significant adverse reactions are described elsewhere in the labeling: Serious Allergic Reactions, including Anaphy",
+      "contraindications": "4 CONTRAINDICATIONS History of a serious hypersensitivity reaction (e.g., anaphylaxis or Stevens-Johnson syndrome) to amoxicillin and clavulanate potassium tabl",
+      "interactions": "7 DRUG INTERACTIONS Concomitant use with probenecid is not recommended. ( 7.1 ) Concomitant use with oral anticoagulants may increase the prolongation of prothr"
+    }
+  },
+  {
+    "name": "Ampicillin",
+    "fdaName": "AMPICILLIN",
+    "status": "full",
+    "setId": "4134cd79-c895-4e6e-b1d5-8e01c38bf2d1",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "Mechanism of Action Ampicillin is similar to penicillin in its bactericidal action against susceptible bacteria during the stage of active multiplication. It ac",
+      "indications": "INDICATIONS AND USAGE To reduce the development of drug-resistant bacteria and maintain the effectiveness of ampicillin capsules, ampicillin for oral suspension",
+      "adverse_effects": "ADVERSE REACTIONS As with other penicillins, it may be expected that untoward reactions will be essentially limited to sensitivity phenomena. They are more like",
+      "contraindications": "CONTRAINDICATIONS The use of Ampicillin is contraindicated in individuals with a history of serious hypersensitivity reactions (e.g., anaphylaxis or Stevens-Joh",
+      "interactions": "Drug Interactions When administered concurrently, the following drugs may interact with ampicillin. Allopurinol : Substantially increased incidence of skin rash"
+    }
+  },
+  {
+    "name": "Benzylpenicillin",
+    "fdaName": "PENICILLIN G POTASSIUM",
+    "status": "full",
+    "setId": "efef4846-9497-41af-8dd6-518f86eca7f2",
+    "effective": "20251216",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Aqueous penicillin G is rapidly absorbed following both intramuscular and subcutaneous injection. Initial blood levels following parentera",
+      "indications": "INDICATIONS AND USAGE Therapy Penicillin G Potassium for Injection is indicated in the treatment of serious infections caused by susceptible strains of the desi",
+      "adverse_effects": "ADVERSE REACTIONS Body as a whole The Jarisch-Herxheimer reaction is a systemic reaction that may occur after the initiation of penicillin therapy in patients w",
+      "contraindications": "CONTRAINDICATIONS A history of a hypersensitivity (anaphylactic) reaction to any penicillin is a contraindication.\n\nSource label: Pfizerpen, US FDA prescribing ",
+      "interactions": "Drug Interactions Bacteriostatic antibacterials ( i.e ., chloramphenicol, erythromycins, sulfonamides or tetracyclines) may antagonize the bactericidal effect o"
+    }
+  },
+  {
+    "name": "Phenoxymethylpenicillin",
+    "fdaName": "PENICILLIN V POTASSIUM",
+    "status": "partial",
+    "setId": "dd8a48b2-9ff1-49de-a53e-db4964c2384c",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Penicillin V exerts a bactericidal action against penicillin-sensitive microorganisms during the stage of active multiplication. It acts t",
+      "indications": "INDICATIONS AND USAGE Penicillin V potassium tablets and penicillin V potassium for oral solution are indicated in the treatment of mild to moderately severe in",
+      "adverse_effects": "ADVERSE REACTIONS Although the incidence of reactions to oral penicillins has been reported with much less frequency than following parenteral therapy, it shoul",
+      "contraindications": "CONTRAINDICATIONS A previous hypersensitivity reaction to any penicillin is a contraindication.\n\nSource label: Penicillin V Potassium, US FDA prescribing inform"
+    }
+  },
+  {
+    "name": "Cefalexin",
+    "fdaName": "CEPHALEXIN",
+    "status": "full",
+    "setId": "e54df878-c235-4aa3-af33-fe5287c73138",
+    "effective": "20260914",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Cephalexin is a cephalosporin antibacterial drug [see Microbiology ( 12.4 )].\n\nSource label: Cephalexin, US FDA prescribing information",
+      "indications": "1 INDICATIONS & USAGE Cephalexin is a cephalosporin antibacterial drug indicated for the treatment of the following infections caused by susceptible isolates of",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious events are described in greater detail in the Warning and Precautions section: Hypersensitivity reactions [ see Warnin",
+      "contraindications": "4 CONTRAINDICATIONS Cephalexin is contraindicated in patients with known hypersensitivity to cephalexin or other members of the cephalosporin class of antibacte",
+      "interactions": "7 DRUG INTERACTIONS Metformin: increased metformin concentrations. Monitor for hypoglycemia. ( 7.1 ) Probenecid- The renal excretion of cephalexin is inhibited "
+    }
+  },
+  {
+    "name": "Cefuroxime",
+    "fdaName": "CEFUROXIME AXETIL",
+    "status": "full",
+    "setId": "76cec54f-d167-4298-951b-5411a3c47f4a",
+    "effective": "20260805",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Cefuroxime axetil is an antibacterial drug [see Microbiology (12.4) ].\n\nSource label: Cefuroxime Axetil, US FDA prescribing information",
+      "indications": "1 INDICATIONS AND USAGE Cefuroxime axetil tablets are a cephalosporin antibacterial drug indicated for the treatment of the following infections due to suscepti",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious and otherwise important adverse reaction is described in greater detail in the Warnings and Precautions section of the",
+      "contraindications": "4 CONTRAINDICATIONS Cefuroxime axetil tablets are contraindicated in patients with a known hypersensitivity (e.g., anaphylaxis) to cefuroxime axetil tablets or ",
+      "interactions": "7 DRUG INTERACTIONS Drugs that reduce gastric acidity may lower the bioavailability of cefuroxime axetil. ( 7.1 ) Coadministration with probenecid increases sys"
+    }
+  },
+  {
+    "name": "Ceftriaxone",
+    "fdaName": "CEFTRIAXONE SODIUM",
+    "status": "partial",
+    "setId": "ddbc3bf6-5bab-4851-ae5a-ef263cd8f255",
+    "effective": "20260723",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "Mechanism of Action Ceftriaxone is a bactericidal agent that acts by inhibition of bacterial cell wall synthesis. Ceftriaxone has activity in the presence of so",
+      "indications": "INDICATIONS AND USAGE Before instituting treatment with ceftriaxone, appropriate specimens should be obtained for isolation of the causative organism and for de",
+      "adverse_effects": "ADVERSE REACTIONS Ceftriaxone is generally well tolerated. In clinical trials, the following adverse reactions, which were considered to be related to ceftriaxo",
+      "contraindications": "CONTRAINDICATIONS Hypersensitivity Ceftriaxone for injection is contraindicated in patients with known hypersensitivity to ceftriaxone, any of its excipients or"
+    }
+  },
+  {
+    "name": "Cefixime",
+    "fdaName": "CEFIXIME",
+    "status": "full",
+    "setId": "3194433c-c04e-442b-9668-fbeb0a15bac7",
+    "effective": "20260805",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Cefixime is a semisynthetic cephalosporin antibacterial drug [see Microbiology ( 12.4 )] .\n\nSource label: CEFIXIME, US FDA prescribing ",
+      "indications": "1 INDICATIONS AND USAGE Cefixime is a cephalosporin antibacterial drug indicated in the treatment of adults and pediatric patients six months and older with the",
+      "adverse_effects": "6 ADVERSE REACTIONS Most common adverse reactions are gastrointestinal such as diarrhea (16%), nausea (7%), loose stools (6%), abdominal pain (3%), dyspepsia (3",
+      "contraindications": "4 CONTRAINDICATIONS Contraindicated in patients with known allergy to cefixime or other cephalosporins. ( 4 ) Cefixime is contraindicated in patients with known",
+      "interactions": "7 DRUG INTERACTIONS Elevated carbamazepine levels have been reported in postmarketing experience when cefixime is administered concomitantly. ( 7.1 ) Increased "
+    }
+  },
+  {
+    "name": "Ciprofloxacin",
+    "fdaName": "CIPROFLOXACIN HYDROCHLORIDE",
+    "status": "full",
+    "setId": "47d1e4c5-f669-4aca-9e8c-0d6bb833b859",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Ciprofloxacin is a member of the fluoroquinolone class of antibacterial agents [see Microbiology (12.4) ].\n\nSource label: Ciprofloxacin",
+      "indications": "1 INDICATIONS AND USAGE Ciprofloxacin tablet is a fluoroquinolone antibacterial indicated in adults (18 years of age and older) with the following infections ca",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious and otherwise important adverse drug reactions are discussed in greater detail in other sections of labeling: Disablin",
+      "contraindications": "4 CONTRAINDICATIONS Known hypersensitivity to ciprofloxacin tablets or other quinolones ( 4.1 , 5.6 , 5.7 ) Concomitant administration with tizanidine ( 4.2 ) 4",
+      "interactions": "7 DRUG INTERACTIONS Ciprofloxacin is an inhibitor of human cytochrome P450 1A2 (CYP1A2) mediated metabolism. Co­-administration of ciprofloxacin with other drug"
+    }
+  },
+  {
+    "name": "Levofloxacin",
+    "fdaName": "LEVOFLOXACIN",
+    "status": "full",
+    "setId": "5a65b2bc-9edc-f193-e063-6394a90a0104",
+    "effective": "20260901",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Levofloxacin is a member of the fluoroquinolone class of antibacterial agents [see Microbiology (12.4) ] .\n\nSource label: Levofloxacin,",
+      "indications": "1 INDICATIONS AND USAGE Levofloxacin tablets are a fluoroquinolone antibacterial indicated in adults (18 years of age and older) with infections caused by desig",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious and otherwise important adverse drug reactions are discussed in greater detail in other sections of labeling: Disablin",
+      "contraindications": "4 CONTRAINDICATIONS Levofloxacin tablets are contraindicated in persons with known hypersensitivity to levofloxacin, or other quinolone antibacterials [see Warn",
+      "interactions": "7 DRUG INTERACTIONS Interacting Drug Interaction Multivalent cation-containing products including antacids, metal cations or didanosine Absorption of levofloxac"
+    }
+  },
+  {
+    "name": "Azithromycin",
+    "fdaName": "AZITHROMYCIN",
+    "status": "full",
+    "setId": "94e17ae5-0871-67a0-e053-2995a90ae0ae",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Azithromycin is a macrolide antibacterial drug. [see Microbiology (12.4) ]\n\nSource label: Azithromycin, US FDA prescribing information,",
+      "indications": "1 INDICATIONS AND USAGE Azithromycin is a macrolide antibacterial drug indicated for the treatment of patients with mild to moderate infections caused by suscep",
+      "adverse_effects": "6 ADVERSE REACTIONS Most common adverse reactions are diarrhea (5 to 14%), nausea (3 to 18%), abdominal pain (3 to 7%), or vomiting (2 to 7%). ( 6.1 ) To report",
+      "contraindications": "4 CONTRAINDICATIONS Patients with known hypersensitivity to azithromycin, erythromycin, any macrolide or ketolide drug. ( 4.1 ) Patients with a history of chole",
+      "interactions": "7 DRUG INTERACTIONS Nelfinavir: Close monitoring for known adverse reactions of azithromycin, such as liver enzyme abnormalities and hearing impairment, is warr"
+    }
+  },
+  {
+    "name": "Erythromycin",
+    "fdaName": "ERYTHROMYCIN",
+    "status": "partial",
+    "setId": "061ddd20-94a6-4e3c-ba84-1ebd8529eea6",
+    "effective": "20260828",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Microbiology Erythromycin inhibits protein synthesis without affecting nucleic acid synthesis. Erythromycin is usually active against the ",
+      "indications": "INDICATIONS AND USAGE For the treatment of superficial ocular infections involving the conjunctiva and/or cornea caused by organisms susceptible to erythromycin",
+      "adverse_effects": "ADVERSE REACTIONS The most frequently reported adverse reactions are minor ocular irritations, redness, and hypersensitivity reactions. To report SUSPECTED ADVE",
+      "contraindications": "CONTRAINDICATIONS This drug is contraindicated in patients with a history of hypersensitivity to erythromycin.\n\nSource label: Erythromycin, US FDA prescribing i"
+    }
+  },
+  {
+    "name": "Clarithromycin",
+    "fdaName": "CLARITHROMYCIN",
+    "status": "full",
+    "setId": "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6",
+    "effective": "20260624",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Clarithromycin is a macrolide antimicrobial drug [see Microbiology (12.4) ] .\n\nSource label: Clarithromycin, US FDA prescribing informa",
+      "indications": "1 INDICATIONS AND USAGE Clarithromycin tablets are a macrolide antimicrobial indicated for mild to moderate infections caused by designated, susceptible bacteri",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described below and elsewhere in the labeling: • Acute Hypersensitivity Reactions [see Warnings ",
+      "contraindications": "4 CONTRAINDICATIONS Hypersensitivity to clarithromycin or any macrolide drug ( 4.1 ) Cisapride and pimozide ( 4.2 ) History of cholestatic jaundice/hepatic dysf",
+      "interactions": "7 DRUG INTERACTIONS Co-administration of clarithromycin is known to inhibit CYP3A, and a drug primarily metabolized by CYP3A may be associated with elevations i"
+    }
+  },
+  {
+    "name": "Doxycycline",
+    "fdaName": "DOXYCYCLINE HYCLATE",
+    "status": "full",
+    "setId": "051654c7-8ba6-44f2-842c-72f515e9b32d",
+    "effective": "20260915",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Tetracyclines are readily absorbed and are bound to plasma proteins in varying degree. They are concentrated by the liver in the bile and ",
+      "indications": "INDICATIONS AND USAGE To reduce the development of drug-resistant bacteria and maintain effectiveness of doxycycline hyclate and other antibacterial drugs, doxy",
+      "adverse_effects": "ADVERSE REACTIONS Due to oral doxycycline’s virtually complete absorption, side effects of the lower bowel, particularly diarrhea, have been infrequent. The fol",
+      "contraindications": "CONTRAINDICATIONS This drug is contraindicated in persons who have shown hypersensitivity to any of the tetracyclines.\n\nSource label: Doxycycline Hyclate, US FD",
+      "interactions": "Drug Interactions Because tetracyclines have been shown to depress plasma prothrombin activity, patients who are on anticoagulant therapy may require downward a"
+    }
+  },
+  {
+    "name": "Gentamicin",
+    "fdaName": "GENTAMICIN SULFATE",
+    "status": "partial",
+    "setId": "977180b3-a222-4282-d485-4a3217674305",
+    "effective": "20260520",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY After intramuscular administration of gentamicin sulfate, peak serum concentrations usually occur between 30 to 60 minutes and serum level",
+      "indications": "INDICATIONS AND USAGE To reduce the development of drug-resistant bacteria and maintain the effectiveness of gentamicin and other antibacterial drugs, gentamici",
+      "adverse_effects": "ADVERSE REACTIONS Nephrotoxicity: Adverse renal effects, as demonstrated by the presence of casts, cells or protein in the urine or by rising BUN, NPN, serum cr",
+      "contraindications": "CONTRAINDICATIONS Hypersensitivity to gentamicin is a contraindication to its use. A history of hypersensitivity or serious toxic reactions to other aminoglycos"
+    }
+  },
+  {
+    "name": "Streptomycin",
+    "fdaName": "STREPTOMYCIN SULFATE",
+    "status": "miss"
+  },
+  {
+    "name": "Amikacin",
+    "fdaName": "AMIKACIN SULFATE",
+    "status": "partial",
+    "setId": "f260ff2a-76a0-4672-9516-91c344b67890",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "Mechanism of Action Amikacin, an aminoglycoside, binds to the prokaryotic ribosome, inhibiting protein synthesis in susceptible bacteria. It is bactericidal in ",
+      "indications": "INDICATIONS AND USAGE Amikacin Sulfate Injection, USP is indicated in the short-term treatment of serious infections due to susceptible strains of Gram-negative",
+      "adverse_effects": "ADVERSE REACTIONS All aminoglycosides have the potential to induce auditory, vestibular, and renal toxicity and neuromuscular blockade (see WARNINGS box). They ",
+      "contraindications": "CONTRAINDICATIONS A history of hypersensitivity to amikacin is a contraindication for its use. A history of hypersensitivity or serious toxic reactions to amino"
+    }
+  },
+  {
+    "name": "Metronidazole",
+    "fdaName": "METRONIDAZOLE",
+    "status": "full",
+    "setId": "4040db14-750f-6d20-e054-00144ff8d46c",
+    "effective": "20260826",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Absorption Disposition of metronidazole in the body is similar for both oral and intravenous dosage forms. Following oral administration, ",
+      "indications": "INDICATIONS AND USAGE Symptomatic Trichomoniasis. Metronidazole tablets are indicated for the treatment of T. vaginalis infection in females and males when the ",
+      "adverse_effects": "ADVERSE REACTIONS The following reactions have been reported during treatment with metronidazole: Central Nervous System: The most serious adverse reactions rep",
+      "contraindications": "CONTRAINDICATIONS Hypersensitivity Metronidazole tablet are contraindicated in patients with a prior history of hypersensitivity to metronidazole or other nitro",
+      "interactions": "Drug Interactions Disulfiram Psychotic reactions have been reported in alcoholic patients who are using metronidazole and disulfiram concurrently. Metronidazole"
+    }
+  },
+  {
+    "name": "Clindamycin",
+    "fdaName": "CLINDAMYCIN HYDROCHLORIDE",
+    "status": "full",
+    "setId": "fa084aad-07fa-44d2-8d01-d32f40acd2f3",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Human Pharmacology Absorption Pharmacokinetic studies with a 150 mg oral dose of clindamycin hydrochloride in 24 normal adult volunteers s",
+      "indications": "INDICATIONS AND USAGE Clindamycin is indicated in the treatment of serious infections caused by susceptible anaerobic bacteria. Clindamycin is also indicated in",
+      "adverse_effects": "ADVERSE REACTIONS The following reactions have been reported with the use of clindamycin. Infections and Infestations: Clostridioides difficile colitis Gastroin",
+      "contraindications": "CONTRAINDICATIONS Clindamycin hydrochloride capsules are contraindicated in individuals with a history of hypersensitivity to preparations containing clindamyci",
+      "interactions": "Drug Interactions Clindamycin has been shown to have neuromuscular blocking properties that may enhance the action of other neuromuscular blocking agents. There"
+    }
+  },
+  {
+    "name": "Co-trimoxazole",
+    "fdaName": "SULFAMETHOXAZOLE AND TRIMETHOPRIM",
+    "status": "full",
+    "setId": "c6171b62-835c-465e-905e-97f70438186e",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Sulfamethoxazole and trimethoprim is rapidly absorbed following oral administration. Both sulfamethoxazole and trimethoprim exist in the b",
+      "indications": "INDICATIONS & USAGE To reduce the development of drug-resistant bacteria and maintain the effectiveness of sulfamethoxazole and trimethoprim oral suspension and",
+      "adverse_effects": "ADVERSE REACTIONS The following adverse reactions associated with the use of sulfamethoxazole and trimethoprim were identified in clinical trials, postmarketing",
+      "contraindications": "CONTRAINDICATIONS Sulfamethoxazole and trimethoprim is contraindicated in the following situations: • known hypersensitivity to trimethoprim or sulfonamides • h",
+      "interactions": "DRUG INTERACTIONS Potential for Sulfamethoxazole and Trimethoprim to Affect Other Drugs Trimethoprim is an inhibitor of CYP2C8 as well as OCT2 transporter. Sulf"
+    }
+  },
+  {
+    "name": "Nitrofurantoin",
+    "fdaName": "NITROFURANTOIN",
+    "status": "full",
+    "setId": "87505f8f-2056-4e55-adf5-5b7309081d7c",
+    "effective": "20260901",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Nitrofurantoin macrocrystals are a larger crystal form of nitrofurantoin. The absorption of nitrofurantoin macrocrystals is slower and its",
+      "indications": "INDICATIONS AND USAGE Nitrofurantoin capsules, USP (macrocrystals) is specifically indicated for the treatment of urinary tract infections when due to susceptib",
+      "adverse_effects": "ADVERSE REACTIONS Respiratory: CHRONIC, SUBACUTE, OR ACUTE PULMONARY HYPERSENSITIVITY REACTIONS MAY OCCUR. CHRONIC PULMONARY REACTIONS OCCUR GENERALLY IN PATIEN",
+      "contraindications": "CONTRAINDICATIONS Anuria, oliguria, or significant impairment of renal function (creatinine clearance under 60 mL per minute or clinically significant elevated ",
+      "interactions": "Drug Interactions: Antacids containing magnesium trisilicate, when administered concomitantly with nitrofurantoin, reduce both the rate and extent of absorption"
+    }
+  },
+  {
+    "name": "Chloramphenicol",
+    "fdaName": "CHLORAMPHENICOL SODIUM SUCCINATE",
+    "status": "partial",
+    "setId": "aed29594-211d-49ef-813f-131975a8d0e3",
+    "effective": "20241010",
+    "sections": [
+      "overview",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY: Chloramphenicol administered orally is absorbed rapidly from the intestinal tract. In controlled studies in adult volunteers using the re",
+      "adverse_effects": "ADVERSE REACTIONS: Blood Dyscrasias The most serious adverse effect of chloramphenicol is bone marrow depression. Serious and fatal blood dyscrasias (aplastic a",
+      "contraindications": "CONTRAINDICATIONS: Chloramphenicol is contraindicated in individuals with a history of previous hypersensitivity and/or toxic reaction to it. It must not be use",
+      "interactions": "Drug Interactions Concurrent therapy with other drugs that may cause bone marrow depression should be avoided.\n\nSource label: Chloramphenicol Sodium Succinate, "
+    }
+  },
+  {
+    "name": "Vancomycin",
+    "fdaName": "VANCOMYCIN HYDROCHLORIDE",
+    "status": "full",
+    "setId": "bc737938-ae36-460b-a2a8-609f3fe59156",
+    "effective": "20260817",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Vancomycin is an antibacterial drug (see Microbiology [12.4] ).\n\nSource label: Vancomycin Hydrochloride, US FDA prescribing information",
+      "indications": "1 INDICATIONS AND USAGE Vancomycin Hydrochloride Capsules are indicated for the treatment of C. difficile -associated diarrhea. Vancomycin Hydrochloride Capsule",
+      "adverse_effects": "6 ADVERSE REACTIONS The most common adverse reactions (≥ 10%) were nausea (17%), abdominal pain (15%), and hypokalemia (13%). ( 6.1 ) To report SUSPECTED ADVERS",
+      "contraindications": "4 CONTRAINDICATIONS Vancomycin Hydrochloride Capsules are contraindicated in patients with known hypersensitivity to vancomycin. Hypersensitivity to vancomycin ",
+      "interactions": "7 DRUG INTERACTIONS No drug interaction studies have been conducted. No drug interaction studies have been conducted. ( 7 )\n\nSource label: Vancomycin Hydrochlor"
+    }
+  },
+  {
+    "name": "Artemether-lumefantrine",
+    "fdaName": "ARTEMETHER AND LUMEFANTRINE",
+    "status": "full",
+    "setId": "7866ec19-dfac-47d4-a53f-511a12643cbf",
+    "effective": "20260326",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Coartem Tablets, a fixed dose combination of artemether and lumefantrine in the ratio of 1:6, is an antimalarial agent [see Microbiolog",
+      "indications": "1 INDICATIONS AND USAGE Coartem Tablets are indicated for treatment of acute, uncomplicated malaria infections due to Plasmodium falciparum (P. falciparum) in p",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious and otherwise important adverse reactions are discussed in greater detail in other sections of labeling: Hypersensitiv",
+      "contraindications": "4 CONTRAINDICATIONS Hypersensitivity Known hypersensitivity to artemether, lumefantrine, or to any of the excipients of Coartem Tablets [see Adverse Reactions (",
+      "interactions": "7 DRUG INTERACTIONS CYP3A4 Inducers: Potential for loss of antimalarial efficacy. ( 4 , 5.3 , 7.1 , 12.3 ) CYP3A4 Inhibitors: Use cautiously due to potential fo"
+    }
+  },
+  {
+    "name": "Artesunate",
+    "fdaName": "ARTESUNATE",
+    "status": "miss"
+  },
+  {
+    "name": "Chloroquine",
+    "fdaName": "CHLOROQUINE PHOSPHATE",
+    "status": "full",
+    "setId": "0a342f72-45f9-3e12-e063-6394a90ae33e",
+    "effective": "20260113",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Chloroquine is rapidly and almost completely absorbed from the gastrointestinal tract, and only a small proportion of the administered dos",
+      "indications": "INDICATIONS AND USAGE Chloroquine phosphate tablets are indicated for the: Treatment of uncomplicated malaria due to susceptible strains of P. falciparum, P.mal",
+      "adverse_effects": "ADVERSE REACTIONS The following adverse reactions have been identified during post-approval use of chloroquine or other 4-aminoqunoline compounds. Because these",
+      "contraindications": "CONTRAINDICATIONS Use of chloroquine phosphate tablets for indications other than acute malaria is contraindicated in the presence of retinal or visual field ch",
+      "interactions": "Drug Interactions Antacids and kaolin: Antacids and kaolin can reduce absorption of chloroquine; an interval of at least 4 hours between intake of these agents "
+    }
+  },
+  {
+    "name": "Quinine",
+    "fdaName": "QUININE SULFATE",
+    "status": "full",
+    "setId": "1f32f05c-a215-40be-b951-e41a7b54a8a0",
+    "effective": "20251031",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 CLINICAL PHARMACOLOGY 12.1 Mechanism of Action Quinine is an antimalarial agent [see CLINICAL PHARMACOLOGY ( 12.4 )] . 12.2 Pharmacodynamics QTc interval pro",
+      "indications": "1 INDICATIONS AND USAGE Quinine sulfate capsule USP is a cinchona alkaloid indicated for treatment of uncomplicated Plasmodium falciparum malaria ( 1 ). Quinine",
+      "adverse_effects": "6 ADVERSE REACTIONS Most common adverse reactions are a cluster of symptoms called \"cinchonism\", which occurs to some degree in almost all patients taking quini",
+      "contraindications": "4 CONTRAINDICATIONS Quinine sulfate is contraindicated in patients with the following: Prolongation of QT interval ( 4 ) Glucose-6-phosphate dehydrogenase (G6PD",
+      "interactions": "7 DRUG INTERACTIONS Interacting Drug Interaction Drugs known to prolong QT interval (e.g., Class IA and Class III antiarrhythmic agents). Quinine sulfate prolon"
+    }
+  },
+  {
+    "name": "Primaquine",
+    "fdaName": "PRIMAQUINE PHOSPHATE",
+    "status": "full",
+    "setId": "3f16166d-678e-51aa-e054-00144ff88e88",
+    "effective": "20260512",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Microbiology Mechanism of Action Primaquine phosphate is an 8-aminoquinoline antimalarial drug. The mechanism of action has not been fully",
+      "indications": "INDICATIONS AND USAGE Primaquine phosphate Tablets are indicated for the radical cure (prevention of relapse) of vivax malaria.\n\nSource label: Primaquine Phosph",
+      "adverse_effects": "ADVERSE REACTIONS Gastrointestinal: Nausea, vomiting, epigastric distress, abdominal cramps. Hematologic: Leukopenia, hemolytic anemia, decreased hemoglobin, me",
+      "contraindications": "CONTRAINDICATIONS Known hypersensitivity reactions to primaquine phosphate, other 8-aminoquinolones, or to any component in Primaquine phosphate Tablets. Severe",
+      "interactions": "Drug Interactions Pharmacodynamics Interactions Quinacrine Concurrent use of quinacrine (mepacrine) and Primaquine phosphate Tablets are contraindicated. Increa"
+    }
+  },
+  {
+    "name": "Hydroxychloroquine",
+    "fdaName": "HYDROXYCHLOROQUINE SULFATE",
+    "status": "full",
+    "setId": "ebe00e35-ed3d-40f4-9a93-a37b0da01ddb",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Malaria Hydroxychloroquine is a 4-aminoquinoline antimalarial [ see Microbiology (12.4) ] and antirheumatic agent. Rheumatoid Arthritis",
+      "indications": "1 INDICATIONS AND USAGE Hydroxychloroquine Sulfate Tablets are an antimalarial and antirheumatic indicated for the: • Treatment of uncomplicated malaria due to ",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are described in greater detail in other sections: • Cardiomyopathy and Ventricular Arrhythmias [ see Warnin",
+      "contraindications": "4 CONTRAINDICATIONS Hydroxychloroquine sulfate tablets are contraindicated in patients with known hypersensitivity to 4-aminoquinoline compounds. • Patients wit",
+      "interactions": "7 DRUG INTERACTIONS • Drugs Prolonging QT Interval and Other Arrhythmogenic Drugs. (7.1) • See FPI for more important drug interactions. (7) 7.1 Drugs Prolongin"
+    }
+  },
+  {
+    "name": "Atovaquone-proguanil",
+    "fdaName": "ATOVAQUONE AND PROGUANIL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "ad25ab65-42aa-48f6-b5ed-247f3685d5bf",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Atovaquone and proguanil hydrochloride tablets, a fixed-dose combination of atovaquone and proguanil hydrochloride, is an antimalarial ",
+      "indications": "1 INDICATIONS AND USAGE Atovaquone and proguanil hydrochloride tablets are an antimalarial indicated for: prophylaxis of Plasmodium falciparum (P. falciparum) m",
+      "adverse_effects": "6 ADVERSE REACTIONS . Prophylaxis: Common adverse reactions (≥4%) in adults were diarrhea, dreams, oral ulcers, and headache; these events occurred in a similar",
+      "contraindications": "4 CONTRAINDICATIONS Atovaquone and proguanil hydrochloride is contraindicated in individuals with known hypersensitivity reactions (e.g., anaphylaxis, erythema ",
+      "interactions": "7 DRUG INTERACTIONS Administration with rifampin or rifabutin is known to reduce atovaquone concentrations; concomitant use with atovaquone and proguanil hydroc"
+    }
+  },
+  {
+    "name": "Sulfadoxine-pyrimethamine",
+    "fdaName": "SULFADOXINE AND PYRIMETHAMINE",
+    "status": "miss"
+  },
+  {
+    "name": "Isoniazid",
+    "fdaName": "ISONIAZID",
+    "status": "full",
+    "setId": "6dab7b7b-a3a9-47ef-b423-134bc6970d8b",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "Mechanism of Action Isoniazid inhibits the synthesis of mycoloic acids, an essential component of the bacterial cell wall. At therapeutic levels isoniazid is ba",
+      "indications": "INDICATIONS AND USAGE Isoniazid tablets, USP are recommended for all forms of tuberculosis in which organisms are susceptible. However, active tuberculosis must",
+      "adverse_effects": "ADVERSE REACTIONS The most frequent reactions are those affecting the nervous system and the liver. Nervous System Reactions Peripheral neuropathy is the most c",
+      "contraindications": "CONTRAINDICATIONS Isoniazid is contraindicated in patients who develop severe hypersensitivity reactions, including drug-induced hepatitis; previous isoniazid-a",
+      "interactions": "Drug Interactions Food Isoniazid should not be administered with food. Studies have shown that the bioavailability of isoniazid is reduced significantly when ad"
+    }
+  },
+  {
+    "name": "Rifampicin",
+    "fdaName": "RIFAMPIN",
+    "status": "full",
+    "setId": "8be91604-d7cd-4f2b-997d-e3364e4092e5",
+    "effective": "20260505",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "Mechanism of Action Rifampin inhibits DNA-dependent RNA polymerase activity in susceptible Mycobacterium tuberculosis organisms. Specifically, it interacts with",
+      "indications": "INDICATIONS AND USAGE In the treatment of both tuberculosis and the meningococcal carrier state, the small number of resistant cells present within large popula",
+      "adverse_effects": "ADVERSE REACTIONS The following adverse reactions associated with the use of rifampin were identified in clinical studies or postmarketing reports. Because some",
+      "contraindications": "CONTRAINDICATIONS Rifampin is contraindicated in patients with a history of hypersensitivity to rifampin or any of the components, or to any of the rifamycins. ",
+      "interactions": "Drug Interactions Pharmacodynamic Interactions Healthy subjects who received rifampin 600 mg once daily concomitantly with saquinavir 1000 mg/ritonavir 100 mg t"
+    }
+  },
+  {
+    "name": "Pyrazinamide",
+    "fdaName": "PYRAZINAMIDE",
+    "status": "full",
+    "setId": "566db230-3d73-482f-b67d-defd0b2dc46c",
+    "effective": "20231003",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Pyrazinamide is well absorbed from the GI tract and attains peak plasma concentrations within 2 hours. Plasma concentrations generally ran",
+      "indications": "INDICATIONS AND USAGE Pyrazinamide is indicated for the initial treatment of active tuberculosis in adults and children when combined with other antituberculous",
+      "adverse_effects": "ADVERSE REACTIONS General Fever, porphyria and dysuria have rarely been reported. Gout (see PRECAUTIONS ). Gastrointestinal The principal adverse effect is a he",
+      "contraindications": "CONTRAINDICATIONS Pyrazinamide is contraindicated in persons: • with severe hepatic damage. • who have shown hypersensitivity to it. • with acute gout.\n\nSource ",
+      "interactions": "Interactions Drug/Laboratory Test Interactions Pyrazinamide has been reported to interfere with ACETEST ® and KETOSTIX ® urine tests to produce a pink-brown col"
+    }
+  },
+  {
+    "name": "Ethambutol",
+    "fdaName": "ETHAMBUTOL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "c12b3482-55f0-4324-bdcd-b129ca2dae73",
+    "effective": "20260731",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Ethambutol hydrochloride, following a single oral dose of 25 mg/kg of body weight, attains a peak of 2 to 5 mcg/mL in serum 2 to 4 hours a",
+      "indications": "INDICATIONS AND USAGE Ethambutol hydrochloride is indicated for the treatment of pulmonary tuberculosis. It should not be used as the sole antituberculous drug,",
+      "adverse_effects": "ADVERSE REACTIONS Ethambutol hydrochloride may produce decreases in visual acuity, including irreversible blindness, which appear to be due to optic neuritis. O",
+      "contraindications": "CONTRAINDICATIONS Ethambutol hydrochloride is contraindicated in patients who are known to be hypersensitive to this drug. It is also contraindicated in patient",
+      "interactions": "Drug Interactions The results of a study of coadministration of ethambutol hydrochloride (50mg/kg) with an aluminum hydroxide containing antacid to 13 patients "
+    }
+  },
+  {
+    "name": "Dapsone",
+    "fdaName": "DAPSONE",
+    "status": "full",
+    "setId": "839d7440-ba0e-4c56-b648-d374b155cf03",
+    "effective": "20260720",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Actions: The mechanism of action in Dermatitis herpetiformis has not been established. By the kinetic method in mice, Dapsone is bacterici",
+      "indications": "INDICATIONS AND USAGE Dermatitis herpetiformis: (D.H.) Leprosy: All forms of leprosy except for cases of proven dapsone resistance.\n\nSource label: Dapsone, US F",
+      "adverse_effects": "ADVERSE REACTIONS In addition to the warnings listed above, the following syndromes and serious reactions have been reported in patients on dapsone. Hematologic",
+      "contraindications": "CONTRAINDICATIONS Hypersensitivity to dapsone and/or its derivatives.\n\nSource label: Dapsone, US FDA prescribing information, effective 20260720. https://dailym",
+      "interactions": "Drug Interactions: Rifampin lowers dapsone levels 7 to 10-fold by accelerating plasma clearance; in leprosy this reduction has not required a change in dosage. "
+    }
+  },
+  {
+    "name": "Tenofovir",
+    "fdaName": "TENOFOVIR DISOPROXIL FUMARATE",
+    "status": "partial",
+    "setId": "e0ae0aa2-3baa-4b75-9e85-68b5338c3c14",
+    "effective": "20260713",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Tenofovir disoproxil fumarate is an antiviral drug [See Microbiology (12.4) ].\n\nSource label: Tenofovir Disoproxil Fumarate, US FDA pre",
+      "indications": "1 INDICATIONS AND USAGE Tenofovir disoproxil fumarate is a nucleotide analog HIV-1 reverse transcriptase inhibitor and an HBV reverse transcriptase inhibitor an",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in other sections of the labeling: Severe Acute Exacerbation of Hepatitis B in Patients with H",
+      "interactions": "7 DRUG INTERACTIONS Tenofovir disoproxil fumarate increases didanosine concentrations. Dose reduction and close monitoring for didanosine toxicity are warranted"
+    }
+  },
+  {
+    "name": "Lamivudine",
+    "fdaName": "LAMIVUDINE",
+    "status": "full",
+    "setId": "6bd6b9da-df69-46db-813e-4e7f3bdecf95",
+    "effective": "20260729",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Lamivudine is an antiviral agent with activity against HBV [see Microbiology ( 12.4 )].\n\nSource label: Lamivudine, US FDA prescribing i",
+      "indications": "1 INDICATIONS AND USAGE Lamivudine tablets (HBV) are indicated for the treatment of chronic hepatitis B virus (HBV) infection associated with evidence of hepati",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in other sections of the labeling: • Exacerbations of hepatitis B after discontinuation of tre",
+      "contraindications": "4 CONTRAINDICATIONS Lamivudine tablets (HBV) are contraindicated in patients with a previous hypersensitivity reaction to lamivudine. Lamivudine tablets (HBV) i",
+      "interactions": "7 DRUG INTERACTIONS Sorbitol: Coadministration of lamivudine and sorbitol may result in decreased lamivudine concentrations; when possible, avoid chronic coadmi"
+    }
+  },
+  {
+    "name": "Zidovudine",
+    "fdaName": "ZIDOVUDINE",
+    "status": "full",
+    "setId": "437f55b2-f6d9-0065-e063-6294a90ab929",
+    "effective": "20260119",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Zidovudine is an antiretroviral agent [see Microbiology ( 12.4 )].\n\nSource label: Zidovudine, US FDA prescribing information, effective",
+      "indications": "1 INDICATIONS & USAGE Zidovudine tablets are a nucleoside analogue reverse transcriptase inhibitor indicated for: •Treatment of Human Immunodeficiency Virus (HI",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in greater detail in other sections of the labeling: • Hematologic toxicity, including neutrop",
+      "contraindications": "4 CONTRAINDICATIONS Zidovudine tablets are contraindicated in patients who have had a potentially life-threatening hypersensitivity reaction (e.g., anaphylaxis,",
+      "interactions": "7 DRUG INTERACTIONS • Avoid use with stavudine. ( 7.1 ) • Avoid use with doxorubicin. ( 7.2 ) • Bone marrow suppressive/cytotoxic agents: May increase the hemat"
+    }
+  },
+  {
+    "name": "Efavirenz",
+    "fdaName": "EFAVIRENZ",
+    "status": "full",
+    "setId": "13ca3456-e5bf-4bb1-af95-b1378658a358",
+    "effective": "20240628",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Efavirenz is an antiviral drug [see Microbiology ( 12.4 )].\n\nSource label: Efavirenz, US FDA prescribing information, effective 2024062",
+      "indications": "1 INDICATIONS & USAGE Efavirenz in combination with other antiretroviral agents is indicated for the treatment of human immunodeficiency virus type 1 (HIV-1) in",
+      "adverse_effects": "6 ADVERSE REACTIONS The most significant adverse reactions observed in patients treated with efavirenz are: •psychiatric symptoms [see Warnings and Precautions ",
+      "contraindications": "4 CONTRAINDICATIONS • Efavirenz is contraindicated in patients with previously demonstrated clinically significant hypersensitivity (e.g., Stevens-Johnson syndr",
+      "interactions": "7 DRUG INTERACTIONS Coadministration of efavirenz can alter the concentrations of other drugs and other drugs may alter the concentrations of efavirenz. The pot"
+    }
+  },
+  {
+    "name": "Dolutegravir",
+    "fdaName": "DOLUTEGRAVIR SODIUM",
+    "status": "full",
+    "setId": "485bc9db-8665-9f5a-e063-6394a90a7921",
+    "effective": "20260522",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Dolutegravir is an HIV-1 antiretroviral agent [see Microbiology ( 12.4 )].\n\nSource label: Tivicay, US FDA prescribing information, effe",
+      "indications": "1 INDICATIONS AND USAGE TIVICAY and TIVICAY PD are indicated in combination with other antiretroviral agents for the treatment of HIV‑1 infection in adults (tre",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse drug reactions are discussed in other sections of the labeling: Hypersensitivity reactions [see Warnings and P",
+      "contraindications": "4 CONTRAINDICATIONS TIVICAY and TIVICAY PD are contraindicated in patients: with previous hypersensitivity reaction to dolutegravir [see Warnings and Precaution",
+      "interactions": "7 DRUG INTERACTIONS Refer to the full prescribing information for important drug interactions with TIVICAY or TIVICAY PD. ( 4 , 7 ) Drugs that are metabolic ind"
+    }
+  },
+  {
+    "name": "Nevirapine",
+    "fdaName": "NEVIRAPINE",
+    "status": "full",
+    "setId": "c6e93829-7024-48f6-8023-da6ff27dfc0a",
+    "effective": "20260715",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Nevirapine is an antiretroviral drug [see Microbiology (12.4) ] .\n\nMechanism of Action Nevirapine is a non-nucleoside reverse transcrip",
+      "indications": "1 INDICATIONS AND USAGE Nevirapine is indicated in combination with other antiretroviral agents for the treatment of human immunodeficiency virus (HIV-1) infect",
+      "adverse_effects": "6 ADVERSE REACTIONS • The most common adverse reaction is rash. In adults, the incidence of rash is 15% versus 6% with placebo, with Grade 3/4 rash occurring in",
+      "contraindications": "4 CONTRAINDICATIONS Nevirapine is contraindicated: • in patients with moderate or severe (Child-Pugh Class B or C, respectively) hepatic impairment [see Warning",
+      "interactions": "7 DRUG INTERACTIONS Nevirapine is principally metabolized by the liver via the cytochrome P450 isoenzymes, 3A and 2B6. Nevirapine is known to be an inducer of t"
+    }
+  },
+  {
+    "name": "Lopinavir-ritonavir",
+    "fdaName": "LOPINAVIR AND RITONAVIR",
+    "status": "full",
+    "setId": "115178c8-5ee2-4d96-820e-ea8264c1ac10",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Lopinavir and ritonavir tablets are a fixed-dose combination of HIV-1 antiviral drugs lopinavir [see Microbiology ( 12.4 )] and ritonav",
+      "indications": "1 INDICATIONS AND USAGE Lopinavir and ritonavir is indicated in combination with other antiretroviral agents for the treatment of HIV1 infection in adults and p",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in greater detail in other sections of the labeling. QT Interval Prolongation, PR Interval Pro",
+      "contraindications": "4 CONTRAINDICATIONS Lopinavir and ritonaviris contraindicated in patients with previously demonstrated clinically significant hypersensitivity (e.g., toxic epid",
+      "interactions": "7 DRUG INTERACTIONS Co-administration of lopinavir and ritonavir can alter the plasma concentrations of other drugs and other drugs may alter the plasma concent"
+    }
+  },
+  {
+    "name": "Abacavir",
+    "fdaName": "ABACAVIR SULFATE",
+    "status": "full",
+    "setId": "f7633480-25aa-4326-bec9-82835b486a20",
+    "effective": "20260305",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Abacavir is an antiretroviral agent [see Microbiology (12.4) ].\n\nSource label: Abacavir Sulfate, US FDA prescribing information, effect",
+      "indications": "1 INDICATIONS AND USAGE Abacavir tablets, in combination with other antiretroviral agents, are indicated for the treatment of human immunodeficiency virus (HIV-",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in other sections of the labeling: Serious and sometimes fatal hypersensitivity reactions [see",
+      "contraindications": "4 CONTRAINDICATIONS Abacavir tablets are contraindicated in patients: who have the HLA-B*5701 allele [see Warnings and Precautions (5.1) ] . with prior hypersen",
+      "interactions": "7 DRUG INTERACTIONS Methadone: An increased methadone dose may be required in a small number of patients. ( 7.1 ) Riociguat: The riociguat dose may need to be r"
+    }
+  },
+  {
+    "name": "Aciclovir",
+    "fdaName": "ACYCLOVIR",
+    "status": "full",
+    "setId": "5176c7f9-9076-4797-e054-00144ff8d46c",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Pharmacokinetics The pharmacokinetics of acyclovir after oral administration have been evaluated in healthy volunteers and in immunocompro",
+      "indications": "INDICATIONS & USAGE Herpes Zoster Infections: Acyclovir tablets, USP are indicated for the acute treatment of herpes zoster (shingles). Genital Herpes: Acyclovi",
+      "adverse_effects": "ADVERSE REACTIONS Herpes Simplex Short-Term Administration: The most frequent adverse events reported during clinical trials of treatment of genital herpes with",
+      "contraindications": "CONTRAINDICATIONS Acyclovir tablets are contraindicated for patients who develop hypersensitivity to acyclovir or valacyclovir.\n\nSource label: Acyclovir, US FDA",
+      "interactions": "Drug Interactions See CLINICAL PHARMACOLOGY: Pharmacokinetics .\n\nSource label: Acyclovir, US FDA prescribing information, effective 20260827. https://dailymed.n"
+    }
+  },
+  {
+    "name": "Oseltamivir",
+    "fdaName": "OSELTAMIVIR PHOSPHATE",
+    "status": "full",
+    "setId": "f26154bd-374c-44a8-983a-b2724a591653",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Oseltamivir is an antiviral drug with activity against influenza virus [see Microbiology ( 12.4 )].\n\nSource label: Oseltamivir Phosphat",
+      "indications": "1 INDICATIONS AND USAGE Oseltamivir Phosphate capsule is an influenza neuraminidase inhibitor (NAI) indicated for: Treatment of acute, uncomplicated influenza A",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are discussed below and elsewhere in the labeling: Serious skin and hypersensitivity reactions [see ",
+      "contraindications": "4 CONTRAINDICATIONS Oseltamivir phosphate capsule is contraindicated in patients with known serious hypersensitivity to oseltamivir or any component of the prod",
+      "interactions": "7 DRUG INTERACTIONS Live attenuated influenza vaccine (LAIV), intranasal: Avoid administration of LAIV within 2 weeks before or 48 hours after Oseltamivir Phosp"
+    }
+  },
+  {
+    "name": "Fluconazole",
+    "fdaName": "FLUCONAZOLE",
+    "status": "full",
+    "setId": "1c82929f-934b-4df4-b24f-1e5da090fd8a",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Pharmacokinetics and Metabolism The pharmacokinetic properties (PK) of fluconazole are similar following administration by the intravenous",
+      "indications": "INDICATIONS AND USAGE Fluconazole tablets are indicated for the treatment of: Vaginal candidiasis (vaginal yeast infections due to Candida ). Oropharyngeal and ",
+      "adverse_effects": "ADVERSE REACTIONS Fluconazole is generally well tolerated. In some patients, particularly those with serious underlying diseases such as AIDS and cancer, change",
+      "contraindications": "CONTRAINDICATIONS Fluconazole tablets are contraindicated in patients who have shown hypersensitivity to fluconazole or to any of its excipients. There is no in",
+      "interactions": "Drug Interaction Studies (See PRECAUTIONS, Drug Interactions) Oral contraceptives: Oral contraceptives were administered as a single dose both before and after "
+    }
+  },
+  {
+    "name": "Ketoconazole",
+    "fdaName": "KETOCONAZOLE",
+    "status": "partial",
+    "setId": "5ac93feb-eb6d-7563-e063-6294a90ad2e0",
+    "effective": "20260905",
+    "sections": [
+      "indications"
+    ],
+    "preview": {
+      "indications": "For best results, follow these steps carefully:lukewarm water. 1.Wet hair and scalp thoroughly with 2.Applya sufficient amount of shampooto generate a rich lath"
+    }
+  },
+  {
+    "name": "Nystatin",
+    "fdaName": "NYSTATIN",
+    "status": "partial",
+    "setId": "05cc72dd-8e05-bfb5-e063-6394a90a92f1",
+    "effective": "20260819",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Pharmacokinetics Gastrointestinal absorption of nystatin is insignificant. Most orally administered nystatin is passed unchanged in the st",
+      "indications": "INDICATIONS AND USAGE Nystatin Tablets are intended for the treatment of non-esophageal mucus membrane gastrointestinal candidiasis.\n\nSource label: nystatin, US",
+      "adverse_effects": "ADVERSE REACTIONS Nystatin is well tolerated even with prolonged therapy. Oral irritation and sensitization have been reported. (See PRECAUTIONS: General . ) Ga",
+      "contraindications": "CONTRAINDICATIONS Nystatin tablets are contraindicated in patients with a history of hypersensitivity to any of their components.\n\nSource label: nystatin, US FD"
+    }
+  },
+  {
+    "name": "Terbinafine",
+    "fdaName": "TERBINAFINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "2886b2ff-815f-4621-bc28-1fea082c1920",
+    "effective": "20260709",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 CLINICAL PHARMACOLOGY 12.1 Mechanism of Action Terbinafine is an allylamine antifungal [see Clinical Pharmacology ( 12.4 ) ]. 12.2 Pharmacodynamics The pharm",
+      "indications": "1 INDICATIONS AND USAGE Terbinafine tablets are indicated for the treatment of onychomycosis of the toenail or fingernail due to dermatophytes (tinea unguium). ",
+      "adverse_effects": "6 ADVERSE REACTIONS Common (greater than 2% of patients treated with terbinafine tablets) reported adverse events include headache, diarrhea, rash, dyspepsia, l",
+      "contraindications": "4 CONTRAINDICATIONS Terbinafine tablets are contraindicated in patients with: Chronic or active liver disease [see Warnings and Precautions (5.1)] History of al",
+      "interactions": "7 DRUG INTERACTIONS Terbinafine is an inhibitor of CYP450 2D6 isozyme and has an effect on metabolism of desipramine. Drug interactions have also been noted wit"
+    }
+  },
+  {
+    "name": "Albendazole",
+    "fdaName": "ALBENDAZOLE",
+    "status": "full",
+    "setId": "8de337eb-92e1-15b5-e053-2a95a90ac4f1",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Albendazole Tablets is a synthetic, anthelminthic drug of the class benzimidazole [ see Clinical Pharmacology ( 12.4 ) ].\n\nSource label",
+      "indications": "1 INDICATIONS & USAGE Albendazole Tablets is an anthelmintic drug indicated for: Treatment of parenchymal neurocysticercosis due to active lesions caused by lar",
+      "adverse_effects": "6 ADVERSE REACTIONS Adverse reactions 1% or greater in hydatid disease: abnormal liver function tests, abdominal pain, nausea/vomiting, reversible alopecia, hea",
+      "contraindications": "4 CONTRAINDICATIONS Albendazole Tablets are contraindicated in patients with known hypersensitivity to the benzimidazole class of compounds or any components of",
+      "interactions": "7 DRUG INTERACTIONS Dexamethasone: Steady‑state trough concentrations of albendazole sulfoxide were about 56% higher when dexamethasone was coadministered with "
+    }
+  },
+  {
+    "name": "Mebendazole",
+    "fdaName": "MEBENDAZOLE",
+    "status": "full",
+    "setId": "a720c424-517a-461b-8e13-6c37caf8aa3f",
+    "effective": "20211005",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Mebendazole, a benzimidazole, is an anthelmintic [see Microbiology (12.4) ] .\n\nSource label: VERMOX, US FDA prescribing information, ef",
+      "indications": "1 INDICATIONS AND USAGE VERMOX™ CHEWABLE is indicated for the treatment of patients one year of age and older with gastrointestinal infections caused by Ascaris",
+      "adverse_effects": "6 ADVERSE REACTIONS Adverse reactions reported in clinical trials were anorexia, abdominal pain, diarrhea, flatulence, nausea, vomiting and rash. ( 6.1 ). To re",
+      "contraindications": "4 CONTRAINDICATIONS VERMOX™ CHEWABLE is contraindicated in persons with a known hypersensitivity to the drug or its excipients. Patients with a known hypersensi",
+      "interactions": "7 DRUG INTERACTIONS Concomitant use of mebendazole and metronidazole should be avoided [see Warnings and Precautions (5.3) ] .\n\nSource label: VERMOX, US FDA pre"
+    }
+  },
+  {
+    "name": "Ivermectin",
+    "fdaName": "IVERMECTIN",
+    "status": "miss"
+  },
+  {
+    "name": "Praziquantel",
+    "fdaName": "PRAZIQUANTEL",
+    "status": "full",
+    "setId": "16f2b9c4-a260-4a31-bd52-e5945913246c",
+    "effective": "20260812",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Praziquantel is an anthelmintic drug [see Microbiology (12.4) ] .\n\nSource label: PRAZIQUANTEL, US FDA prescribing information, effectiv",
+      "indications": "1 INDICATIONS AND USAGE Praziquantel tablets are indicated in patients aged 1 year and older for the treatment of the following infections: Schistosomiasis due ",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious or otherwise important adverse reactions are discussed elsewhere in the labeling: Clinical Deterioration [see Warnings",
+      "contraindications": "4 CONTRAINDICATIONS Praziquantel is contraindicated in: Patients who previously have shown hypersensitivity to praziquantel or any of the excipients in praziqua",
+      "interactions": "7 DRUG INTERACTIONS Moderate CYP 3A Inducers : Avoid concomitant administration of moderate CYP 3A inducers, for example, efavirenz ( 5.6 , 7.1 ) 7.1 CYP 3A Ind"
+    }
+  },
+  {
+    "name": "Amlodipine",
+    "fdaName": "AMLODIPINE BESYLATE",
+    "status": "full",
+    "setId": "5af8493b-2b73-859c-e063-6394a90a4620",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Amlodipine is a dihydropyridine calcium antagonist (calcium ion antagonist or slow-channel blocker) that inhibits the transmembrane inf",
+      "indications": "1 INDICATIONS AND USAGE Amlodipine besylate tablets are calcium channel blocker and may be used alone or in combination with other antihypertensive and antiangi",
+      "adverse_effects": "6 ADVERSE REACTIONS Most common adverse reaction to amlodipine is edema which occurred in a dose related manner. Other adverse experiences not dose related but ",
+      "contraindications": "4 CONTRAINDICATIONS Known sensitivity to amlodipine ( 4 ) Amlodipine besylate tablets are contraindicated in patients with known sensitivity to amlodipine.\n\nSou",
+      "interactions": "7 DRUG INTERACTIONS Do not exceed doses greater than 20 mg daily of simvastatin. ( 7.2 ) 7.1 Impact of Other Drugs on Amlodipine CYP3A Inhibitors Co-administrat"
+    }
+  },
+  {
+    "name": "Nifedipine",
+    "fdaName": "NIFEDIPINE",
+    "status": "full",
+    "setId": "4ee466dc-5a4e-4c77-8e94-8b510cafd61b",
+    "effective": "20260804",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "Mechanism of Action A) Angina The precise mechanisms by which inhibition of calcium influx relieves angina has not been fully determined, but includes at least ",
+      "indications": "INDICATIONS AND USAGE I.Vasospastic Angina Nifedipine extended-release tablets are indicated for the management of vasospastic angina confirmed by any of the fo",
+      "adverse_effects": "ADVERSE EXPERIENCES Over 1000 patients from both controlled and open trials with nifedipine extended-release tablets in hypertension and angina were included in",
+      "contraindications": "CONTRAINDICATIONS Known hypersensitivity reaction to nifedipine.\n\nSource label: Nifedipine, US FDA prescribing information, effective 20260804. https://dailymed",
+      "interactions": "Drug Interactions: Beta-adrenergic blocking agents: (see and .) Experience in over 1400 patients with nifedipine capsules in a noncomparative clinical trial has"
+    }
+  },
+  {
+    "name": "Lisinopril",
+    "fdaName": "LISINOPRIL",
+    "status": "full",
+    "setId": "aa5d68e7-c2b9-41eb-ade4-2cd57edc1533",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Lisinopril inhibits angiotensin-converting enzyme (ACE) in human subjects and animals. ACE is a peptidyl dipeptidase that catalyzes the",
+      "indications": "1 INDICATIONS AND USAGE Lisinopril tablets USP is an angiotensin converting enzyme (ACE) inhibitor indicated for: Treatment of hypertension in adults and pediat",
+      "adverse_effects": "6 ADVERSE REACTIONS Common adverse reactions (events 2% greater than placebo) by use: Hypertension: headache, dizziness and cough ( 6.1 ) Heart Failure: hypoten",
+      "contraindications": "4 CONTRAINDICATIONS Angioedema or a history of hereditary or idiopathic angioedema ( 4 ) Hypersensitivity ( 4 ) Co-administration of aliskiren with lisinopril i",
+      "interactions": "7 DRUG INTERACTIONS Diuretics: Excessive drop in blood pressure ( 7.1 ) NSAIDS: Increased risk of renal impairment and loss of antihypertensive efficacy ( 7.3 )"
+    }
+  },
+  {
+    "name": "Enalapril",
+    "fdaName": "ENALAPRIL MALEATE",
+    "status": "full",
+    "setId": "3fbc6cce-7ad5-49d5-9705-5f66ef92d544",
+    "effective": "20260901",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "Mechanism of Action Enalapril, after hydrolysis to enalaprilat, inhibits angiotensin-converting enzyme (ACE) in human subjects and animals. ACE is a peptidyl di",
+      "indications": "INDICATIONS AND USAGE Hypertension Enalapril maleate is indicated for the treatment of hypertension. Enalapril maleate is effective alone or in combination with",
+      "adverse_effects": "ADVERSE REACTIONS Enalapril maleate has been evaluated for safety in more than 10,000 patients, including over 1000 patients treated for one year or more. Enala",
+      "contraindications": "CONTRAINDICATIONS Enalapril maleate is contraindicated in patients who are hypersensitive to this product and in patients with a history of angioedema related t",
+      "interactions": "Drug Interactions Neprilysin Inhibitors Patients taking concomitant neprilysin inhibitors may be at increased risk for angioedema (see WARNINGS ). Dual Blockade"
+    }
+  },
+  {
+    "name": "Ramipril",
+    "fdaName": "RAMIPRIL",
+    "status": "full",
+    "setId": "45707435-4fc8-457e-9ff2-02d7be9b4a6e",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Ramipril and ramiprilat inhibit ACE in human subjects and animals. Angiotensin converting enzyme is a peptidyl dipeptidase that catalyz",
+      "indications": "1 INDICATIONS AND USAGE Ramipril capsules are an angiotensin converting enzyme (ACE) inhibitor indicated for the treatment of hypertension, to lower blood press",
+      "adverse_effects": "6 ADVERSE REACTIONS The most common adverse reactions in patients with hypertension included headache, dizziness, fatigue, and cough (6.1) .To report SUSPECTED ",
+      "contraindications": "4 CONTRAINDICATIONS Ramipril capsules are contraindicated in patients who are hypersensitive to this product or any other ACE inhibitor (e.g., a patient who has",
+      "interactions": "7 DRUG INTERACTIONS Diuretics: Possibility of excessive hypotension ( 7.1 ). Lithium: Use with caution (7.4) . Gold: Nitritoid reactions have been reported ( 7."
+    }
+  },
+  {
+    "name": "Losartan",
+    "fdaName": "LOSARTAN POTASSIUM",
+    "status": "full",
+    "setId": "a397502e-abe7-49cf-97c7-d53a616947eb",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Angiotensin II [formed from angiotensin I in a reaction catalyzed by angiotensin converting enzyme (ACE, kininase II)] is a potent vaso",
+      "indications": "1 INDICATIONS & USAGE Losartan potassium tablets, USP are an angiotensin II receptor blocker (ARB) indicated for: • Treatment of hypertension, to lower blood pr",
+      "adverse_effects": "6 ADVERSE REACTIONS Most common adverse reactions (incidence ≥2% and greater than placebo) are: dizziness, upper respiratory infection, nasal congestion, and ba",
+      "contraindications": "4 CONTRAINDICATIONS Losartan potassium tablets are contraindicated: • In patients who are hypersensitive to any component of this product. • For coadministratio",
+      "interactions": "7 DRUG INTERACTIONS • Agents Increasing Serum Potassium: Risk of hyperkalemia. ( 7.1 ) • Lithium: Risk of lithium toxicity. ( 7.2 ) • NSAIDs: Increased risk of "
+    }
+  },
+  {
+    "name": "Valsartan",
+    "fdaName": "VALSARTAN",
+    "status": "full",
+    "setId": "5a816ea6-2645-bd6e-e063-6294a90a908b",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 CLINICAL PHARMACOLOGY 12.1 Mechanism of Action Angiotensin II is formed from angiotensin I in a reaction catalyzed by angiotensin-converting enzyme (ACE, kin",
+      "indications": "1 INDICATIONS AND USAGE Valsartan tablets are an angiotensin II receptor blocker (ARB) indicated for: Treatment of hypertension , to lower blood pressure. Lower",
+      "adverse_effects": "6 ADVERSE REACTIONS Hypertension: Most common adverse reactions are headache, dizziness, viral infection, fatigue and abdominal pain. (6.1) Heart Failure: Most ",
+      "contraindications": "4 CONTRAINDICATIONS Do not use in patients with known hypersensitivity to any component. Do not co-administer aliskiren with valsartan tablets in patients with ",
+      "interactions": "7 DRUG INTERACTIONS Potassium-sparing diuretics, potassium supplements or salt substitutes may lead to increases in serum potassium, and in heart failure patien"
+    }
+  },
+  {
+    "name": "Atenolol",
+    "fdaName": "ATENOLOL",
+    "status": "full",
+    "setId": "897e18f6-3b57-4ef0-85ff-9dfa23521eb9",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Atenolol is a beta 1 -selective (cardioselective) beta-adrenergic receptor blocking agent without membrane stabilizing or intrinsic sympat",
+      "indications": "INDICATIONS AND USAGE Hypertension Atenolol tablets are indicated for the treatment of hypertension, to lower blood pressure. Lowering blood pressure lowers the",
+      "adverse_effects": "ADVERSE REACTIONS Most adverse effects have been mild and transient. The frequency estimates in the following table were derived from controlled studies in hype",
+      "contraindications": "CONTRAINDICATIONS Atenolol tablets are contraindicated in sinus bradycardia, heart block greater than first degree, cardiogenic shock, and overt cardiac failure",
+      "interactions": "Drug Interactions Catecholamine-depleting drugs (e.g., reserpine) may have an additive effect when given with beta-blocking agents. Patients treated with atenol"
+    }
+  },
+  {
+    "name": "Propranolol",
+    "fdaName": "PROPRANOLOL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "5affa0ea-db84-86fd-e063-6294a90a4d16",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "Mechanism of Action The mechanism of the antihypertensive effect of propranolol has not been established. Among the factors that may be involved in contributing",
+      "indications": "INDICATIONS AND USAGE Hypertension Propranolol Hydrochloride Extended-Release Capsules, USP, are indicated in the management of hypertension. They may be used a",
+      "adverse_effects": "ADVERSE REACTIONS The following adverse events were observed and have been reported in patients using propranolol. Cardiovascular Bradycardia; congestive heart ",
+      "contraindications": "CONTRAINDICATIONS Propranolol is contraindicated in 1) cardiogenic shock; 2) sinus bradycardia and greater than first-degree block; 3) bronchial asthma; and 4) ",
+      "interactions": "Drug Interactions Caution should be exercised when Propranolol Hydrochloride Extended-Release Capsules, USP, are administered with drugs that have an affect on "
+    }
+  },
+  {
+    "name": "Bisoprolol",
+    "fdaName": "BISOPROLOL FUMARATE",
+    "status": "full",
+    "setId": "df37d337-9978-0c31-e053-2a95a90a3258",
+    "effective": "20260421",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY BISOPROLOL FUMARATE is a beta 1 -selective (cardioselective) adrenoceptor blocking agent without significant membrane stabilizing activity",
+      "indications": "INDICATIONS & USAGE BISOPROLOL FUMARATE TABLETS, USP are indicated in the management of hypertension. It may be used alone or in combination with other antihype",
+      "adverse_effects": "ADVERSE REACTIONS Safety data are available in more than 30,000 patients or volunteers. Frequency estimates and rates of withdrawal of therapy for adverse event",
+      "contraindications": "CONTRAINDICATIONS BISOPROLOL FUMARATE is contraindicated in patients with cardiogenic shock, overt cardiac failure, second or third degree AV block, and marked ",
+      "interactions": "DRUG INTERACTIONS BISOPROLOL FUMARATE should not be combined with other beta-blocking agents. Patients receiving catecholamine-depleting drugs, such as reserpin"
+    }
+  },
+  {
+    "name": "Carvedilol",
+    "fdaName": "CARVEDILOL",
+    "status": "full",
+    "setId": "d7d6bfff-fbb6-4a1f-aa13-babbb9a1e878",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Carvedilol is a racemic mixture in which nonselective β-adrenoreceptor blocking activity is present in the S(-) enantiomer and α 1 -adr",
+      "indications": "1. INDICATIONS AND USAGE . Carvedilol tablets are an alpha/beta-adrenergic blocking agent indicated for the treatment of: mild to severe chronic heart failure (",
+      "adverse_effects": "6. ADVERSE REACTIONS Most common adverse events ( 6.1 ): Heart failure and left ventricular dysfunction following myocardial infarction (≥10%): Dizziness, fatig",
+      "contraindications": "4. CONTRAINDICATIONS Bronchial asthma or related bronchospastic conditions ( 4 ) Second- or third-degree AV block ( 4 ) Sick sinus syndrome ( 4 ) Severe bradyca",
+      "interactions": "7. DRUG INTERACTIONS . CYP P450 2D6 enzyme inhibitors may increase and rifampin may decrease carvedilol levels. ( 7.1 , 7.5 ) Hypotensive agents (e.g., reserpin"
+    }
+  },
+  {
+    "name": "Metoprolol",
+    "fdaName": "METOPROLOL TARTRATE",
+    "status": "full",
+    "setId": "0ca72c89-82c5-4b31-b515-1a8b8e82ec59",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 CLINICAL PHARMACOLOGY 12.1 Mechanism of Action Metoprolol is a beta 1 -selective (cardioselective) adrenergic receptor blocking agent. This preferential effe",
+      "indications": "1 INDICATIONS AND USAGE Metoprolol tartrate is a beta-adrenergic blocker indicated for the treatment of: Hypertension, to lower blood pressure. Lowering blood p",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are described elsewhere in labeling: Worsening angina or myocardial infarction [see Warnings and Precautions",
+      "contraindications": "4 CONTRAINDICATIONS Metoprolol tartrate is contraindicated in severe bradycardia, second or third degree heart block, cardiogenic shock, systolic blood pressure",
+      "interactions": "7 DRUG INTERACTIONS Catecholamine-depleting drugs may have an additive effect when given with beta-blocking agents. ( 7.1 ) Patients may be unresponsive to the "
+    }
+  },
+  {
+    "name": "Hydrochlorothiazide",
+    "fdaName": "HYDROCHLOROTHIAZIDE",
+    "status": "full",
+    "setId": "f20fd735-30c7-4f89-8ceb-b6186646eea6",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY The mechanism of the antihypertensive effect of thiazides is unknown. Hydrochlorothiazide does not usually affect normal blood pressure. H",
+      "indications": "INDICATIONS AND USAGE Hydrochlorothiazide tablets are indicated as adjunctive therapy in edema associated with congestive heart failure, hepatic cirrhosis, and ",
+      "adverse_effects": "ADVERSE REACTIONS The following adverse reactions have been reported and, within each category, are listed in order of decreasing severity. Body As A Whole : We",
+      "contraindications": "CONTRAINDICATIONS Anuria. Hypersensitivity to this product or to other sulfonamide-derived drugs\n\nSource label: Hydrochlorothiazide, US FDA prescribing informat",
+      "interactions": "Drug Interactions When given concurrently the following drugs may interact with thiazide diuretics. Alcohol, Barbiturates, or Narcotics -potentiation of orthost"
+    }
+  },
+  {
+    "name": "Furosemide",
+    "fdaName": "FUROSEMIDE",
+    "status": "full",
+    "setId": "58cc1e38-6000-1489-e063-6394a90a5978",
+    "effective": "20260811",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Furosemide inhibits primarily the reabsorption of sodium and chloride not only in the proximal and distal tubules but also in the loop ",
+      "indications": "1 INDICATIONS AND USAGE FUROSEMIDE INJECTION is a loop diuretic indicated for: The treatment of edema associated with heart failure, cirrhosis of the liver, and",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are described elsewhere in the labeling: Fluid, Electrolyte, and Metabolic Abnormalities [see Warnings and P",
+      "contraindications": "4 CONTRAINDICATIONS Furosemide Injection is contraindicated in patients with anuria. Furosemide Injection is contraindicated in patients with a history of hyper",
+      "interactions": "7 DRUG INTERACTIONS Aminoglycoside antibiotics : Increased potential ototoxicity of the antibiotics. Avoid combination ( 7.1 ) Ethacrynic acid : Risk of ototoxi"
+    }
+  },
+  {
+    "name": "Spironolactone",
+    "fdaName": "SPIRONOLACTONE",
+    "status": "full",
+    "setId": "8b76a904-6c99-485a-a05f-13a36c5f720c",
+    "effective": "20260915",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Spironolactone and its active metabolites are specific pharmacologic antagonists of aldosterone, acting primarily through competitive b",
+      "indications": "1 INDICATIONS AND USAGE Spironolactone is an aldosterone antagonist indicated for: The treatment of NYHA Class III-IV heart failure and reduced ejection fractio",
+      "adverse_effects": "6 ADVERSE REACTIONS The following clinically significant adverse reactions are described elsewhere in the labeling: Hyperkalemia [see Warnings and Precautions (",
+      "contraindications": "4 CONTRAINDICATIONS Spironolactone tablets are contraindicated in the patients with: Hyperkalemia Addison's disease Concomitant use of eplerenone Spironolactone",
+      "interactions": "7 DRUG INTERACTIONS Agents increasing serum potassium: Concomitant administration can lead to hyperkalemia ( 5.1 , 7.1 ). Lithium: Increased risk of lithium tox"
+    }
+  },
+  {
+    "name": "Digoxin",
+    "fdaName": "DIGOXIN",
+    "status": "full",
+    "setId": "e61d2108-d871-44c0-b12a-2e61fbb56967",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 CLINICAL PHARMACOLOGY 12.1 Mechanism of Action All of digoxin’s actions are mediated through its effects on Na-K ATPase. This enzyme, the “sodium pump,” is r",
+      "indications": "1 INDICATIONS & USAGE Digoxin is a cardiac glycoside indicated for: Treatment of mild to moderate heart failure in adults. ( 1.1 ) Increasing myocardial contrac",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are included in more detail in the Warnings and Precautions section of the label: Cardiac arrhythmias [see W",
+      "contraindications": "4 CONTRAINDICATIONS Digoxin is contraindicated in patients with: Ventricular fibrillation [see Warnings and Precautions (5.1)] Known hypersensitivity to digoxin",
+      "interactions": "7 DRUG INTERACTIONS Digoxin has a narrow therapeutic index, increased monitoring of serum digoxin concentrations and for potential signs and symptoms of clinica"
+    }
+  },
+  {
+    "name": "Amiodarone",
+    "fdaName": "AMIODARONE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "4c149392-a4f0-4e2d-a13f-2b94810005de",
+    "effective": "20260805",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 CLINICAL PHARMACOLOGY 12.1 Mechanism of Action Amiodarone is considered a class III antiarrhythmic drug, but it possesses electrophysiologic characteristics ",
+      "indications": "1 INDICATIONS AND USAGE Amiodarone hydrochloride tablets are indicated for the treatment of documented, life-threatening recurrent ventricular fibrillation and ",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described in more detail in other sections of the prescribing information: Pulmonary Toxicity [s",
+      "contraindications": "4 CONTRAINDICATIONS Cardiogenic shock. Sick sinus syndrome, second- or third-degree atrioventricular block, bradycardia leading to syncope without a functioning",
+      "interactions": "7 DRUG INTERACTIONS Because of amiodarone's long half-life, expect drug interactions to persist for weeks to months after discontinuation of amiodarone. Drug in"
+    }
+  },
+  {
+    "name": "Glyceryl trinitrate",
+    "fdaName": "NITROGLYCERIN",
+    "status": "full",
+    "setId": "5b150cd2-fac8-86ce-e063-6294a90a67b9",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Nitroglycerin forms free radical nitric oxide (NO) which activates guanylate cyclase, resulting in an increase of guanosine 3'5' monoph",
+      "indications": "1 INDICATIONS AND USAGE Nitroglycerin sublingual tablets are indicated for the acute relief of an attack or acute prophylaxis of angina pectoris due to coronary",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in more detail elsewhere in the label: Hypotension [see Warnings and Precautions (5.2)] Headac",
+      "contraindications": "4 CONTRAINDICATIONS Use of phosphodiesterase type 5 (PDE-5) inhibitors, such as avanafil, sildenafil, tadalafil, or vardenafil, or soluble guanylate cyclase (sG",
+      "interactions": "7 DRUG INTERACTIONS Ergotamine: increased bioavailability of ergotamine. Avoid concomitant use. (7.2) 7.1 PDE-5-Inhibitors and sGC-Stimulators Nitroglycerin sub"
+    }
+  },
+  {
+    "name": "Isosorbide dinitrate",
+    "fdaName": "ISOSORBIDE DINITRATE",
+    "status": "full",
+    "setId": "6df6a2fa-c56c-4eb6-a485-c16585420eb0",
+    "effective": "20260731",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY The principal pharmacological action of isosorbide dinitrate is relaxation of vascular smooth muscle and consequent dilatation of peripher",
+      "indications": "INDICATIONS AND USAGE Isosorbide dinitrate tablets are indicated for the prevention of angina pectoris due to coronary artery disease. The onset of action of im",
+      "adverse_effects": "ADVERSE REACTIONS Adverse reactions to isosorbide dinitrate are generally dose-related, and almost all of these reactions are the result of isosorbide dinitrate",
+      "contraindications": "CONTRAINDICATIONS Isosorbide dinitrate is contraindicated in patients who are allergic to isosorbide dinitrate or any of its ingredients. Do not use isosorbide ",
+      "interactions": "Drug Interactions The vasodilating effects of isosorbide dinitrate may be additive with those of other vasodilators. Alcohol, in particular, has been found to e"
+    }
+  },
+  {
+    "name": "Atorvastatin",
+    "fdaName": "ATORVASTATIN CALCIUM",
+    "status": "full",
+    "setId": "6600f22e-d303-4fe3-8212-accd6fb06e62",
+    "effective": "20261015",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 CLINICAL PHARMACOLOGY 12.1 Mechanism of Action Atorvastatin calcium is a selective, competitive inhibitor of HMG-CoA reductase, the rate-limiting enzyme that",
+      "indications": "1 INDICATIONS AND USAGE Atorvastatin calcium tablets are indicated: To reduce the risk of: Myocardial infarction (MI), stroke, revascularization procedures, and",
+      "adverse_effects": "6 ADVERSE REACTIONS The following important adverse reactions are described below and elsewhere in the labeling: Myopathy and Rhabdomyolysis [see Warnings and P",
+      "contraindications": "4 CONTRAINDICATIONS Acute liver failure or decompensated cirrhosis [see Warnings and Precautions ( 5.3 )] Hypersensitivity to atorvastatin or any excipients in ",
+      "interactions": "7 DRUG INTERACTIONS See full prescribing information for details regarding concomitant use of atorvastatin calcium tablets with other drugs or grapefruit juice "
+    }
+  },
+  {
+    "name": "Simvastatin",
+    "fdaName": "SIMVASTATIN",
+    "status": "full",
+    "setId": "3f6fad0b-0278-433f-86db-761b673a5803",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Simvastatin is a prodrug and is hydrolyzed to its active β-hydroxyacid form, simvastatin acid, after administration. Simvastatin acid a",
+      "indications": "1 INDICATIONS AND USAGE Simvastatin tablets USP are indicated: • To reduce the risk of total mortality by reducing risk of coronary heart disease death, non-fat",
+      "adverse_effects": "6 ADVERSE REACTIONS The following important adverse reactions are described below and elsewhere in the labeling: • Myopathy and Rhabdomyolysis [see WARNINGS AND",
+      "contraindications": "4 CONTRAINDICATIONS Simvastatin is contraindicated in the following conditions: • Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrol",
+      "interactions": "7 DRUG INTERACTIONS • See full prescribing information for details regarding concomitant use of simvastatin with other drugs or grapefruit juice that increase t"
+    }
+  },
+  {
+    "name": "Rosuvastatin",
+    "fdaName": "ROSUVASTATIN CALCIUM",
+    "status": "full",
+    "setId": "cb942007-6ef1-4445-8dbd-6f4972148bf1",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Rosuvastatin is an inhibitor of HMG-CoA reductase, the rate‑limiting enzyme that converts 3-hydroxy-3-methylglutaryl coenzyme A to meva",
+      "indications": "1 INDICATIONS AND USAGE Rosuvastatin tablets are indicated: To reduce the risk of major adverse cardiovascular (CV) events (CV death, nonfatal myocardial infarc",
+      "adverse_effects": "6 ADVERSE REACTIONS The following important adverse reactions are described below and elsewhere in the labeling: Myopathy and Rhabdomyolysis [see Warnings and P",
+      "contraindications": "4 CONTRAINDICATIONS Rosuvastatin tablets are contraindicated in the following conditions: Acute liver failure or decompensated cirrhosis [see Warnings and Preca",
+      "interactions": "7 DRUG INTERACTIONS See full prescribing information for details regarding concomitant use of rosuvastatin with other drugs that increase the risk of myopathy a"
+    }
+  },
+  {
+    "name": "Warfarin",
+    "fdaName": "WARFARIN SODIUM",
+    "status": "full",
+    "setId": "7c4deb97-9966-4c8e-9ba6-bb260b71e130",
+    "effective": "20260825",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Warfarin acts by inhibiting the synthesis of vitamin K-dependent clotting factors, which include Factors II, VII, IX, and X, and the an",
+      "indications": "1 INDICATIONS AND USAGE Warfarin sodium tablets, USP are indicated for: • Prophylaxis and treatment of venous thrombosis and its extension, pulmonary embolism (",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions to warfarin sodium are discussed in greater detail in other sections of the labeling: • Hemorrhage [",
+      "contraindications": "4 CONTRAINDICATIONS Warfarin sodium tablets, USP are contraindicated in: • Pregnancy Warfarin sodium tablets, USP are contraindicated in women who are pregnant ",
+      "interactions": "7 DRUG INTERACTIONS • Concomitant use of drugs that increase bleeding risk, antibiotics, antifungals, botanical (herbal) products, and inhibitors and inducers o"
+    }
+  },
+  {
+    "name": "Clopidogrel",
+    "fdaName": "CLOPIDOGREL BISULFATE",
+    "status": "full",
+    "setId": "bb3b5e96-e629-4db5-8ad5-40c17c6dae18",
+    "effective": "20260929",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Clopidogrel is an inhibitor of platelet activation and aggregation through the irreversible binding of its active metabolite to the P2Y",
+      "indications": "1 INDICATIONS AND USAGE Clopidogrel is a P2Y 12 platelet inhibitor indicated for: Acute coronary syndrome – For patients with non–ST-segment elevation ACS (unst",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are discussed below and elsewhere in the labeling: Bleeding [see Warnings and Precautions (5.2) ] Th",
+      "contraindications": "4 CONTRAINDICATIONS Active pathological bleeding, such as peptic ulcer or intracranial hemorrhage ( 4.1 ) Hypersensitivity to clopidogrel or any component of th",
+      "interactions": "7 DRUG INTERACTIONS CYP2C19 inducers: Increases levels of clopidogrel active metabolite and increases platelet inhibition. ( 7.1 ) Opioids: Decreased exposure t"
+    }
+  },
+  {
+    "name": "Heparin",
+    "fdaName": "HEPARIN SODIUM",
+    "status": "full",
+    "setId": "c8c4edd2-ee9e-4558-6b8c-b83adc242a0a",
+    "effective": "20260825",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Heparin interacts with the naturally occurring plasma protein, antithrombin III, to induce a conformational change, which markedly enha",
+      "indications": "1 INDICATIONS AND USAGE Heparin Sodium Injection is indicated for: • Prophylaxis and treatment of venous thrombosis and pulmonary embolism; • Prevention of post",
+      "adverse_effects": "6 ADVERSE REACTIONS The following clinically significant adverse reactions are described elsewhere in the labeling: • Hemorrhage [see Warnings and Precautions (",
+      "contraindications": "4 CONTRAINDICATIONS The use of Heparin Sodium Injection is contraindicated in patients with the following conditions: • History of heparin-induced thrombocytope",
+      "interactions": "7 DRUG INTERACTIONS Drugs that interfere with platelet aggregation: May induce bleeding. ( 7.2 ) 7.1 Oral Anticoagulants Heparin sodium may prolong the one-stag"
+    }
+  },
+  {
+    "name": "Enoxaparin",
+    "fdaName": "ENOXAPARIN SODIUM",
+    "status": "full",
+    "setId": "45a66675-b159-42b8-9f18-ff80f28e1503",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Enoxaparin is a low molecular weight heparin which has antithrombotic properties.\n\nSource label: Enoxaparin Sodium, US FDA prescribing ",
+      "indications": "1 INDICATIONS AND USAGE Enoxaparin sodium injection is a low molecular weight heparin [LMWH] indicated for: • Prophylaxis of deep vein thrombosis (DVT) in abdom",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are also discussed in other sections of the labeling: • Spinal/epidural hematomas [ see Boxed Warnin",
+      "contraindications": "4 CONTRAINDICATIONS Enoxaparin sodium injection is contraindicated in patients with: • Active major bleeding • History of immune-mediated heparin-induced thromb",
+      "interactions": "7 DRUG INTERACTIONS Whenever possible, agents which may enhance the risk of hemorrhage should be discontinued prior to initiation of enoxaparin sodium injection"
+    }
+  },
+  {
+    "name": "Hydralazine",
+    "fdaName": "HYDRALAZINE HYDROCHLORIDE",
+    "status": "partial",
+    "setId": "51c293c1-70e7-48c7-8af1-a8b74312ed56",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Although the precise mechanism of action of hydrALAZINE is not fully understood, the major effects are on the cardiovascular system. HydrA",
+      "indications": "INDICATIONS AND USAGE Essential hypertension, alone or as an adjunct.\n\nSource label: Hydralazine Hydrochloride, US FDA prescribing information, effective 202609",
+      "adverse_effects": "ADVERSE REACTIONS Adverse reactions with hydrALAZINE are usually reversible when dosage is reduced. However, in some cases it may be necessary to discontinue th",
+      "contraindications": "CONTRAINDICATIONS Hypersensitivity to hydrALAZINE; coronary artery disease; mitral valvular rheumatic heart disease.\n\nSource label: Hydralazine Hydrochloride, U"
+    }
+  },
+  {
+    "name": "Metformin",
+    "fdaName": "METFORMIN HYDROCHLORIDE",
+    "status": "full",
+    "setId": "d5228e81-9c86-4781-b984-20feaa2ae779",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Metformin is an antihyperglycemic agent which improves glucose tolerance in patients with type 2 diabetes mellitus, lowering both basal",
+      "indications": "1 INDICATIONS AND USAGE Metformin hydrochloride extended-release tablets, USP are indicated as an adjunct to diet and exercise to improve glycemic control in ad",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are also discussed elsewhere in the labeling: Lactic Acidosis [ see Boxed Warning and Warnings and Precautio",
+      "contraindications": "4 CONTRAINDICATIONS Metformin hydrochloride extended-release tablets are contraindicated in patients with: Severe renal impairment (eGFR below 30 mL/min/1.73 m ",
+      "interactions": "7 DRUG INTERACTIONS Table 2 presents clinically significant drug interactions with metformin hydrochloride extended-release tablets. Table 2: Clinically Signifi"
+    }
+  },
+  {
+    "name": "Glibenclamide",
+    "fdaName": "GLYBURIDE",
+    "status": "full",
+    "setId": "524eec41-37ee-419a-b7a1-d23e888ae6ab",
+    "effective": "20260612",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Actions Glyburide appears to lower the blood glucose acutely by stimulating the release of insulin from the pancreas, an effect dependent ",
+      "indications": "INDICATIONS & USAGE Glyburide tablets are indicated as an adjunct to diet and exercise to improve glycemic control in adults with type 2 diabetes mellitus.\n\nSou",
+      "adverse_effects": "ADVERSE REACTIONS Hypoglycemia: See Precautions and Overdosage sections. Gastrointestinal Reactions: Cholestatic jaundice and hepatitis may occur rarely which m",
+      "contraindications": "CONTRAINDICATIONS Glyburide tablets are contraindicated in patients with: 1. Known hypersensitivity or allergy to the drug. 2. Diabetic ketoacidosis, with or wi",
+      "interactions": "Drug Interactions The hypoglycemic action of sulfonylureas may be potentiated by certain drugs including non-steroidal anti-inflammatory agents and other drugs "
+    }
+  },
+  {
+    "name": "Glimepiride",
+    "fdaName": "GLIMEPIRIDE",
+    "status": "full",
+    "setId": "fc9d8495-184c-3af1-e053-6394a90a5e29",
+    "effective": "20260622",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Glimepiride primarily lowers blood glucose by stimulating the release of insulin from pancreatic beta cells. Sulfonylureas bind to the ",
+      "indications": "1 INDICATIONS AND USAGE Glimepiride tablets are indicated as an adjunct to diet and exercise to improve glycemic control in adults with type 2 diabetes mellitus",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are discussed in more detail below and elsewhere in the labeling: Hypoglycemia [see Warnings and Pre",
+      "contraindications": "4 CONTRAINDICATIONS Glimepiride tablets are contraindicated in patients with a history of a hypersensitivity reaction to: Glimepiride or any of the product’s in",
+      "interactions": "7 DRUG INTERACTIONS Certain medications may affect glucose metabolism, requiring glimepiride dose adjustment and close monitoring of blood glucose. (7.1) Micona"
+    }
+  },
+  {
+    "name": "Pioglitazone",
+    "fdaName": "PIOGLITAZONE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "d740d2a2-b26d-4b16-aedc-e4b4b1c94daa",
+    "effective": "20260619",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Pioglitazone is a thiazolidinedione that depends on the presence of insulin for its mechanism of action. Pioglitazone decreases insulin",
+      "indications": "1 INDICATIONS AND USAGE Monotherapy and Combination Therapy Pioglitazone Tablets is indicated as an adjunct to diet and exercise to improve glycemic control in ",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are discussed elsewhere in the labeling: Congestive heart failure [see Boxed Warning and Warnings an",
+      "contraindications": "4 CONTRAINDICATIONS Initiation in patients with established NYHA Class III or IV heart failure [see Boxed Warning ]. Use in patients with known hypersensitivity",
+      "interactions": "7 DRUG INTERACTIONS Strong CYP2C8 inhibitors (e.g., gemfibrozil) increase pioglitazone concentrations. Limit pioglitazone dose to 15 mg daily. (2.3 , 7.1) CYP2C"
+    }
+  },
+  {
+    "name": "Sitagliptin",
+    "fdaName": "SITAGLIPTIN",
+    "status": "full",
+    "setId": "194c3718-5eb5-4cf5-85d0-2bb1ed8293b8",
+    "effective": "20260708",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Sitagliptin is a DPP-4 inhibitor, which is believed to exert its actions in patients with type 2 diabetes mellitus by slowing the inact",
+      "indications": "1 INDICATIONS AND USAGE JANUVIA ® is indicated as an adjunct to diet and exercise to improve glycemic control in adults with type 2 diabetes mellitus. JANUVIA i",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are also discussed elsewhere in the labeling: Pancreatitis [see Warnings and Precautions (5.1) ] Heart Failu",
+      "contraindications": "4 CONTRAINDICATIONS History of a serious hypersensitivity reaction to sitagliptin, such as anaphylaxis or angioedema. [See Warnings and Precautions (5.5) ; Adve",
+      "interactions": "7 DRUG INTERACTIONS 7.1 Insulin Secretagogues or Insulin Coadministration of JANUVIA with an insulin secretagogue (e.g., sulfonylurea) or insulin may require lo"
+    }
+  },
+  {
+    "name": "Insulin",
+    "fdaName": "INSULIN HUMAN",
+    "status": "full",
+    "setId": "b60e8dd0-1d48-4dc9-87fd-e14675255e8c",
+    "effective": "20260701",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Regulation of glucose metabolism is the primary activity of insulins, including HUMULIN R U-500. Insulins lower blood glucose by stimul",
+      "indications": "1 INDICATIONS AND USAGE HUMULIN R U-500 is a concentrated human insulin indicated to improve glycemic control in adult and pediatric patients with diabetes mell",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed elsewhere: Hypoglycemia [see Warnings and Precautions ( 5.3 )] . Hypersensitivity Reactions [s",
+      "contraindications": "4 CONTRAINDICATIONS HUMULIN R U-500 is contraindicated: During episodes of hypoglycemia [see Warnings and Precautions ( 5.3 )] In patients who are hypersensitiv",
+      "interactions": "7 DRUG INTERACTIONS Table 1: Clinically Significant Drug Interactions with HUMULIN R U-500 Drugs That May Increase the Risk of Hypoglycemia Drugs : Antidiabetic"
+    }
+  },
+  {
+    "name": "Levothyroxine",
+    "fdaName": "LEVOTHYROXINE SODIUM",
+    "status": "full",
+    "setId": "4c903249-69e9-4168-a9d1-22e6c2c1eb22",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Thyroid hormones exert their physiologic actions through control of DNA transcription and protein synthesis. Triiodothyronine (T3) and ",
+      "indications": "1 INDICATIONS AND USAGE Hypothyroidism Levothyroxine sodium tablets are indicated in adult and pediatric patients, including neonates, as a replacement therapy ",
+      "adverse_effects": "6 ADVERSE REACTIONS Adverse reactions associated with levothyroxine sodium therapy are primarily those of hyperthyroidism due to therapeutic overdosage [see War",
+      "contraindications": "4 CONTRAINDICATIONS Levothyroxine sodium tablets are contraindicated in patients with uncorrected adrenal insufficiency [see Warnings and Precautions (5.4) ]. U",
+      "interactions": "7 DRUG INTERACTIONS See full prescribing information for drugs that affect thyroid hormone pharmacokinetics and metabolism (e.g., absorption, synthesis, secreti"
+    }
+  },
+  {
+    "name": "Methimazole",
+    "fdaName": "METHIMAZOLE",
+    "status": "full",
+    "setId": "f69edfa9-0efb-4fe8-aeab-50f7baeebb6a",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Methimazole inhibits the synthesis of thyroid hormones and thus is effective in the treatment of hyperthyroidism. The drug does not inacti",
+      "indications": "INDICATIONS AND USAGE Methimazole tablets are indicated: In patients with Graves' disease with hyperthyroidism or toxic multinodular goiter for whom surgery or ",
+      "adverse_effects": "ADVERSE REACTIONS Major adverse reactions (which occur with much less frequency than the minor adverse reactions) include inhibition of myelopoiesis (agranulocy",
+      "contraindications": "CONTRAINDICATIONS Methimazole tablets are contraindicated in the presence of hypersensitivity to the drug or any of the other product components.\n\nSource label:",
+      "interactions": "Drug Interactions Anticoagulants (oral): Due to potential inhibition of vitamin K activity by methimazole, the activity of oral anticoagulants (e.g., warfarin) "
+    }
+  },
+  {
+    "name": "Prednisolone",
+    "fdaName": "PREDNISOLONE",
+    "status": "partial",
+    "setId": "35f0b197-c3ae-445a-8da7-9ffcd4472e05",
+    "effective": "20260123",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Naturally occurring glucocorticoids (hydrocortisone and cortisone), which also have salt-retaining properties, are used as replacement the",
+      "indications": "INDICATIONS AND USAGE Prednisolone Oral Solution USP is indicated in the following conditions: 1. Endocrine Disorders Primary or secondary adrenocortical insuff",
+      "adverse_effects": "ADVERSE REACTIONS Fluid and Electrolyte Disturbances Sodium retention Fluid retention Congestive heart failure in susceptible patients Potassium loss Hypokalemi",
+      "contraindications": "CONTRAINDICATIONS Systemic fungal infections.\n\nSource label: Prednisolone, US FDA prescribing information, effective 20260123. https://dailymed.nlm.nih.gov/dail"
+    }
+  },
+  {
+    "name": "Dexamethasone",
+    "fdaName": "DEXAMETHASONE",
+    "status": "full",
+    "setId": "8c5375a7-7a0d-4af0-8b86-bc87698ac3d1",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Glucocorticoids, naturally occurring and synthetic, are adrenocortical steroids that are readily absorbed from the gastrointestinal tract.",
+      "indications": "INDICATIONS & USAGE Allergic States Control of severe or incapacitating allergic conditions intractable to adequate trials of conventional treatment in asthma, ",
+      "adverse_effects": "ADVERSE REACTIONS (Listed alphabetically, under each subsection) The following adverse reactions have been reported with dexamethasone or other corticosteroids:",
+      "contraindications": "CONTRAINDICATIONS Systemic fungal infections (see WARNINGS, Fungal Infections). Dexamethasone tablets are contraindicated in patients who are hypersensitive to ",
+      "interactions": "DRUG INTERACTIONS Aminoglutethimide : Aminoglutethimide may diminish adrenal suppression by corticosteroids. Amphotericin B injection and potassium-depleting ag"
+    }
+  },
+  {
+    "name": "Hydrocortisone",
+    "fdaName": "HYDROCORTISONE",
+    "status": "full",
+    "setId": "506aab0d-9308-4d60-90b3-7d64952fff36",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "DESCRIPTION Hydrocortisone tablets, USP contain hydrocortisone which is a glucocorticoid. Glucocorticoids are adrenocortical steroids, both naturally occurring ",
+      "indications": "INDICATIONS AND USAGE Hydrocortisone tablets are indicated in the following conditions. 1. Endocrine Disorders Primary or secondary adrenocortical insufficiency",
+      "adverse_effects": "ADVERSE REACTIONS Fluid and Electrolyte Disturbances Sodium retention Fluid retention Congestive heart failure in susceptible patients Potassium loss Hypokalemi",
+      "contraindications": "CONTRAINDICATIONS Systemic fungal infections and known hypersensitivity to components\n\nSource label: Hydrocortisone, US FDA prescribing information, effective 2",
+      "interactions": "Drug Interactions The pharmacokinetic interactions listed below are potentially clinically important. Drugs that induce hepatic enzymes such as phenobarbital, p"
+    }
+  },
+  {
+    "name": "Salbutamol",
+    "fdaName": "ALBUTEROL SULFATE",
+    "status": "full",
+    "setId": "17858afa-dcdf-4612-b475-3b6baadfb639",
+    "effective": "20260806",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Albuterol sulfate is a beta 2 -adrenergic agonist. The pharmacologic effects of albuterol sulfate are attributable to activation of bet",
+      "indications": "1 INDICATIONS AND USAGE Albuterol Sulfate Inhalation Aerosol is a beta 2 -adrenergic agonist indicated for: Treatment or prevention of bronchospasm in patients ",
+      "adverse_effects": "6 ADVERSE REACTIONS Use of Albuterol Sulfate may be associated with the following: Paradoxical bronchospasm [see Warnings and Precautions ( 5.1 ) ] Cardiovascul",
+      "contraindications": "4 CONTRAINDICATIONS Albuterol Sulfate Inhalation Aerosol is contraindicated in patients with a history of hypersensitivity to albuterol and any other Albuterol ",
+      "interactions": "7 DRUG INTERACTIONS Other short-acting sympathomimetic aerosol bronchodilators should not be used concomitantly with Albuterol Sulfate Inhalation Aerosol. If ad"
+    }
+  },
+  {
+    "name": "Beclometasone",
+    "fdaName": "BECLOMETHASONE DIPROPIONATE",
+    "status": "partial",
+    "setId": "d853c96f-21a3-4def-931d-4d47d16acd62",
+    "effective": "20200731",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Beclomethasone dipropionate is a corticosteroid demonstrating potent anti-inflammatory activity. The precise mechanism of corticosteroi",
+      "indications": "1 INDICATIONS AND USAGE Beclomethasone dipropionate HFA inhalation aerosol is indicated in the maintenance treatment of asthma as prophylactic therapy in patien",
+      "adverse_effects": "6 ADVERSE REACTIONS Systemic and local corticosteroid use may result in the following: Candida albicans infection [see Warnings and Precautions (5.1) ] Immunosu",
+      "contraindications": "4 CONTRAINDICATIONS Primary treatment of status asthmaticus or other acute episodes of asthma where intensive measures are required. (4) Hypersensitivity to any"
+    }
+  },
+  {
+    "name": "Budesonide",
+    "fdaName": "BUDESONIDE",
+    "status": "full",
+    "setId": "3235e2a4-8e12-2d58-e063-6294a90a4936",
+    "effective": "20260716",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Budesonide is an anti-inflammatory corticosteroid that exhibits potent glucocorticoid activity and weak mineralocorticoid activity. In ",
+      "indications": "1 INDICATIONS AND USAGE Budesonide inhalation suspension is an inhaled corticosteroid indicated for: Maintenance treatment of asthma and as prophylactic therapy",
+      "adverse_effects": "6 ADVERSE REACTIONS Systemic and inhaled corticosteroid use may result in the following: Candida albicans infection [see Warnings and Precautions (5.1) ] Hypers",
+      "contraindications": "4 CONTRAINDICATIONS The use of budesonide inhalation suspension is contraindicated in the following conditions: Primary treatment of status asthmaticus or other",
+      "interactions": "7 DRUG INTERACTIONS Strong cytochrome P450 3A4 inhibitors (e.g., ritonavir): Use with caution. May cause increased systemic corticosteroid effects. ( 5.12 , 7.1"
+    }
+  },
+  {
+    "name": "Montelukast",
+    "fdaName": "MONTELUKAST SODIUM",
+    "status": "full",
+    "setId": "1eeb3123-9e93-4681-8096-800a7c7acf8a",
+    "effective": "20260728",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action The cysteinyl leukotrienes (LTC4, LTD4, LTE4) are products of arachidonic acid metabolism and are released from various cells, includin",
+      "indications": "1 INDICATIONS AND USAGE Montelukast sodium is a leukotriene receptor antagonist indicated for: • Prophylaxis and chronic treatment of asthma in patients 2 years",
+      "adverse_effects": "6 ADVERSE REACTIONS The following clinically significant adverse reactions are described elsewhere in the labeling: • Neuropsychiatric Events [see Warnings and ",
+      "contraindications": "4 CONTRAINDICATIONS Montelukast sodium is contraindicated in patients with hypersensitivity to any of its components. • Hypersensitivity to any component of mon",
+      "interactions": "7 DRUG INTERACTIONS No dose adjustment is needed when montelukast sodium is co-administered with theophylline, prednisone, prednisolone, oral contraceptives, fe"
+    }
+  },
+  {
+    "name": "Theophylline",
+    "fdaName": "THEOPHYLLINE",
+    "status": "full",
+    "setId": "5e64036a-ee3e-42e7-9e59-881f88a4e298",
+    "effective": "20260729",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "Mechanism of Action: Theophylline has two distinct actions in the airways of patients with reversible obstruction; smooth muscle relaxation (i.e., bronchodilati",
+      "indications": "INDICATIONS AND USAGE: Theophylline extended-release tablets are indicated for the treatment of the symptoms and reversible airflow obstruction associated with ",
+      "adverse_effects": "ADVERSE REACTIONS : Adverse reactions associated with theophylline are generally mild when peak serum theophylline concentrations are <20 mcg/mL and mainly cons",
+      "contraindications": "CONTRAINDICATIONS: Theophylline extended-release tablets are contraindicated in patients with a history of hypersensitivity to theophylline or other components ",
+      "interactions": "Drug Interactions: Drug-Drug Interactions: Theophylline interacts with a wide variety of drugs. The interaction may be pharmacodynamic, i.e., alterations in the"
+    }
+  },
+  {
+    "name": "Loratadine",
+    "fdaName": "LORATADINE",
+    "status": "partial",
+    "setId": "bc789b82-56ca-4248-b60a-252d9695636a",
+    "effective": "20260929",
+    "sections": [
+      "indications"
+    ],
+    "preview": {
+      "indications": "Uses temporarily relieves these symptoms due to hay fever or other upper respiratory allergies: • runny nose • itchy, watery eyes • sneezing • itching of the no"
+    }
+  },
+  {
+    "name": "Cetirizine",
+    "fdaName": "CETIRIZINE HYDROCHLORIDE",
+    "status": "partial",
+    "setId": "36b6d0e4-8da5-9df5-e063-6294a90af326",
+    "effective": "20261001",
+    "sections": [
+      "indications"
+    ],
+    "preview": {
+      "indications": "Uses reduces hives and relieves itching due to hives (urticaria). This product will not prevent hives or an allergic skin reaction from occurring.\n\nSource label"
+    }
+  },
+  {
+    "name": "Chlorphenamine",
+    "fdaName": "CHLORPHENIRAMINE MALEATE",
+    "status": "partial",
+    "setId": "5e6623c3-6210-4c50-94d6-5554f36876d1",
+    "effective": "20260831",
+    "sections": [
+      "indications"
+    ],
+    "preview": {
+      "indications": "Uses temporarily relieves these symptoms due to hay fever or other upper respiratory allergies: sneezing runny nose itchy, watery eyes itching of the nose or th"
+    }
+  },
+  {
+    "name": "Promethazine",
+    "fdaName": "PROMETHAZINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "5a797d11-19b0-fd33-e063-6394a90a4d58",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Promethazine is a phenothiazine derivative which differs structurally from the antipsychotic phenothiazines by the presence of a branched ",
+      "indications": "INDICATIONS AND USAGE Promethazine Hydrochloride, is useful orally for. Perennial and seasonal allergic rhinitis. Vasomotor rhinitis. Allergic conjunctivitis du",
+      "adverse_effects": "ADVERSE REACTIONS Central Nervous System Drowsiness is the most prominent CNS effect of this drug. Sedation, somnolence, blurred vision, dizziness; confusion, d",
+      "contraindications": "CONTRAINDICATIONS Promethazine hydrochloride tablets, USP are contraindicated for use in pediatric patients less than two years of age. Promethazine hydrochlori",
+      "interactions": "Drug Interactions CNS Depressants - Promethazine hydrochloride tablets, USP may increase, prolong, or intensify the sedative action of other central-nervous-sys"
+    }
+  },
+  {
+    "name": "Diphenhydramine",
+    "fdaName": "DIPHENHYDRAMINE HYDROCHLORIDE",
+    "status": "partial",
+    "setId": "303d7651-9c8f-4a14-9f2c-7181fa0f003e",
+    "effective": "20260909",
+    "sections": [
+      "indications"
+    ],
+    "preview": {
+      "indications": "Uses ▪ for the relief of occasional sleeplessness ▪ reduces time to fall asleep if you have difficulty falling asleep\n\nSource label: Nighttime Sleep Aid Berry F"
+    }
+  },
+  {
+    "name": "Omeprazole",
+    "fdaName": "OMEPRAZOLE",
+    "status": "full",
+    "setId": "63b3982a-b541-4b0d-99d4-93a673e57d46",
+    "effective": "20260828",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Omeprazole belongs to a class of antisecretory compounds, the substituted benzimidazoles, that suppress gastric acid secretion by speci",
+      "indications": "1 INDICATIONS AND USAGE Omeprazole is a proton pump inhibitor (PPI) indicated for the: • Treatment of active duodenal ulcer in adults (1.1) • Eradication of Hel",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described below and elsewhere in labeling: • Acute Tubulointerstitial Nephritis [see Warnings an",
+      "contraindications": "4 CONTRAINDICATIONS • Omeprazole delayed-release capsules are contraindicated in patients with known hypersensitivity reactions including anaphylaxis to the for",
+      "interactions": "7 DRUG INTERACTIONS Tables 3 and 4 include drugs with clinically important drug interactions and interaction with diagnostics when administered concomitantly wi"
+    }
+  },
+  {
+    "name": "Esomeprazole",
+    "fdaName": "ESOMEPRAZOLE MAGNESIUM",
+    "status": "full",
+    "setId": "f907e633-4080-44ae-829f-141497876922",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 CLINICAL PHARMACOLOGY 12.1 Mechanism of Action Esomeprazole belongs to a class of antisecretory compounds, the substituted benzimidazoles, that suppress gast",
+      "indications": "1 INDICATIONS AND USAGE Esomeprazole magnesium for delayed-release oral suspension is a proton pump inhibitor (PPI). Esomeprazole magnesium for delayed-release ",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described below and elsewhere in labeling: Acute Tubulointerstitial Nephritis [see Warnings and ",
+      "contraindications": "4 CONTRAINDICATIONS Esomeprazole magnesium for delayed-release oral suspension is contraindicated in patients with known hypersensitivity to substituted benzimi",
+      "interactions": "7 DRUG INTERACTIONS See full prescribing information for a list of clinically important drug interactions. ( 7 ) Tables 3 and 4 include drugs with clinically im"
+    }
+  },
+  {
+    "name": "Pantoprazole",
+    "fdaName": "PANTOPRAZOLE SODIUM",
+    "status": "full",
+    "setId": "70378eba-3904-4491-9f6d-00f5d1501c4a",
+    "effective": "20260930",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Pantoprazole is a PPI that suppresses the final step in gastric acid production by covalently binding to the (H + , K + )-ATPase enzyme",
+      "indications": "1 INDICATIONS AND USAGE Pantoprazole Sodium for Injection is indicated for treatment of: gastroesophageal reflux disease (GERD) and a history of erosive esophag",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described below and elsewhere in labeling: Injection Site Reactions [see Warnings and Precaution",
+      "contraindications": "4 CONTRAINDICATIONS Pantoprazole Sodium for Injection is contraindicated in patients with known hypersensitivity reactions including anaphylaxis to the formulat",
+      "interactions": "7 DRUG INTERACTIONS Table 3 includes drugs with clinically important drug interactions and interaction with diagnostics when administered concomitantly with Pan"
+    }
+  },
+  {
+    "name": "Famotidine",
+    "fdaName": "FAMOTIDINE",
+    "status": "full",
+    "setId": "669fbd46-cae5-4477-884e-8eca893d2e05",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Famotidine is a competitive inhibitor of histamine-2 (H 2 ) receptors. The primary clinically important pharmacologic activity of famot",
+      "indications": "1 INDICATIONS AND USAGE Famotidine tablets are indicated in adult and pediatric patients 40 kg and greater for the treatment of: • active duodenal ulcer (DU). •",
+      "adverse_effects": "6 ADVERSE REACTIONS The most common adverse reactions are: headache, dizziness, constipation, and diarrhea. ( 6.1 ) To report SUSPECTED ADVERSE REACTIONS, conta",
+      "contraindications": "4 CONTRAINDICATIONS Famotidine tablets are contraindicated in patients with a history of serious hypersensitivity reactions (e.g., anaphylaxis) to famotidine or",
+      "interactions": "7 DRUG INTERACTIONS • Drugs Dependent on Gastric pH for Absorption : Systemic exposure of the concomitant drug may be significantly reduced leading to loss of e"
+    }
+  },
+  {
+    "name": "Metoclopramide",
+    "fdaName": "METOCLOPRAMIDE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "3cd4b274-6176-4e5b-9765-4f50763bd58f",
+    "effective": "20260710",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Metoclopramide stimulates motility of the upper gastrointestinal tract without stimulating gastric, biliary, or pancreatic secretions. Its",
+      "indications": "INDICATIONS AND USAGE The use of Metoclopramide Oral Solution is recommended for adults only. Therapy should not exceed 12 weeks in duration. Symptomatic Gastro",
+      "adverse_effects": "ADVERSE REACTIONS In general, the incidence of adverse reactions correlates with the dose and duration of metoclopramide administration. The following reactions",
+      "contraindications": "CONTRAINDICATIONS Metoclopramide should not be used whenever stimulation of gastrointestinal motility might be dangerous, e.g., in the presence of gastrointesti",
+      "interactions": "Drug Interactions The effects of metoclopramide on gastrointestinal motility are antagonized by anticholinergic drugs and narcotic analgesics. Additive sedative"
+    }
+  },
+  {
+    "name": "Ondansetron",
+    "fdaName": "ONDANSETRON HYDROCHLORIDE",
+    "status": "full",
+    "setId": "a29b5c18-9884-4c88-8827-65d9ad5f69f6",
+    "effective": "20260821",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Ondansetron is a selective 5-HT 3 receptor antagonist. While its mechanism of action has not been fully characterized, ondansetron is n",
+      "indications": "1 INDICATIONS AND USAGE Ondansetron tablets are indicated for the prevention of nausea and vomiting associated with: highly emetogenic cancer chemotherapy, incl",
+      "adverse_effects": "6 ADVERSE REACTIONS The following clinically significant adverse reactions are described elsewhere in the labeling: • Hypersensitivity Reactions [see Warnings a",
+      "contraindications": "4 CONTRAINDICATIONS Ondansetron is contraindicated in patients: • known to have hypersensitivity (e.g., anaphylaxis) to ondansetron or any of the components of ",
+      "interactions": "7 DRUG INTERACTIONS 7.1 Serotonergic Drugs Serotonin syndrome (including altered mental status, autonomic instability, and neuromuscular symptoms) has been desc"
+    }
+  },
+  {
+    "name": "Loperamide",
+    "fdaName": "LOPERAMIDE HYDROCHLORIDE",
+    "status": "partial",
+    "setId": "5a728c6d-26ec-3316-e063-6394a90ade08",
+    "effective": "20260909",
+    "sections": [
+      "indications"
+    ],
+    "preview": {
+      "indications": "Use controls symptoms of diarrhea, including Travelers' Diarrhea\n\nSource label: LOPERAMIDE HYDROCHLORIDE, US FDA prescribing information, effective 20260909. ht"
+    }
+  },
+  {
+    "name": "Diazepam",
+    "fdaName": "DIAZEPAM",
+    "status": "full",
+    "setId": "ba953b22-f0cd-4be5-9e0e-178bded88727",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Diazepam is a benzodiazepine that exerts anxiolytic, sedative, muscle-relaxant, anticonvulsant and amnestic effects. Most of these effects",
+      "indications": "INDICATIONS AND USAGE Diazepam tablets are indicated for the management of anxiety disorders or for the short-term relief of the symptoms of anxiety. Anxiety or",
+      "adverse_effects": "ADVERSE REACTIONS Side effects most commonly reported were drowsiness, fatigue, muscle weakness, and ataxia. The following have also been reported: Central Nerv",
+      "contraindications": "CONTRAINDICATIONS Diazepam tablets are contraindicated in patients with a known hypersensitivity to diazepam and, because of lack of sufficient clinical experie",
+      "interactions": "Drug Interactions Opioids The concomitant use of benzodiazepines and opioids increases the risk of respiratory depression because of actions at different recept"
+    }
+  },
+  {
+    "name": "Lorazepam",
+    "fdaName": "LORAZEPAM",
+    "status": "full",
+    "setId": "c0810422-b732-4c04-97d8-c1521c401ef4",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Studies in healthy volunteers show that in single high doses lorazepam has a tranquilizing action on the central nervous system with no ap",
+      "indications": "INDICATIONS AND USAGE Lorazepam tablets are indicated for the management of anxiety disorders or for the short-term relief of the symptoms of anxiety or anxiety",
+      "adverse_effects": "ADVERSE REACTIONS Most adverse reactions to benzodiazepines, including CNS effects and respiratory depression, are dose dependent, with more severe effects occu",
+      "contraindications": "CONTRAINDICATIONS Lorazepam is contraindicated in patients with: hypersensitivity to benzodiazepines or to any components of the formulation acute narrow-angle ",
+      "interactions": "Drug Interactions The concomitant use of benzodiazepines and opioids increases the risk of respiratory depression because of actions at different receptor sites"
+    }
+  },
+  {
+    "name": "Carbamazepine",
+    "fdaName": "CARBAMAZEPINE",
+    "status": "full",
+    "setId": "e91f9de3-3fdd-0a6b-71ce-53a2cc142816",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY In controlled clinical trials, carbamazepine has been shown to be effective in the treatment of psychomotor and grand mal seizures, as wel",
+      "indications": "INDICATIONS AND USAGE Epilepsy Carbamazepine extended-release capsules are indicated for use as an anticonvulsant drug. Evidence supporting efficacy of carbamaz",
+      "adverse_effects": "ADVERSE REACTIONS General : If adverse reactions are of such severity that the drug must be discontinued, the physician must be aware that abrupt discontinuatio",
+      "contraindications": "CONTRAINDICATIONS Carbamazepine should not be used in patients with a history of previous bone marrow depression, hypersensitivity to the drug, or known sensiti",
+      "interactions": "Drug Interactions Clinically meaningful drug interactions have occurred with concomitant medications and include, but are not limited to the following: Agents H"
+    }
+  },
+  {
+    "name": "Phenytoin",
+    "fdaName": "PHENYTOIN SODIUM",
+    "status": "full",
+    "setId": "46d5c0d1-a97b-46d9-8cf4-994780673337",
+    "effective": "20260820",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action The precise mechanism by which phenytoin exerts its therapeutic effect has not been established but is thought to involve the voltage-d",
+      "indications": "1 INDICATIONS AND USAGE Extended phenytoin sodium capsules are indicated for the treatment of tonic-clonic (grand mal) and psychomotor (temporal lobe) seizures ",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described elsewhere in the labeling: • Withdrawal Precipitated Seizure, Status Epilepticus [see ",
+      "contraindications": "4 CONTRAINDICATIONS Extended phenytoin sodium capsules are contraindicated in patients with: • A history of hypersensitivity to phenytoin, its inactive ingredie",
+      "interactions": "7 DRUG INTERACTIONS Phenytoin is extensively bound to plasma proteins and is prone to competitive displacement. Phenytoin is primarily metabolized by the hepati"
+    }
+  },
+  {
+    "name": "Phenobarbital",
+    "fdaName": "PHENOBARBITAL",
+    "status": "full",
+    "setId": "4e2910f2-173d-4b5c-aad3-44f4ab40d8cb",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Barbiturates are capable of producing all levels of CNS mood alteration, from excitation to mild sedation, hypnosis, and deep coma. Overdo",
+      "indications": "INDICATIONS AND USAGE A. Sedative B. Anticonvulsant – For the treatment of generalized and partial seizures.\n\nSource label: Phenobarbital, US FDA prescribing in",
+      "adverse_effects": "ADVERSE REACTIONS The following adverse reactions have been reported: CNS Depression – Residual sedation or \"hangover\", drowsiness, lethargy, and vertigo. Emoti",
+      "contraindications": "CONTRAINDICATIONS Phenobarbital is contraindicated in patients who are hypersensitive to barbiturates, in patients with a history of manifest or latent porphyri",
+      "interactions": "Drug Interactions Most reports of clinically significant drug interactions occurring with the barbiturates have involved phenobarbital. However, the application"
+    }
+  },
+  {
+    "name": "Valproate",
+    "fdaName": "VALPROIC ACID",
+    "status": "full",
+    "setId": "1edd220d-d151-4177-9a29-9fee36489fb7",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Valproic acid dissociates to the valproate ion in the gastrointestinal tract. The mechanisms by which valproate exerts its therapeutic ",
+      "indications": "1 INDICATIONS AND USAGE Valproic acid oral solution is indicated for: Monotherapy and adjunctive therapy of complex partial seizures; sole and adjunctive therap",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described below and elsewhere in the labeling: Hepatic failure [see Warnings and Precautions ( 5",
+      "contraindications": "4 CONTRAINDICATIONS Valproic acid should not be administered to patients with hepatic disease or significant hepatic dysfunction [see Warnings and Precautions (",
+      "interactions": "7 DRUG INTERACTIONS Hepatic enzyme-inducing drugs (e.g., phenytoin, carbamazepine, phenobarbital, primidone, rifampin) can increase valproate clearance, while e"
+    }
+  },
+  {
+    "name": "Levetiracetam",
+    "fdaName": "LEVETIRACETAM",
+    "status": "partial",
+    "setId": "0348fec4-d919-4307-ac90-35360819bc00",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action The precise mechanism(s) by which levetiracetam exerts its antiepileptic effect is unknown. A saturable and stereoselective neuronal bi",
+      "indications": "1 INDICATIONS AND USAGE Levetiracetam is indicated for the treatment of partial-onset seizures in patients 1 month of age and older (1.1) Levetiracetam is indic",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in more details in other sections of labeling: • Behavior Abnormalities and Psychotic Symptoms",
+      "contraindications": "4 CONTRAINDICATIONS Levetiracetam tablets are contraindicated in patients with a hypersensitivity to levetiracetam. Reactions have included anaphylaxis and angi"
+    }
+  },
+  {
+    "name": "Haloperidol",
+    "fdaName": "HALOPERIDOL",
+    "status": "partial",
+    "setId": "a0751f2e-05ab-4ba9-9bae-7b791bf1a621",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY The precise mechanism of action has not been clearly established.\n\nSource label: Haloperidol, US FDA prescribing information, effective 20",
+      "indications": "INDICATIONS AND USAGE Haloperidol tablets are indicated for use in the management of manifestations of psychotic disorders. Haloperidol tablets are indicated fo",
+      "adverse_effects": "ADVERSE REACTIONS Cardiovascular Effects Tachycardia, hypotension, and hypertension have been reported. QT prolongation and/or ventricular arrhythmias have also",
+      "contraindications": "CONTRAINDICATIONS Haloperidol tablets are contraindicated in severe toxic central nervous system depression or comatose states from any cause and in individuals"
+    }
+  },
+  {
+    "name": "Chlorpromazine",
+    "fdaName": "CHLORPROMAZINE HYDROCHLORIDE",
+    "status": "partial",
+    "setId": "9709ffde-7034-42be-97be-f5f39eeacf72",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY The precise mechanism whereby the therapeutic effects of chlorpromazine are produced is not known. The principal pharmacological actions a",
+      "indications": "INDICATIONS AND USAGE For the management of manifestations of psychotic disorders. For the treatment of schizophrenia. To control nausea and vomiting. For relie",
+      "adverse_effects": "ADVERSE REACTIONS Note: Some adverse effects of chlorpromazine may be more likely to occur, or occur with greater intensity, in patients with special medical pr",
+      "contraindications": "CONTRAINDICATIONS Do not use in patients with known hypersensitivity to phenothiazines. Do not use in comatose states or in the presence of large amounts of cen"
+    }
+  },
+  {
+    "name": "Risperidone",
+    "fdaName": "RISPERIDONE",
+    "status": "full",
+    "setId": "4ab6d256-6590-45be-a5df-f505987f96c3",
+    "effective": "20260830",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action The mechanism of action of risperidone in schizophrenia is unclear. The drug’s therapeutic activity in schizophrenia could be mediated ",
+      "indications": "1 INDICATIONS AND USAGE Risperidone is an atypical antipsychotic agent indicated for: Treatment of schizophrenia ( 1.1 ) As monotherapy or adjunctive therapy wi",
+      "adverse_effects": "6 ADVERSE REACTIONS The following are discussed in more detail in other sections of the labeling: Increased mortality in elderly patients with dementia-related ",
+      "contraindications": "4 CONTRAINDICATIONS Risperidone oral solution is contraindicated in patients with a known hypersensitivity to either risperidone or paliperidone, or to any of t",
+      "interactions": "7 DRUG INTERACTIONS Carbamazepine and other enzyme inducers decrease plasma concentrations of risperidone. Increase the risperidone dose up to double the patien"
+    }
+  },
+  {
+    "name": "Olanzapine",
+    "fdaName": "OLANZAPINE",
+    "status": "full",
+    "setId": "5af81f87-5582-aa23-e063-6294a90a1ee8",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action The mechanism of action of olanzapine, in the listed indications is unclear. However, the efficacy of olanzapine in schizophrenia could",
+      "indications": "1 INDICATIONS AND USAGE Olanzapine is an atypical antipsychotic indicated: As oral formulation for the: · Treatment of schizophrenia. ( 1.1 ) · Adults: Efficacy",
+      "adverse_effects": "6 ADVERSE REACTIONS When using olanzapine and fluoxetine in combination, also refer to the Adverse Reactions section of the package insert for Symbyax. Most com",
+      "contraindications": "4 CONTRAINDICATIONS • None with olanzapine tablets monotherapy. • When using olanzapine and fluoxetine in combination, also refer to the Contraindications secti",
+      "interactions": "7 DRUG INTERACTIONS The risks of using olanzapine in combination with other drugs have not been extensively evaluated in systematic studies. • Diazepam: May pot"
+    }
+  },
+  {
+    "name": "Amitriptyline",
+    "fdaName": "AMITRIPTYLINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "61b29703-cfc2-45c7-ae24-7bf3b77e8587",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Amitriptyline hydrochloride is an antidepressant with sedative effects. Its mechanism of action in man is not known. It is not a monoamine",
+      "indications": "INDICATIONS AND USAGE For the relief of symptoms of depression. Endogenous depression is more likely to be alleviated than are other depressive states.\n\nSource ",
+      "adverse_effects": "ADVERSE REACTIONS Within each category the following adverse reactions are listed in order of decreasing severity. Included in the listing are a few adverse rea",
+      "contraindications": "CONTRAINDICATIONS Amitriptyline hydrochloride is contraindicated in patients who have shown prior hypersensitivity to it. It should not be given concomitantly w",
+      "interactions": "Drug Interactions Topiramate Some patients may experience a large increase in amitriptyline concentration in the presence of topiramate and any adjustments in a"
+    }
+  },
+  {
+    "name": "Fluoxetine",
+    "fdaName": "FLUOXETINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "a08dadff-f209-48dc-b597-6f085be13640",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Although the exact mechanism of fluoxetine is unknown, it is presumed to be linked to its inhibition of CNS neuronal uptake of serotoni",
+      "indications": "1 INDICATIONS AND USAGE Fluoxetine is indicated for the treatment of: Acute and maintenance treatment of Major Depressive Disorder [see Clinical Studies (14.1) ",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are discussed in more detail in other sections of the labeling: Suicidal Thoughts and Behaviors in Children,",
+      "contraindications": "4 CONTRAINDICATIONS When using fluoxetine capsules and olanzapine in combination, also refer to the Contraindications section of the package insert for Symbyax.",
+      "interactions": "7 DRUG INTERACTIONS As with all drugs, the potential for interaction by a variety of mechanisms (e.g., pharmacodynamic, pharmacokinetic drug inhibition or enhan"
+    }
+  },
+  {
+    "name": "Sertraline",
+    "fdaName": "SERTRALINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "7d598f1a-6c76-458a-a155-7a6a0743a2d3",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Sertraline potentiates serotonergic activity in the central nervous system through inhibition of neuronal reuptake of serotonin (5-HT).",
+      "indications": "1 INDICATIONS AND USAGE Sertraline hydrochloride tablets are indicated for the treatment of the following [See Clinical Studies (14) ] : Major depressive disord",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are described in more detail in other sections of the prescribing information: Hypersensitivity reactions to",
+      "contraindications": "4 CONTRAINDICATIONS Sertraline hydrochloride tablets are contraindicated in patients: Taking, or within 14 days of stopping, MAOIs, (including the MAOIs linezol",
+      "interactions": "7 DRUG INTERACTIONS Protein-bound drugs: Monitor for adverse reactions and reduce dosage of sertraline hydrochloride or other protein-bound drugs (e.g., warfari"
+    }
+  },
+  {
+    "name": "Lithium",
+    "fdaName": "LITHIUM CARBONATE",
+    "status": "full",
+    "setId": "b839ff4b-f62d-41ab-a823-550a756d58ec",
+    "effective": "20260816",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action The mechanism of action of lithium as a mood stabilizing agent is unknown.\n\nSource label: Lithium Carbonate, US FDA prescribing informa",
+      "indications": "1 INDICATIONS AND USAGE Lithium is a mood-stabilizing agent indicated as monotherapy for the treatment of bipolar I disorder: • Treatment of acute manic and mix",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are described in greater detail in other sections: • Acute Lithium Toxicity [see Warnings and Precautions ( ",
+      "contraindications": "4 CONTRAINDICATIONS Lithium is contraindicated in patients with known hypersensitivity to any inactive ingredient in the lithium carbonate tablet or capsule [se",
+      "interactions": "7 DRUG INTERACTIONS • Diuretics, NSAID, renin-angiotensin system antagonists, or metronidazole may increase lithium serum concentrations. Recommend frequent mon"
+    }
+  },
+  {
+    "name": "Ketamine",
+    "fdaName": "KETAMINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "76d6aad3-0515-49da-a6e1-3fe2a1938a24",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 Clinical Pharmacology 12.1 Mechanism of Action Ketamine Hydrochloride Injection, a racemic mixture of ketamine, is a non-selective, non-competitive antagonis",
+      "indications": "1 Indications and Usage Ketamine Hydrochloride Injection is indicated: as the sole anesthetic agent for diagnostic and surgical procedures that do not require s",
+      "adverse_effects": "6 Adverse Reactions The following clinically significant adverse reactions are described elsewhere in the labeling: Hemodynamic Instability [see Warnings and Pr",
+      "contraindications": "4 Contraindications Ketamine Hydrochloride Injection is contraindicated in patients for whom a significant elevation of blood pressure would constitute a seriou",
+      "interactions": "7 Drug Interactions 7.1 Theophylline or Aminophylline Concomitant administration of Ketamine Hydrochloride Injection and theophylline or aminophylline may lower"
+    }
+  },
+  {
+    "name": "Oxytocin",
+    "fdaName": "OXYTOCIN",
+    "status": "full",
+    "setId": "6d4b2c25-2e5d-49b5-93bc-2ae8a20916d1",
+    "effective": "20260506",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Uterine motility depends on the formation of the contractile protein actomyosin under the influence of the Ca 2+- dependent phosphorylatin",
+      "indications": "INDICATIONS AND USAGE IMPORTANT NOTICE Elective induction of labor is defined as the initiation of labor in a pregnant individual who has no medical indications",
+      "adverse_effects": "ADVERSE REACTIONS The following adverse reactions have been reported in the mother: Anaphylactic reaction Premature ventricular contractions Postpartum hemorrha",
+      "contraindications": "CONTRAINDICATIONS Antepartum use of Pitocin is contraindicated in any of the following circumstances: Where there is significant cephalopelvic disproportion; In",
+      "interactions": "Drug Interactions Severe hypertension has been reported when oxytocin was given three to four hours following prophylactic administration of a vasoconstrictor i"
+    }
+  },
+  {
+    "name": "Misoprostol",
+    "fdaName": "MISOPROSTOL",
+    "status": "full",
+    "setId": "c4fe14fb-0a43-4c31-9cd6-29eb0d156705",
+    "effective": "20260825",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Pharmacokinetics Misoprostol is extensively absorbed, and undergoes rapid de-esterification to its free acid, which is responsible for its",
+      "indications": "INDICATIONS AND USAGE Misoprostol is indicated for reducing the risk of NSAID (nonsteroidal anti-inflammatory drugs, including aspirin)–induced gastric ulcers i",
+      "adverse_effects": "ADVERSE REACTIONS The following have been reported as adverse events in subjects receiving misoprostol: Gastrointestinal In subjects receiving misoprostol 400 o",
+      "contraindications": "CONTRAINDICATIONS See boxed WARNINGS . Misoprostol should not be taken by pregnant women to reduce the risk of ulcers induced by nonsteroidal anti-inflammatory ",
+      "interactions": "Drug interactions See Clinical Pharmacology . Misoprostol has not been shown to interfere with the beneficial effects of aspirin on signs and symptoms of rheuma"
+    }
+  },
+  {
+    "name": "Methylergometrine",
+    "fdaName": "METHYLERGONOVINE MALEATE",
+    "status": "full",
+    "setId": "d8e4b8ed-3289-4611-8a61-2392a4bf6072",
+    "effective": "20260501",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Mechanism of Action Methylergonovine maleate acts directly on the smooth muscle of the uterus and increases the tone, rate, and amplitude ",
+      "indications": "INDICATIONS AND USAGE Following delivery of the placenta, for routine management of uterine atony, hemorrhage and subinvolution of the uterus. For control of ut",
+      "adverse_effects": "ADVERSE REACTIONS Clinical trials experience Common Adverse Reactions The most common adverse reaction is hypertension associated in several cases with seizure ",
+      "contraindications": "CONTRAINDICATIONS Hypertension; toxemia; pregnancy; and hypersensitivity.\n\nSource label: Methylergonovine Maleate, US FDA prescribing information, effective 202",
+      "interactions": "Drug Interactions CYP 3A4 Inhibitors (e.g., Macrolide Antibiotics and Protease Inhibitors) There have been rare reports of serious adverse events in connection "
+    }
+  },
+  {
+    "name": "Magnesium sulfate",
+    "fdaName": "MAGNESIUM SULFATE",
+    "status": "partial",
+    "setId": "87f98e6c-a3a1-4ca5-bd56-977e38f48914",
+    "effective": "20260904",
+    "sections": [
+      "indications",
+      "adverse_effects"
+    ],
+    "preview": {
+      "indications": "Uses for relief of occasional constipation (irregularity) this product generally produces bowel movement in 1/2 to 6 hours\n\nSource label: Epsom Salt, US FDA pre",
+      "adverse_effects": "Adverse Reaction Satisfaction guaranteed - Love it or your money back. We welcome any questions you may have at Target.com/comments or 1-800-910-6874. Distribut"
+    }
+  },
+  {
+    "name": "Folic acid",
+    "fdaName": "FOLIC ACID",
+    "status": "full",
+    "setId": "bda4687e-929a-434d-ab59-909cf2ed73a2",
+    "effective": "20260911",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Folic acid acts on megaloblastic bone marrow to produce a normoblastic marrow. In man, an exogenous source of folate is required for nucle",
+      "indications": "INDICATIONS AND USAGE Folic acid is effective in the treatment of megaloblastic anemias due to a deficiency of folic acid (as may be seen in tropical or nontrop",
+      "adverse_effects": "ADVERSE REACTIONS Allergic sensitization has been reported following both oral and parenteral administration of folic acid. Folic acid is relatively nontoxic in",
+      "contraindications": "CONTRAINDICATIONS Folic acid is contraindicated in patients who have shown previous intolerance to the drug.\n\nSource label: Folic Acid, US FDA prescribing infor",
+      "interactions": "Drug Interactions There is evidence that the anticonvulsant action of phenytoin is antagonized by folic acid. A patient whose epilepsy is completely controlled "
+    }
+  },
+  {
+    "name": "Phytomenadione",
+    "fdaName": "PHYTONADIONE",
+    "status": "full",
+    "setId": "e8808230-2c44-44c6-8cab-8f29b6b34051",
+    "effective": "20260809",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Vitamin K 1 Injection aqueous dispersion of vitamin K 1 for parenteral injection, possesses the same type and degree of activity as doe",
+      "indications": "1 INDICATIONS AND USAGE Vitamin K 1 Injection is a vitamin K replacement indicated for the treatment of the following coagulation disorders which are due to fau",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described elsewhere in the labeling: • Hypersensitivity Reactions [see Warnings and Precautions ",
+      "contraindications": "4 CONTRAINDICATIONS Hypersensitivity to phytonadione or any other component of this medication [see Warnings and Precautions (5.1) ] . Hypersensitivity to any c",
+      "interactions": "7 DRUG INTERACTIONS Anticoagulants Vitamin K 1 Injection may induce temporary resistance to prothrombin-depressing anticoagulants, especially when larger doses "
+    }
+  },
+  {
+    "name": "Tranexamic acid",
+    "fdaName": "TRANEXAMIC ACID",
+    "status": "full",
+    "setId": "fb2fcae9-6aa0-4708-b250-b0e40beb147e",
+    "effective": "20260829",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12 CLINICAL PHARMACOLOGY 12.1 Mechanism of Action Tranexamic acid is a synthetic lysine amino acid derivative, which diminishes the dissolution of hemostatic fi",
+      "indications": "1 INDICATIONS AND USAGE Tranexamic acid injection is indicated in patients with hemophilia for short-term use (2 to 8 days) to reduce or prevent hemorrhage and ",
+      "adverse_effects": "6 ADVERSE REACTIONS The following clinically significant adverse reactions are described elsewhere in the labeling: Risk of Medication Errors Due to Incorrect R",
+      "contraindications": "4 CONTRAINDICATIONS Tranexamic acid injection is contraindicated: As a neuraxial (i.e., intrathecal, epidural) injection [see Warnings and Precautions (5.1) ]. ",
+      "interactions": "7 DRUG INTERACTIONS Prothrombotic Medical Products: Avoid concomitant use, can further increase the risk of thromboembolic adverse reactions associated with tra"
+    }
+  },
+  {
+    "name": "Allopurinol",
+    "fdaName": "ALLOPURINOL",
+    "status": "full",
+    "setId": "8f50e91e-66a7-4fd4-888a-9f1986aa661c",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Allopurinol is a structural analogue of the natural purine base, hypoxanthine. Allopurinol acts on purine catabolism, without disruptin",
+      "indications": "1 INDICATIONS AND USAGE Allopurinol tablets are indicated for: The management of adults with signs and symptoms of primary or secondary gout (acute attacks, top",
+      "adverse_effects": "6 ADVERSE REACTIONS The following clinically significant adverse reactions are described elsewhere in the labeling: Skin Rash and Hypersensitivity [see Warnings",
+      "contraindications": "4 CONTRAINDICATIONS Allopurinol tablets are contraindicated in patients with a history of hypersensitivity reaction to allopurinol or to any of the ingredients ",
+      "interactions": "7 DRUG INTERACTIONS The following drugs may increase the risk of serious skin reactions: bendamustine, thiazide diuretics, ampicillin and amoxicillin. ( 7.1 ) C"
+    }
+  },
+  {
+    "name": "Colchicine",
+    "fdaName": "COLCHICINE",
+    "status": "full",
+    "setId": "5a0b4246-e7dd-29e5-e063-6294a90a2871",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action The mechanism by which colchicine exerts its beneficial effect in patients with FMF has not been fully elucidated; however, evidence su",
+      "indications": "1.1 Gout Flares Colchicine tablets are indicated for prophylaxis and the treatment of acute gout flares. • Prophylaxis of Gout Flares: Colchicine tablets are in",
+      "adverse_effects": "Prophylaxis of Gout Flares The most commonly reported adverse reaction in clinical trials of colchicine for the prophylaxis of gout was diarrhea. Treatment of G",
+      "contraindications": "Patients with renal or hepatic impairment should not be given colchicine tablets in conjunction with P-gp or strong CYP3A4 inhibitors (this includes all proteas",
+      "interactions": "Colchicine is a substrate of the efflux transporter P-glycoprotein (P-gp). Of the cytochrome P450 enzymes tested, CYP3A4 was mainly involved in the metabolism o"
+    }
+  },
+  {
+    "name": "Methotrexate",
+    "fdaName": "METHOTREXATE",
+    "status": "full",
+    "setId": "dd035a9f-cd40-4314-b9d8-2294b8a924e2",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Methotrexate inhibits dihydrofolic acid reductase. Dihydrofolates must be reduced to tetrahydrofolates by this enzyme before they can b",
+      "indications": "1 INDICATIONS AND USAGE Methotrexate Injection is a folate analog metabolic inhibitor indicated for The following neoplastic diseases for the: Treatment of adul",
+      "adverse_effects": "6 ADVERSE REACTIONS The following adverse reactions are described, or described in greater detail, in other sections: Hypersensitivity Reactions [see Warnings a",
+      "contraindications": "4 CONTRAINDICATIONS Methotrexate Injection is contraindicated in: Patients with history of severe hypersensitivity to methotrexate [see Warnings and Precautions",
+      "interactions": "7 DRUG INTERACTIONS Refer to full prescribing information for drug interactions with Methotrexate Injection. ( 7 ) 7.1 Effects of Other Drugs on Methotrexate Dr"
+    }
+  },
+  {
+    "name": "Tamoxifen",
+    "fdaName": "TAMOXIFEN CITRATE",
+    "status": "full",
+    "setId": "509f8ba3-214d-aec8-e063-6294a90af498",
+    "effective": "20260430",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Tamoxifen citrate is a nonsteroidal agent that has demonstrated potent antiestrogenic properties in animal test systems. The antiestrogeni",
+      "indications": "INDICATIONS AND USAGE Metastatic Breast Cancer: Tamoxifen citrate tablets are effective in the treatment of metastatic breast cancer in women and men. In premen",
+      "adverse_effects": "ADVERSE REACTIONS Adverse reactions to tamoxifen citrate are relatively mild and rarely severe enough to require discontinuation of treatment in breast cancer p",
+      "contraindications": "CONTRAINDICATIONS Tamoxifen citrate tablets are contraindicated in patients with known hypersensitivity to the drug or any of its ingredients. Reduction in Brea",
+      "interactions": "Drug Interactions: When tamoxifen citrate is used in combination with coumarin-type anticoagulants, a significant increase in anticoagulant effect may occur. Wh"
+    }
+  },
+  {
+    "name": "Epinephrine",
+    "fdaName": "EPINEPHRINE",
+    "status": "partial",
+    "setId": "55befbe4-c819-4367-bbe7-de5841786aac",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Epinephrine acts on both alpha (α)- and beta (β)-adrenergic receptors. The mechanism of the rise in blood pressure is 3-fold: a direct ",
+      "indications": "1 INDICATIONS AND USAGE Epinephrine is a non-selective alpha and beta adrenergic agonist indicated: To increase mean arterial blood pressure in adult patients w",
+      "adverse_effects": "6 ADVERSE REACTIONS Most common adverse reactions to systemically administered epinephrine are headache; anxiety; apprehensiveness; restlessness; tremor; weakne",
+      "interactions": "7 DRUG INTERACTIONS Drugs antagonizing pressor effects of epinephrine α-blockers, such as phentolamine Vasodilators, such as nitrates Diuretics Antihypertensive"
+    }
+  },
+  {
+    "name": "Atropine",
+    "fdaName": "ATROPINE SULFATE",
+    "status": "full",
+    "setId": "a116af5c-ba4c-408c-9a02-4bc33772aa8d",
+    "effective": "20260803",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "12.1 Mechanism of Action Atropine is a reversible antagonist of muscarine-like actions of acetyl-choline and is therefore classified as an antimuscarinic agent.",
+      "indications": "1 INDICATIONS AND USAGE Atropine Sulfate Ophthalmic Solution, 1% is indicated in adults and pediatric patients aged three (3) months and older for: 1.1 Cyclople",
+      "adverse_effects": "6 ADVERSE REACTIONS The following serious adverse reactions are described below and elsewhere in the labeling: • Photophobia and Blurred Vision [See Warnings an",
+      "contraindications": "4 CONTRAINDICATIONS Hypersensitivity or allergic reaction to any ingredient in formulation. ( 4.1 ) 4.1 Hypersensitivity Atropine Sulfate Ophthalmic Solution 1%",
+      "interactions": "7 DRUG INTERACTIONS The use of atropine and monoamine oxidase inhibitors (MAOI) is generally not recommended because of the potential to precipitate hypertensiv"
+    }
+  },
+  {
+    "name": "Lidocaine",
+    "fdaName": "LIDOCAINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "6f8d20d2-6a91-4a5b-bfe8-f1baada38442",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ],
+    "preview": {
+      "overview": "CLINICAL PHARMACOLOGY Mechanism of Action Lidocaine stabilizes the neuronal membrane by inhibiting the ionic fluxes required for the initiation and conduction o",
+      "indications": "INDICATIONS AND USAGE Lidocaine is indicated for the production of topical anesthesia of irritated or inflamed mucous membranes of the mouth and pharynx. It is ",
+      "adverse_effects": "ADVERSE REACTIONS Adverse experiences following the administration of lidocaine are similar in nature to those observed with other amide local anesthetic agents",
+      "contraindications": "CONTRAINDICATIONS Lidocaine is contraindicated in patients with a known history of hypersensitivity to local anesthetics of the amide type, or to other componen",
+      "interactions": "Drug Interactions Patients who are administered local anesthetics are at increased risk of developing methemoglobinemia when concurrently exposed to the followi"
+    }
+  }
+]

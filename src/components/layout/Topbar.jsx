@@ -2,12 +2,13 @@ import logo from "../../assets/rxct-logo.png";
 import avatar from "../../assets/circle_avatar.png";
 import styles from "./Topbar.module.css";
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Topbar({ onOpenPanel, panelOpen }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
-
+       const [text, setText] = useState("");
+const navigate = useNavigate()
   useEffect(() => {
 
     if (!menuOpen) {
@@ -42,11 +43,20 @@ function Topbar({ onOpenPanel, panelOpen }) {
 
       <div className={styles.search}>
         <i className="fa-solid fa-magnifying-glass"></i>
-        <input
-          type="search"
-          placeholder="Search medicines, classes, symptoms..."
-          className={styles.searchInput}
-        />
+
+
+<input
+className={styles.searchInput}
+  value={text}
+  type="search"
+  placeholder="Search medicines,classes....."
+  onChange={(e) => setText(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter" && text.trim()) {
+      navigate("/medicines?q=" + encodeURIComponent(text.trim()));
+    }
+  }}
+/>
       </div>
 
       <div className={styles.actions}>
