@@ -11,7 +11,7 @@
 //
 // Not in this list on purpose (no FDA drug label exists for them):
 // Oral rehydration salts, Ferrous sulfate.
-
+import https from "node:https";
 export const DRUGS = [
   // Pain and inflammation
   ["Paracetamol", "ACETAMINOPHEN"],
@@ -186,4 +186,65 @@ export const DRUGS = [
   ["Epinephrine", "EPINEPHRINE"],
   ["Atropine", "ATROPINE SULFATE"],
   ["Lidocaine", "LIDOCAINE HYDROCHLORIDE"],
+  // Added batch: antibacterials and antimalarial
+  ["Ceftazidime", "CEFTAZIDIME"],
+  ["Cefpodoxime", "CEFPODOXIME PROXETIL"],
+  ["Cefadroxil", "CEFADROXIL"],
+  ["Meropenem", "MEROPENEM"],
+  ["Piperacillin-tazobactam", "PIPERACILLIN AND TAZOBACTAM"],
+  ["Linezolid", "LINEZOLID"],
+  ["Tetracycline", "TETRACYCLINE HYDROCHLORIDE"],
+  ["Mefloquine", "MEFLOQUINE HYDROCHLORIDE"],
+
+  // Added batch: HIV and antifungals
+  ["Emtricitabine", "EMTRICITABINE"],
+  ["Ritonavir", "RITONAVIR"],
+  ["Amphotericin B", "AMPHOTERICIN B"],
+  ["Griseofulvin", "GRISEOFULVIN"],
+
+  // Added batch: cardiovascular
+  ["Captopril", "CAPTOPRIL"],
+  ["Methyldopa", "METHYLDOPA"],
+  ["Bumetanide", "BUMETANIDE"],
+  ["Telmisartan", "TELMISARTAN"],
+  ["Diltiazem", "DILTIAZEM HYDROCHLORIDE"],
+  ["Verapamil", "VERAPAMIL HYDROCHLORIDE"],
+  ["Labetalol", "LABETALOL HYDROCHLORIDE"],
+  ["Rivaroxaban", "RIVAROXABAN"],
+  ["Adenosine", "ADENOSINE"],
+
+  // Added batch: endocrine, respiratory, gastrointestinal
+  ["Glipizide", "GLIPIZIDE"],
+  ["Propylthiouracil", "PROPYLTHIOURACIL"],
+  ["Methylprednisolone", "METHYLPREDNISOLONE"],
+  ["Fludrocortisone", "FLUDROCORTISONE ACETATE"],
+  ["Ipratropium", "IPRATROPIUM BROMIDE"],
+  ["Fluticasone", "FLUTICASONE PROPIONATE"],
+  ["Lansoprazole", "LANSOPRAZOLE"],
+  ["Sucralfate", "SUCRALFATE"],
+  ["Lactulose", "LACTULOSE"],
+  ["Dicyclomine", "DICYCLOMINE HYDROCHLORIDE"],
+
+  // Added batch: central nervous system and anaesthesia
+  ["Clonazepam", "CLONAZEPAM"],
+  ["Gabapentin", "GABAPENTIN"],
+  ["Lamotrigine", "LAMOTRIGINE"],
+  ["Escitalopram", "ESCITALOPRAM OXALATE"],
+  ["Fentanyl", "FENTANYL CITRATE"],
+  ["Pethidine", "MEPERIDINE HYDROCHLORIDE"],
+  ["Codeine", "CODEINE SULFATE"],
+  ["Midazolam", "MIDAZOLAM HYDROCHLORIDE"],
+  ["Bupivacaine", "BUPIVACAINE HYDROCHLORIDE"],
+  ["Naloxone", "NALOXONE HYDROCHLORIDE"],
+  ["Neostigmine", "NEOSTIGMINE METHYLSULFATE"],
+
+  // Added batch: immunology, oncology, urology, other
+  ["Azathioprine", "AZATHIOPRINE"],
+  ["Cyclophosphamide", "CYCLOPHOSPHAMIDE"],
+  ["Hydroxycarbamide", "HYDROXYUREA"],
+  ["Sildenafil", "SILDENAFIL CITRATE"],
+  ["Tamsulosin", "TAMSULOSIN HYDROCHLORIDE"],
+  ["Medroxyprogesterone", "MEDROXYPROGESTERONE ACETATE"],
+  ["Cyproheptadine", "CYPROHEPTADINE HYDROCHLORIDE"],
+  ["Potassium chloride", "POTASSIUM CHLORIDE"],
 ];

@@ -1,0 +1,624 @@
+/* ========================================
+   MEDICINE STUDY VIEW
+======================================== */
+
+.study {
+  /* Where the sticky tab bar sits. Same offset your old
+     sectionNavigation used. Change it here if the tabs sit too low
+     or hide under the topbar on your phone. */
+  --study-sticky-top: var(--header-height, 64px);
+
+  width: 100%;
+}
+
+
+/* ========================================
+   NOTICES
+======================================== */
+
+.notices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.dosageNotice {
+  padding: 14px 16px;
+  border: 1px solid var(--danger-border);
+  border-radius: 12px;
+  background: var(--danger-bg);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.dosageNotice strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--danger);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.infoNotice {
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 9px 9px 0;
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+
+/* ========================================
+   LAYOUT
+======================================== */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.main {
+  min-width: 0;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.2px;
+}
+
+
+/* ========================================
+   TABS
+======================================== */
+
+.tabs {
+  position: sticky;
+  top: var(--study-sticky-top);
+  z-index: 5;
+
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+
+  padding: 11px 0;
+  margin-bottom: 14px;
+
+  background: var(--bg);
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  flex-shrink: 0;
+  padding: 9px 14px;
+
+  border: 1px solid var(--border);
+  border-radius: 20px;
+
+  background: var(--surface);
+  color: var(--muted);
+
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.tab:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.tabActive,
+.tabActive:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--text-light);
+}
+
+
+/* ========================================
+   PANEL
+======================================== */
+
+.panel {
+  /* Keeps the heading visible under the sticky tab bar when a tab is
+     selected from the At a Glance panel. */
+  scroll-margin-top: calc(var(--study-sticky-top) + 58px);
+
+  padding: 24px;
+
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: var(--surface);
+}
+
+.panelHeader {
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panelHeader h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 22px;
+  letter-spacing: -0.5px;
+}
+
+.block + .block {
+  padding-top: 22px;
+  margin-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+.blockTitle {
+  margin: 0 0 8px;
+  color: var(--secondary);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+
+/* ========================================
+   BULLETS
+======================================== */
+
+.bulletList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bulletList li {
+  position: relative;
+
+  padding: 11px 0 11px 22px;
+  border-bottom: 1px solid var(--border);
+
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.bulletList li:last-child {
+  border-bottom: 0;
+}
+
+.bulletList li::before {
+  content: "";
+
+  position: absolute;
+  top: 21px;
+  left: 3px;
+
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+
+  background: var(--accent);
+}
+
+.dangerList li::before {
+  background: var(--danger);
+}
+
+.showMore {
+  padding: 10px 0 2px;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+
+/* ========================================
+   MENTIONED IN OTHER LABELS
+======================================== */
+
+.mentions {
+  padding-top: 22px;
+  margin-top: 26px;
+  border-top: 1px solid var(--border);
+}
+
+.mentionsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.mentionsHeader h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 16px;
+  letter-spacing: -0.3px;
+}
+
+.mentionsHeader p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.count {
+  flex-shrink: 0;
+
+  padding: 6px 11px;
+  border-radius: 20px;
+
+  background: var(--surface-alt);
+  color: var(--primary);
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.muted {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.mentionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mentionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  width: 100%;
+  padding: 13px 15px;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: var(--bg);
+  color: var(--text);
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.mentionItem:hover {
+  background: var(--hover);
+}
+
+.mentionItem strong,
+.mentionItem small {
+  display: block;
+}
+
+.mentionItem strong {
+  font-size: 13px;
+}
+
+.mentionItem small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.mentionItem > span:last-child {
+  color: var(--accent);
+  font-size: 17px;
+}
+
+.snippet {
+  margin: 6px 4px 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+
+/* ========================================
+   PROVENANCE
+======================================== */
+
+.provenance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+
+  padding-top: 20px;
+  margin-top: 26px;
+  border-top: 1px solid var(--border);
+}
+
+.provenance div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.provenance strong {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.provenance span {
+  font-size: 12px;
+}
+
+.provenance a {
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.provenanceNote {
+  width: 100%;
+  margin: 0;
+
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+
+/* ========================================
+   AT A GLANCE
+======================================== */
+
+.rail {
+  order: -1;
+
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: var(--surface);
+}
+
+.railHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  width: 100%;
+  padding: 14px 16px;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+
+  cursor: pointer;
+}
+
+.railToggle {
+  color: var(--accent);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.railBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  padding: 0 16px 16px;
+}
+
+.railClosed .railBody {
+  display: none;
+}
+
+.railDanger,
+.railInfo,
+.railClass {
+  padding: 13px;
+  border-radius: 11px;
+}
+
+.railDanger {
+  border: 1px solid var(--danger-border);
+  background: var(--danger-bg);
+}
+
+.railInfo {
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+}
+
+.railClass {
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.railBody h3 {
+  margin: 0 0 8px;
+
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.railDanger h3 {
+  color: var(--danger);
+}
+
+.railBody ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.railBody li {
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.railDanger > button,
+.railInfo > button {
+  padding: 10px 0 0;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--secondary);
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.classChip {
+  padding: 8px 12px;
+
+  border: 1px solid var(--border);
+  border-radius: 20px;
+
+  background: var(--surface);
+  color: var(--primary);
+
+  font-size: 12px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.classChip:hover {
+  background: var(--class-hover);
+}
+
+.railNote {
+  margin: 0;
+
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   EMPTY
+======================================== */
+
+.empty {
+  padding: 25px;
+
+  border: 1px dashed var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.empty h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.empty p {
+  margin: 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   DESKTOP: TABS FIXED, RAIL SCROLLS ON ITS OWN
+======================================== */
+
+@media (min-width: 1000px) {
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .rail {
+    order: 0;
+
+    position: sticky;
+    top: calc(var(--study-sticky-top) + 12px);
+
+    max-height: calc(100vh - var(--study-sticky-top) - 28px);
+    overflow-y: auto;
+  }
+
+  .railHeader {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .railToggle {
+    display: none;
+  }
+
+  /* The rail is always open on desktop. */
+  .railClosed .railBody {
+    display: flex;
+  }
+
+}
+
+
+/* ========================================
+   PHONE
+======================================== */
+
+@media (max-width: 700px) {
+
+  .panel {
+    padding: 19px;
+  }
+
+  .tab {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+}

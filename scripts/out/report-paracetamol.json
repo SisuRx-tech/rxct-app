@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Paracetamol",
+    "fdaName": "ACETAMINOPHEN",
+    "status": "full",
+    "setId": "464e404a-1957-44a2-a53a-f2a9d3c15bde",
+    "effective": "20260828",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  }
+]

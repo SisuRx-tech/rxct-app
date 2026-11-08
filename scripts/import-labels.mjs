@@ -24,14 +24,13 @@
 import { createClient } from "@supabase/supabase-js";
 import { mkdir, writeFile } from "node:fs/promises";
 import { DRUGS } from "./drug-list.mjs";
-
+import https from "node:https";
 // ------------------------------------------------------------------
 // Settings
 // ------------------------------------------------------------------
 
 const LABEL_API = "https://api.fda.gov/drug/label.json";
-
-const SOURCE_NAME = "openFDA drug labels (US FDA prescribing information)";
+const SOURCE_NAME = "US FDA label";
 
 const SOURCE_NOTE =
   "US FDA prescribing information via openFDA. US labelling: brands, doses " +
@@ -43,13 +42,17 @@ const PAUSE_MS = 500;
 
 // RxCT section -> label fields to try, in order. First one with text wins.
 const SECTION_FIELDS = {
-  overview: ["mechanism_of_action", "clinical_pharmacology", "description"],
+  overview: [
+    "description",
+    "mechanism_of_action",
+    "clinical_pharmacology",
+    "pharmacokinetics",
+  ],
   indications: ["indications_and_usage"],
   adverse_effects: ["adverse_reactions"],
   contraindications: ["contraindications"],
   interactions: ["drug_interactions"],
 };
-
 // ------------------------------------------------------------------
 // Command line flags
 // ------------------------------------------------------------------
@@ -85,14 +88,21 @@ function shorten(text) {
 
 // First field in the list that has real text.
 function pickText(label, fields) {
+  const parts = [];
+
   for (const field of fields) {
     const value = label[field];
+
     if (!Array.isArray(value) || value.length === 0) continue;
 
     const text = cleanText(value);
-    if (text.length >= 40) return text;
+
+    if (text.length < 40) continue;
+
+    parts.push(text);
   }
-  return null;
+
+  return parts.length > 0 ? parts.join("\n\n") : null;
 }
 
 // How many of the five RxCT sections this label can fill.
@@ -120,30 +130,92 @@ function sourceFooter(label) {
 function buildSections(label) {
   const sections = {};
 
-  for (const [section, fields] of Object.entries(SECTION_FIELDS)) {
-    const text = pickText(label, fields);
-    if (!text) continue;
+  const overviewTitles = {
+    description: "DESCRIPTION",
+    mechanism_of_action: "MECHANISM OF ACTION",
+    clinical_pharmacology: "PHARMACOLOGICAL PROFILE",
+    pharmacokinetics: "PHARMACOKINETICS",
+  };
 
-    sections[section] = shorten(text) + sourceFooter(label);
+  for (const [section, fields] of Object.entries(SECTION_FIELDS)) {
+    const parts = [];
+
+    for (const field of fields) {
+      const value = label[field];
+
+      if (!Array.isArray(value) || value.length === 0) continue;
+
+let text = cleanText(value);
+
+const sourceHeading = field.replaceAll("_", " ");
+text = text.replace(
+  new RegExp(`^${sourceHeading}\\s*`, "i"),
+  "",
+).trim();
+
+if (text.length < 40) continue;
+
+      const heading =
+        section === "overview"
+          ? overviewTitles[field]
+          : null;
+
+      parts.push(
+        heading ? `${heading}\n${text}` : text,
+      );
+    }
+
+    if (parts.length > 0) {
+      sections[section] =
+        shorten(parts.join("\n\n")) + sourceFooter(label);
+    }
   }
 
   return sections;
 }
+function httpsGet(url) {
+  return new Promise((resolve, reject) => {
+    const request = https.get(
+      url,
+      { family: 4, timeout: 15000 },
+      (response) => {
+        let body = "";
 
+        response.setEncoding("utf8");
+        response.on("data", (chunk) => {
+          body += chunk;
+        });
+
+        response.on("end", () => {
+          resolve({
+            status: response.statusCode,
+            ok: response.statusCode >= 200 && response.statusCode < 300,
+            json: async () => JSON.parse(body),
+          });
+        });
+      },
+    );
+
+    request.on("timeout", () => {
+      request.destroy(new Error("OpenFDA request timed out"));
+    });
+
+    request.on("error", reject);
+  });
+}
 // ------------------------------------------------------------------
 // openFDA
 // ------------------------------------------------------------------
-
-// Newest labels first, exact generic name only. Three is enough to pick
-// the most complete one without downloading dozens of large labels.
+// Fetch multiple recent labels so we can select the most complete one,
+// rather than automatically favouring the newest product label.
 async function fetchLabels(fdaName) {
   const search = `openfda.generic_name.exact:"${fdaName}"`;
   const url =
     `${LABEL_API}?search=${encodeURIComponent(search)}` +
-    `&sort=effective_time:desc&limit=3`;
+    `&sort=effective_time:desc&limit=100`;
 
   for (let attempt = 1; attempt <= 3; attempt++) {
-    const response = await fetch(url);
+    const response = await httpsGet(url);
 
     // openFDA answers 404 when nothing matches.
     if (response.status === 404) return [];
@@ -202,14 +274,22 @@ async function ensureSource(db) {
 async function ensureMedicine(db, name, label) {
   const { data: found, error } = await db
     .from("medicines")
-    .select("id")
-    .eq("name", name)
+    .select("id, name")
+    .ilike("name", name)
     .maybeSingle();
 
   if (error) throw error;
-  if (found) return found.id;
 
-  // New medicine: take the class from the label when it has one.
+  if (found) {
+    if (found.name !== name) {
+      throw new Error(
+        `Medicine name conflict: "${name}" matches existing "${found.name}"`,
+      );
+    }
+
+    return found.id;
+  }
+
   const drugClass =
     label.openfda?.pharm_class_epc?.[0]?.replace(/\s*\[EPC\]$/, "") ?? null;
 
@@ -220,10 +300,56 @@ async function ensureMedicine(db, name, label) {
     .single();
 
   if (insertError) throw insertError;
+
   return data.id;
 }
 
 // ignoreDuplicates means an existing row is left exactly as it is.
+async function saveSearchTerms(db, medicineId, fdaName, label) {
+  const candidates = [
+    ...(label.openfda?.generic_name ?? []),
+    fdaName,
+  ];
+
+  const terms = [
+    ...new Map(
+      candidates
+        .map((term) => term.trim())
+        .filter(Boolean)
+        .map((term) => [term.toLowerCase(), term]),
+    ).values(),
+  ];
+
+  const { data: existing, error } = await db
+    .from("search_terms")
+    .select("term")
+    .eq("medicine_id", medicineId);
+
+  if (error) throw error;
+
+  const existingTerms = new Set(
+    existing.map(({ term }) => term.trim().toLowerCase()),
+  );
+
+  const rows = terms
+    .filter((term) => !existingTerms.has(term.toLowerCase()))
+    .map((term) => ({
+      medicine_id: medicineId,
+      term,
+      kind: "synonym",
+    }));
+
+  if (rows.length === 0) return;
+
+  const { error: insertError } = await db
+    .from("search_terms")
+    .upsert(rows, {
+      onConflict: "medicine_id,term",
+      ignoreDuplicates: true,
+    });
+
+  if (insertError) throw insertError;
+}
 async function saveSections(db, medicineId, sourceId, sections) {
   const rows = Object.entries(sections).map(([section, body]) => ({
     medicine_id: medicineId,
@@ -293,12 +419,12 @@ async function main() {
       const sections = buildSections(label);
       const found = Object.keys(sections);
       const status = found.length === 5 ? "full" : "partial";
+if (db) {
+  const medicineId = await ensureMedicine(db, name, label);
 
-      if (db) {
-        const medicineId = await ensureMedicine(db, name, label);
-        await saveSections(db, medicineId, sourceId, sections);
-      }
-
+  await saveSearchTerms(db, medicineId, fdaName, label);
+  await saveSections(db, medicineId, sourceId, sections);
+}
       console.log(
         `${tag}: ${status.toUpperCase()} (${found.length}/5: ${found.join(", ")})`,
       );
@@ -314,7 +440,7 @@ async function main() {
           ? Object.fromEntries(
               Object.entries(sections).map(([key, text]) => [
                 key,
-                text.slice(0, 160),
+                text.slice(0, 6000),
               ]),
             )
           : undefined,
@@ -336,8 +462,13 @@ async function main() {
   console.log(`Errors:      ${count("error")}`);
 
   await mkdir("scripts/out", { recursive: true });
-  const file = `scripts/out/${DRY_RUN ? "preview" : "report"}.json`;
-  await writeFile(file, JSON.stringify(report, null, 2));
+const base = DRY_RUN ? "preview" : "report";
+const suffix = ONLY
+  ? `-${ONLY.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`
+  : "";
+
+const file = `scripts/out/${base}${suffix}.json`;
+await writeFile(file, JSON.stringify(report, null, 2));
 
   console.log(`\nDetails written to ${file}`);
 }

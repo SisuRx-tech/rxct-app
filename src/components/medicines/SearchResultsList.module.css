@@ -1,0 +1,309 @@
+/* ========================================
+   SEARCH RESULTS LIST
+======================================== */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  width: 100%;
+}
+
+.section {
+  width: 100%;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.2px;
+}
+
+
+/* ========================================
+   NOTICE
+======================================== */
+
+.dosageNotice {
+  padding: 14px 16px;
+
+  border: 1px solid var(--danger-border);
+  border-radius: 12px;
+  background: var(--danger-bg);
+
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.dosageNotice strong {
+  display: block;
+  margin-bottom: 4px;
+
+  color: var(--danger);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+
+/* ========================================
+   HEADINGS
+======================================== */
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.sectionHeading h2 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 19px;
+  font-weight: 720;
+  letter-spacing: -0.4px;
+}
+
+.sectionHeading p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.count {
+  flex-shrink: 0;
+
+  padding: 6px 11px;
+  border-radius: 20px;
+
+  background: var(--surface-alt);
+  color: var(--primary);
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.textButton {
+  flex-shrink: 0;
+  padding: 5px 0;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+
+/* ========================================
+   MEDICINE ROWS
+======================================== */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: 100%;
+  padding: 15px;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.row:hover {
+  background: var(--hover);
+}
+
+.rowText {
+  flex: 1;
+  min-width: 0;
+}
+
+.rowText strong,
+.rowText small {
+  display: block;
+}
+
+.rowText strong {
+  font-size: 13px;
+}
+
+.rowText small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.tag {
+  display: inline-block;
+
+  margin-top: 7px;
+  padding: 3px 9px;
+  border-radius: 20px;
+
+  background: var(--class-hover);
+  color: var(--accent);
+
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.best {
+  flex-shrink: 0;
+
+  padding: 4px 9px;
+  border-radius: 20px;
+
+  background: var(--surface-alt);
+  color: var(--primary);
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.arrow {
+  flex-shrink: 0;
+  color: var(--accent);
+  font-size: 17px;
+}
+
+
+/* ========================================
+   CLASS CARDS
+======================================== */
+
+.classCards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.classCard {
+  padding: 6px 16px 16px;
+
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.classHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  width: 100%;
+  padding: 12px 0;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.classHeader strong {
+  font-size: 13px;
+}
+
+.classHeader span {
+  flex-shrink: 0;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.chip {
+  padding: 8px 12px;
+
+  border: 1px solid var(--border);
+  border-radius: 20px;
+
+  background: var(--bg);
+  color: var(--primary);
+
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.chip:hover {
+  background: var(--class-hover);
+}
+
+
+/* ========================================
+   INTERACTION SNIPPETS
+======================================== */
+
+.snippet {
+  margin: 6px 4px 6px;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+
+/* ========================================
+   EMPTY
+======================================== */
+
+.empty {
+  padding: 25px;
+
+  border: 1px dashed var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.empty h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.empty p {
+  margin: 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 16px;
+}
