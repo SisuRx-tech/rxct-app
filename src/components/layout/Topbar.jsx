@@ -4,6 +4,7 @@ import styles from "./Topbar.module.css";
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { searchSuggestions } from "../../services/medicines";
+import InstallButton from "./InstallButton";
 function Topbar({ onOpenPanel, panelOpen }) {
 const [menuOpen, setMenuOpen] = useState(false);
 const [searchExpanded, setSearchExpanded] = useState(false);
@@ -101,6 +102,7 @@ className={`${styles.topbar} ${
 
     <input
       ref={searchRef}
+      data-global-search
       className={styles.searchInput}
       value={text}
       type="search"
@@ -170,12 +172,16 @@ onBlur={() => {
   </div>
 
   <div className={styles.actions}>
-    {!panelOpen && (
+  {!panelOpen && (
+    <>
+      <InstallButton />
+
       <button className={styles.iconButton} aria-label="Notifications">
         <i className="fa-solid fa-bell"></i>
       </button>
-    )}
-  </div>
+    </>
+  )}
+</div>
 
   {!panelOpen && (
     <div className={styles.profileMenu} ref={menuRef}>

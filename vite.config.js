@@ -1,7 +1,67 @@
-import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
-
-// https://vite.dev/config/
+import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
+import { readFileSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
 export default defineConfig({
-  plugins: [react()],
+    preview: {
+    host: '0.0.0.0',
+    port: 4173,
+    https: {
+      cert: readFileSync(
+        join(homedir(), '.config/rxct-certs/rxct.pem')
+      ),
+      key: readFileSync(
+        join(homedir(), '.config/rxct-certs/rxct-key.pem')
+      ),
+    },
+  },
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+
+   includeAssets: [
+  'favicon.png',
+  'apple-touch-icon.png',
+],
+
+      manifest: {
+        name: 'RxCT',
+        short_name: 'RxCT',
+        description: 'Your pharmacy learning workspace.',
+
+        background_color: '#164a45',
+        theme_color: '',
+        display: 'standalone',
+
+        start_url: '/',
+        scope: '/',
+
+        icons: [
+          {
+            src: '/pwa-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: '/pwa-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: '/pwa-maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
+
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+      },
+    }),
+  ],
 })

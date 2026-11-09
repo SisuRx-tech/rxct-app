@@ -1,0 +1,247 @@
+.installButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  height: 36px;
+  padding: 0 12px;
+
+  border: 1px solid var(--soft);
+  border-radius: 10px;
+
+  background: var(--surface-alt);
+  color: var(--primary);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.installButton:hover {
+  background: var(--soft);
+  transform: translateY(-1px);
+}
+
+.installButton img {
+  width: 23px;
+  height: 23px;
+
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+.installButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ========================================
+   INSTALL ONBOARDING
+======================================== */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  background: rgba(12, 29, 26, 0.48);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+
+  animation: overlayEnter 0.25s ease;
+}
+
+.installSheet {
+  position: relative;
+
+  width: 100%;
+  max-width: 480px;
+max-height: 90dvh;
+overflow-y: auto;
+overscroll-behavior: contain;
+  padding: 12px 24px calc(28px + env(safe-area-inset-bottom));
+touch-action: none;
+max-height: 90dvh;
+overflow-y: auto;
+overscroll-behavior: contain;
+  background: var(--surface);
+  border: 1px solid var(--soft);
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
+
+  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.12);
+
+  animation: sheetEnter 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sheetHandle {
+  width: 38px;
+  height: 4px;
+touch-action: none;
+cursor: grab;
+user-select: none;
+  margin: 0 auto 24px;
+
+  border-radius: 10px;
+  background: var(--soft);
+}
+
+.logo {
+  display: block;
+
+  width: 88px;
+  height: 88px;
+
+  margin: 0 auto 24px;
+
+  border-radius: 20px;
+  object-fit: contain;
+}
+.installSheet h2 {
+  margin: 0 0 10px;
+
+  color: var(--primary);
+  font-size: 25px;
+  font-weight: 750;
+  letter-spacing: -0.7px;
+  text-align: center;
+}
+
+.installSheet > p {
+  max-width: 340px;
+
+  margin: 0 auto 26px;
+
+  color: var(--secondary);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: block;
+
+  width: 100%;
+  min-height: 48px;
+
+  border-radius: 12px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.primaryAction {
+  border: 1px solid var(--primary);
+
+  background: var(--primary);
+  color: var(--text-light);
+}
+
+.primaryAction:hover {
+  background: var(--secondary);
+  transform: translateY(-1px);
+}
+
+.secondaryAction {
+  margin-top: 10px;
+
+  border: 1px solid transparent;
+
+  background: transparent;
+  color: var(--secondary);
+}
+
+.secondaryAction:hover {
+  background: var(--surface-alt);
+}
+
+.instructions {
+  margin: 0 0 22px;
+  padding: 16px;
+
+  border: 1px solid var(--soft);
+  border-radius: 14px;
+
+  background: var(--surface-alt);
+}
+
+.instructions p,
+.instructions li {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.instructions p {
+  margin: 0 0 8px;
+  font-weight: 650;
+}
+
+.instructions ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+
+@keyframes overlayEnter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheetEnter {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   LARGER SCREENS
+======================================== */
+
+@media (min-width: 600px) {
+  .overlay {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .installSheet {
+    padding: 20px 32px 32px;
+
+    border: 1px solid var(--soft);
+    border-radius: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .installSheet {
+    animation: none;
+  }
+}

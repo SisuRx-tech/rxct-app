@@ -66,3 +66,10 @@ a {
   color: inherit;
   text-decoration: none;
 }
+/* MOBILE: PREVENT PULL-TO-REFRESH IN INSTALLED APP ONLY */
+@media (max-width: 768px) and (display-mode: standalone) {
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
+}

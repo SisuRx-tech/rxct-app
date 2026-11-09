@@ -1,0 +1,202 @@
+/* ========================================
+   JOTTER
+   Floats above the bottom navigation on
+   phones and in the corner on desktop.
+======================================== */
+
+.button {
+  position: fixed;
+  right: 16px;
+  bottom: calc(
+    var(--bottom-nav-height, 56px) + 36px + env(safe-area-inset-bottom, 0px)
+  );
+  z-index: 30;
+
+  display: grid;
+  place-items: center;
+
+  width: 52px;
+  height: 52px;
+
+  border: 0;
+  border-radius: 16px;
+  background: var(--primary);
+  box-shadow: 0 6px 18px var(--shadow);
+
+  color: var(--text-light);
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--blue-hover);
+}
+
+
+/* ========================================
+   PANEL
+======================================== */
+
+.panel {
+  position: fixed;
+  right: 12px;
+  bottom: calc(
+    var(--bottom-nav-height, 56px) + 100px + env(safe-area-inset-bottom, 0px)
+  );
+  left: 12px;
+  z-index: 30;
+
+  padding: 16px;
+
+  border: 1px solid var(--soft);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 10px 32px var(--shadow);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-bottom: 12px;
+}
+
+.header h2 {
+  margin: 0;
+
+  color: var(--primary);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.header p {
+  margin: 3px 0 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+
+  width: 36px;
+  height: 36px;
+
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.panel textarea {
+  display: block;
+
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+
+  border: 1px solid var(--soft);
+  border-radius: 12px;
+  background: var(--bg);
+
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.panel textarea:focus {
+  outline: 2px solid var(--secondary);
+  outline-offset: 1px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 12px;
+}
+
+.save {
+  min-height: 42px;
+  padding: 0 20px;
+
+  border: 0;
+  border-radius: 12px;
+  background: var(--primary);
+
+  color: var(--text-light);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.save:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+
+/* ========================================
+   CONFIRMATION
+======================================== */
+
+.toast {
+  position: fixed;
+  right: 16px;
+  bottom: calc(
+    var(--bottom-nav-height, 56px) + 100px + env(safe-area-inset-bottom, 0px)
+  );
+  z-index: 30;
+
+  margin: 0;
+  padding: 10px 16px;
+
+  border-radius: 12px;
+  background: var(--primary);
+
+  color: var(--text-light);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.button:focus-visible,
+.close:focus-visible,
+.save:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+
+/* ========================================
+   DESKTOP
+======================================== */
+
+@media (min-width: 1024px) {
+
+  .button {
+    right: 28px;
+    bottom: 28px;
+  }
+
+  .panel {
+    right: 28px;
+    bottom: 96px;
+    left: auto;
+
+    width: 360px;
+  }
+
+  .toast {
+    right: 28px;
+    bottom: 96px;
+  }
+
+}

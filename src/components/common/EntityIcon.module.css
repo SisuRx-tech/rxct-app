@@ -1,0 +1,51 @@
+/* ========================================
+   ENTITY ICON
+======================================== */
+
+.icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+
+  border-radius: 12px;
+}
+
+.sm {
+  width: 32px;
+  height: 32px;
+
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.md {
+  width: 44px;
+  height: 44px;
+
+  font-size: 16px;
+}
+
+.lg {
+  width: 52px;
+  height: 52px;
+
+  font-size: 19px;
+}
+
+.medicine {
+  background: var(--class-hover);
+
+  color: var(--accent);
+}
+
+.class {
+  background: var(--surface-alt);
+
+  color: var(--primary);
+}
+
+.group {
+  background: rgba(63, 97, 120, 0.12);
+
+  color: var(--secondary);
+}
