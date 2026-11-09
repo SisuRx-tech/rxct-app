@@ -38,10 +38,9 @@ export default defineConfig({
         name: 'RxCT',
         short_name: 'RxCT',
         description: 'Your pharmacy learning workspace.',
-
-        background_color: '#164a45',
-        theme_color: '',
-        display: 'standalone',
+background_color: '#164a45',
+theme_color: '#FAF9F5',
+display: 'standalone',
 
         start_url: '/',
         scope: '/',
