@@ -131,29 +131,34 @@ function InstallButton() {
   }
 
   // Installation
-  async function handleInstall() {
-    if (installPrompt) {
-      const promptEvent = installPrompt;
+async function handleInstall() {
+  const promptEvent =
+    installPrompt || window.__rxctInstallPrompt;
 
-      setInstallPrompt(null);
-      window.__rxctInstallPrompt = null;
-
-      await promptEvent.prompt();
-
-      const { outcome } = await promptEvent.userChoice;
-
-      if (outcome === "accepted") {
-        setShowOnboarding(false);
-      } else {
-        setShowInstructions(true);
-      }
-
-      return;
-    }
-
+  if (!promptEvent) {
     setShowInstructions(true);
+    return;
   }
 
+  try {
+    await promptEvent.prompt();
+
+    const { outcome } = await promptEvent.userChoice;
+
+    setInstallPrompt(null);
+    window.__rxctInstallPrompt = null;
+
+    if (outcome === "accepted") {
+      setShowOnboarding(false);
+      setShowInstructions(false);
+    } else {
+      setShowInstructions(true);
+    }
+  } catch (error) {
+    console.error("RxCT installation failed:", error);
+    setShowInstructions(true);
+  }
+}
   function handleDismiss() {
     sessionStorage.setItem(DISMISSED_KEY, "true");
     setShowOnboarding(false);
