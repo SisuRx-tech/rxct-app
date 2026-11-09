@@ -29,56 +29,65 @@ function InstallButton() {
   const isMobile = isIOS || isAndroid;
 
   // Installation prompt listener
-  useEffect(() => {
-    const syncInstallPrompt = () => {
-      if (window.__rxctInstallPrompt) {
-        setInstallPrompt(window.__rxctInstallPrompt);
-      }
-    };
+useEffect(() => {
+  const syncInstallPrompt = () => {
+    const promptEvent = window.__rxctInstallPrompt;
 
-    const handleInstalled = () => {
-      setInstalled(true);
-      setShowOnboarding(false);
-      setInstallPrompt(null);
-      window.__rxctInstallPrompt = null;
-    };
+    if (!promptEvent) return;
 
-    syncInstallPrompt();
+    setInstallPrompt(promptEvent);
+    setShowInstructions(false);
 
-    window.addEventListener(
+    if (
+      isAndroid &&
+      !installed &&
+      sessionStorage.getItem(DISMISSED_KEY) !== "true"
+    ) {
+      setShowOnboarding(true);
+    }
+  };
+
+  const handleInstalled = () => {
+    setInstalled(true);
+    setShowOnboarding(false);
+    setShowInstructions(false);
+    setInstallPrompt(null);
+    window.__rxctInstallPrompt = null;
+  };
+
+  syncInstallPrompt();
+
+  window.addEventListener(
+    "rxct-install-prompt-ready",
+    syncInstallPrompt
+  );
+
+  window.addEventListener("appinstalled", handleInstalled);
+
+  let timer;
+
+  // iOS does not support beforeinstallprompt.
+  if (
+    isIOS &&
+    !installed &&
+    sessionStorage.getItem(DISMISSED_KEY) !== "true"
+  ) {
+    timer = setTimeout(() => {
+      setShowOnboarding(true);
+    }, 2000);
+  }
+
+  return () => {
+    clearTimeout(timer);
+
+    window.removeEventListener(
       "rxct-install-prompt-ready",
       syncInstallPrompt
     );
 
-    window.addEventListener("appinstalled", handleInstalled);
-
-    if (
-      isMobile &&
-      !installed &&
-      sessionStorage.getItem(DISMISSED_KEY) !== "true"
-    ) {
-      const timer = setTimeout(() => {
-        setShowOnboarding(true);
-      }, 2000);
-
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener(
-          "rxct-install-prompt-ready",
-          syncInstallPrompt
-        );
-        window.removeEventListener("appinstalled", handleInstalled);
-      };
-    }
-
-    return () => {
-      window.removeEventListener(
-        "rxct-install-prompt-ready",
-        syncInstallPrompt
-      );
-      window.removeEventListener("appinstalled", handleInstalled);
-    };
-  }, [installed, isMobile]);
+    window.removeEventListener("appinstalled", handleInstalled);
+  };
+}, [installed, isAndroid, isIOS]);
 
   // Prevent background scrolling
   useEffect(() => {
@@ -133,10 +142,15 @@ function InstallButton() {
   // Installation
 async function handleInstall() {
   const promptEvent =
-    installPrompt || window.__rxctInstallPrompt;
+    window.__rxctInstallPrompt || installPrompt;
 
   if (!promptEvent) {
-    setShowInstructions(true);
+    if (isIOS) {
+      setShowInstructions(true);
+    } else {
+      setShowOnboarding(false);
+    }
+
     return;
   }
 
@@ -145,18 +159,16 @@ async function handleInstall() {
 
     const { outcome } = await promptEvent.userChoice;
 
-    setInstallPrompt(null);
     window.__rxctInstallPrompt = null;
+    setInstallPrompt(null);
+    setShowOnboarding(false);
+    setShowInstructions(false);
 
     if (outcome === "accepted") {
-      setShowOnboarding(false);
-      setShowInstructions(false);
-    } else {
-      setShowInstructions(true);
+      setInstalled(true);
     }
   } catch (error) {
     console.error("RxCT installation failed:", error);
-    setShowInstructions(true);
   }
 }
   function handleDismiss() {
@@ -257,15 +269,13 @@ async function handleInstall() {
               </div>
             )}
 
-            <button
-              type="button"
-              className={styles.primaryAction}
-              onClick={
-                showInstructions ? handleDismiss : handleInstall
-              }
-            >
-              {showInstructions ? "Got it" : "Install RxCT"}
-            </button>
+           <button
+  type="button"
+  className={styles.primaryAction}
+  onClick={handleInstall}
+>
+  Install RxCT
+</button>
 
             <button
               type="button"
