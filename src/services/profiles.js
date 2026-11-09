@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 import { executeRequest } from "./diagnostics/executeRequest";
 import { smartSearch } from "./medicines";
-
+import { classifyError } from "./diagnostics/classifyError";
 /* ========================================
    STUDY PROFILE DATA
    Loads one medicine, drug class or
@@ -328,9 +328,27 @@ const LOOKUPS = {
 export async function resolveQuery(query, kind) {
   const kinds = LOOKUPS[kind] ? [kind] : ["medicine", "class", "group"];
 
-  const names = await Promise.all(
-    kinds.map((type) => LOOKUPS[type](query).catch(() => null)),
-  );
+ const results = await Promise.allSettled(
+  kinds.map((type) => LOOKUPS[type](query)),
+);
+
+const names = results.map((result) =>
+  result.status === "fulfilled" ? result.value : null
+);
+
+const lookupErrors = results
+  .filter((result) => result.status === "rejected")
+  .map((result) => result.reason);
+
+const connectionError = lookupErrors.find((error) =>
+  ["OFFLINE", "NETWORK", "TIMEOUT", "SERVER"].includes(
+    classifyError(error)
+  )
+);
+
+if (!names.some(Boolean) && connectionError) {
+  throw connectionError;
+}
 
   const index = names.findIndex(Boolean);
 

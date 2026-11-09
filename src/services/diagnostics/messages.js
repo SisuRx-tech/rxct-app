@@ -54,6 +54,12 @@ const ERROR_MESSAGES = {
       "RxCT encountered an unexpected problem. Please try again.",
     action: "Retry",
   },
+  OFFLINE: {
+  title: "You're offline",
+  message:
+    "Connect to the internet to search the RxCT database. Your saved profiles remain available.",
+  action: "Try again",
+},
 };
 
 export function getUserErrorMessage(category) {

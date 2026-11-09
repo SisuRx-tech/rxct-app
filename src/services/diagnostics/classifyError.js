@@ -14,7 +14,15 @@ export function classifyError(error) {
   const message = String(error?.message || "").toLowerCase();
 
   if (
+    typeof navigator !== "undefined" &&
+    navigator.onLine === false
+  ) {
+    return "OFFLINE";
+  }
+
+  if (
     TIMEOUT_CODES.includes(code) ||
+    code === "RXCT_TIMEOUT" ||
     message.includes("timeout") ||
     message.includes("timed out")
   ) {

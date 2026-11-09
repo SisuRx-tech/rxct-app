@@ -12,6 +12,8 @@ const [text, setText] = useState("");
 const [suggestions, setSuggestions] = useState([]);
 const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 const [searchFocused, setSearchFocused] = useState(false);
+const [suggestionsError, setSuggestionsError] = useState("");
+const [isOnline, setIsOnline] = useState(() => navigator.onLine);
 const menuRef = useRef(null);
 const searchRef = useRef(null);
 const navigate = useNavigate();
@@ -41,12 +43,20 @@ useEffect(() => {
   const query = text.trim();
 
   const timer = setTimeout(async () => {
-    if (query.length < 2) {
-      setSuggestions([]);
-      setSuggestionsLoading(false);
-      return;
-    }
+if (query.length < 2) {
+  setSuggestions([]);
+  setSuggestionsLoading(false);
+  setSuggestionsError("");
+  return;
+}
 
+if (!isOnline) {
+  setSuggestions([]);
+  setSuggestionsLoading(false);
+  setSuggestionsError("OFFLINE");
+  return;
+}
+setSuggestionsError("");
     try {
       setSuggestionsLoading(true);
 
@@ -55,10 +65,15 @@ useEffect(() => {
       if (active) {
         setSuggestions(data || []);
       }
-    } catch (error) {
+        } catch (error) {
       console.error("Autocomplete error:", error);
 
-      if (active) setSuggestions([]);
+      if (active) {
+        setSuggestions([]);
+        setSuggestionsError(
+          navigator.onLine ? "FAILED" : "OFFLINE"
+        );
+      }
     } finally {
       if (active) setSuggestionsLoading(false);
     }
@@ -68,7 +83,19 @@ useEffect(() => {
     active = false;
     clearTimeout(timer);
   };
-}, [text]);
+}, [text, isOnline]);
+useEffect(() => {
+  const handleOnline = () => setIsOnline(true);
+  const handleOffline = () => setIsOnline(false);
+
+  window.addEventListener("online", handleOnline);
+  window.addEventListener("offline", handleOffline);
+
+  return () => {
+    window.removeEventListener("online", handleOnline);
+    window.removeEventListener("offline", handleOffline);
+  };
+}, []);
 function handleSearchKeyDown(event) {
 if (event.key === "Enter" && text.trim()) {
 navigate("/medicines?q=" + encodeURIComponent(text.trim()));
@@ -125,7 +152,15 @@ onBlur={() => {
           <div className={styles.suggestionMessage}>
             Searching...
           </div>
-        ) : suggestions.length > 0 ? (
+) : suggestionsError === "OFFLINE" ? (
+  <div className={styles.suggestionMessage}>
+    You're offline. Connect to search medicines.
+  </div>
+) : suggestionsError === "FAILED" ? (
+  <div className={styles.suggestionMessage}>
+    Couldn't load suggestions. Check your connection.
+  </div>
+) : suggestions.length > 0 ? (
           suggestions.slice(0, 4).map((item) => (
             <button
               key={`${item.suggestion_type}-${item.target_value}`}

@@ -9,6 +9,8 @@ import GroupProfile from "../components/study/GroupProfile";
 import Jotter from "../components/jotter/Jotter";
 
 import { resolveQuery } from "../services/profiles";
+import { classifyError } from "../services/diagnostics/classifyError";
+import { getUserErrorMessage } from "../services/diagnostics/messages";
 import { recordVisit, saveResume } from "../services/activity";
 import { useScrollMemory } from "../hooks/useScrollMemory";
 import { formatClassName } from "../utils/labelText";
@@ -38,45 +40,63 @@ function MedicinesView() {
   const section = params.get("section") || "";
   const sub = params.get("sub") || "";
 
- const [view, setView] = useState(null);
-
+  const [view, setView] = useState(null);
+const [retryCount, setRetryCount] = useState(0);
   const pageRef = useRef(null);
+
+  const isLanding = !query.trim();
+  const queryKey = `${kind}:${query.trim().toLowerCase()}`;
 
   /* ========================================
      RESOLVE WHAT THE URL POINTS AT
   ======================================== */
 
- useEffect(() => {
-  if (!query.trim()) return;
+  useEffect(() => {
+    if (isLanding) return;
 
-  let active = true;
+    let active = true;
 
-
-  resolveQuery(query, kind)
-    .then((result) => {
-      if (active) {
-        setView({ status: "ready", ...result });
-      }
-    })
+    resolveQuery(query, kind)
+      .then((result) => {
+        if (active) {
+          setView({
+            status: "ready",
+            queryKey,
+            ...result,
+          });
+        }
+      })
     .catch((error) => {
-      if (active) {
-        setView({
-          status: "error",
-          message: error?.message || "Unable to load this page.",
-        });
-      }
-    })
+  console.error("Medicine search failed:", error);
 
-  return () => {
-    active = false;
-  };
-}, [query, kind]);
-const isLanding = !query.trim();
+  if (active) {
+    const category =
+      error?.diagnostic?.category || classifyError(error);
 
-const isLoading =
-  !isLanding &&
-  (!view || view.status === "loading");
+    const userMessage =
+      error?.diagnostic?.userMessage ||
+      getUserErrorMessage(category);
 
+    setView({
+      status: "error",
+      queryKey,
+      category,
+      title: userMessage.title,
+      message: userMessage.message,
+      action: userMessage.action,
+    });
+  }
+});
+    return () => {
+      active = false;
+    };
+}, [query, kind, queryKey, isLanding, retryCount]);
+
+  const isLoading =
+    !isLanding &&
+    (!view ||
+      view.queryKey !== queryKey ||
+      view.status === "loading");
   /* ========================================
      ACTIVITY
   ======================================== */
@@ -113,10 +133,56 @@ useEffect(() => {
     [setParams],
   );
 
-  const openMedicine = useCallback(
-    (name) => open("medicine", name),
-    [open],
-  );
+const openMedicine = useCallback(
+  (name, intent) => {
+    const destinations = {
+      indications: {
+        section: "indications",
+      },
+
+      contraindications: {
+        section: "contraindications",
+      },
+
+      adverse_effects: {
+        section: "adverse_effects",
+      },
+
+      interactions: {
+        section: "interactions",
+      },
+
+      mechanism: {
+        section: "overview",
+        sub: "mechanism",
+      },
+
+      mechanism_of_action: {
+        section: "overview",
+        sub: "mechanism",
+      },
+
+      moa: {
+        section: "overview",
+        sub: "mechanism",
+      },
+    };
+
+    const destination = destinations[intent];
+
+    if (!destination) {
+      open("medicine", name);
+      return;
+    }
+
+    setParams({
+      kind: "medicine",
+      q: name,
+      ...destination,
+    });
+  },
+  [open, setParams],
+);
 
   const openClass = useCallback((name) => open("class", name), [open]);
   const openGroup = useCallback((name) => open("group", name), [open]);
@@ -161,32 +227,47 @@ const isSearch = view?.status === "ready" && view.type === "search";
       </div>
     );
   }
-
 if (isLoading) {
-    return (
-      <main className={styles.workspace}>
-        <div className={styles.loading} role="status">
-          <span className={styles.loader}></span>
-          <p>Opening...</p>
-        </div>
-      </main>
-    );
-  }
+  return (
+    <main className={styles.workspace}>
+      <div
+        className={styles.loading}
+        role="status"
+        aria-live="polite"
+      >
+        <span className={styles.loader} />
+        <p>Preparing your results...</p>
+      </div>
+    </main>
+  );
+}
+if (view?.status === "error") {
+  return (
+    <main className={styles.workspace}>
+      <div className={styles.error}>
+        <h2>{view.title}</h2>
+        <p>{view.message}</p>
 
-  if (view?.status === "error") {
-    return (
-      <main className={styles.workspace}>
-        <div className={styles.error}>
-          <h2>Something went wrong</h2>
-          <p>{view.message}</p>
+        <button
+          type="button"
+    onClick={() => {
+  setView((current) => ({ ...current, status: "loading" }));
+  setRetryCount((count) => count + 1);
+}}
+        >
+          {view.action || "Try again"}
+        </button>
 
-          <button type="button" onClick={() => navigate("/medicines")}>
-            Return to Medicines
-          </button>
-        </div>
-      </main>
-    );
-  }
+        <button
+          type="button"
+          onClick={() => navigate("/medicines")}
+        >
+          Return to Medicines
+        </button>
+      </div>
+    </main>
+  );
+}
 
   if (isSearch) {
     return (
