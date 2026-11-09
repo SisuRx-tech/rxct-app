@@ -1,31 +1,38 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+
+const certPath = join(homedir(), '.config/rxct-certs/rxct.pem')
+const keyPath = join(homedir(), '.config/rxct-certs/rxct-key.pem')
+
+const localHttps =
+  existsSync(certPath) && existsSync(keyPath)
+    ? {
+        cert: readFileSync(certPath),
+        key: readFileSync(keyPath),
+      }
+    : undefined
+
 export default defineConfig({
-    preview: {
+  preview: {
     host: '0.0.0.0',
     port: 4173,
-    https: {
-      cert: readFileSync(
-        join(homedir(), '.config/rxct-certs/rxct.pem')
-      ),
-      key: readFileSync(
-        join(homedir(), '.config/rxct-certs/rxct-key.pem')
-      ),
-    },
+    ...(localHttps ? { https: localHttps } : {}),
   },
+
   plugins: [
     react(),
+
     VitePWA({
       registerType: 'autoUpdate',
 
-   includeAssets: [
-  'favicon.png',
-  'apple-touch-icon.png',
-],
+      includeAssets: [
+        'favicon.png',
+        'apple-touch-icon.png',
+      ],
 
       manifest: {
         name: 'RxCT',
