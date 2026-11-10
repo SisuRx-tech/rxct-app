@@ -75,14 +75,28 @@ function StudyProfile({
     left: 0,
     width: 0,
   });
+  const [open, setOpen] = useState(() => {
+    const expanded = saved?.expanded || {};
 
-  const [open, setOpen] = useState(() => ({
-    ...(saved?.expanded || {}),
-    ...(initialSub
-      ? { [`${initialSection}.${initialSub}`]: true }
-      : {}),
-  }));
+    const defaultGlanceOpen =
+      typeof window === "undefined" ||
+      !window.matchMedia("(max-width: 600px)").matches;
 
+    return {
+      glance:
+        expanded.glance !== undefined
+          ? expanded.glance
+          : defaultGlanceOpen,
+
+      ...expanded,
+
+      ...(initialSub
+        ? {
+            [`${initialSection}.${initialSub}`]: true,
+          }
+        : {}),
+    };
+  });
   const positions = useRef({ ...(saved?.scroll || {}) });
   const viewportTop = useRef(0);
   const activeRef = useRef(active);

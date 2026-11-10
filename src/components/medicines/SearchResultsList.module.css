@@ -307,3 +307,49 @@
   gap: 7px;
   margin-top: 16px;
 }
+/* ========================================
+   CLASS RESULT META
+======================================== */
+
+.classMeta {
+  padding-bottom: 10px;
+  margin: 0;
+
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ========================================
+   INTERACTION POLISH
+======================================== */
+
+.row,
+.classCard,
+.chip {
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.row:active,
+.chip:active {
+  transform: scale(0.99);
+}
+
+.row:focus-visible,
+.classHeader:focus-visible,
+.textButton:focus-visible,
+.chip:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .classCard,
+  .chip {
+    transition: none;
+  }
+}

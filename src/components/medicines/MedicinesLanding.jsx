@@ -1,10 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-
-import {
-  getLandingData,
-  pickFeaturedClasses,
-} from "../../services/landing";
 
 import {
   getRecentActivity,
@@ -13,40 +8,14 @@ import {
 
 import { formatClassName } from "../../utils/labelText";
 
+import MedicineTools from "./MedicineTools";
+
 import styles from "./MedicinesLanding.module.css";
 
-const CACHE_KEY = "rxct-landing-v1"; // gitleaks:allow
+/* ========================================
+   HELPERS
+======================================== */
 
-const TYPE_LABELS = {
-  medicine: "Medicine",
-  class: "Drug class",
-  group: "Therapeutic group",
-};
-
-const TYPE_ICONS = {
-  medicine: "fa-capsules",
-  class: "fa-layer-group",
-  group: "fa-sitemap",
-};
-
-const readCache = () => {
-  try {
-    const value = localStorage.getItem(CACHE_KEY);
-    return value ? JSON.parse(value) : null;
-  } catch {
-    return null;
-  }
-};
-
-const writeCache = (value) => {
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(value));
-  } catch {
-    // Storage may be unavailable or full.
-  }
-};
-
-// RxCT uses one global search through the Topbar.
 const focusGlobalSearch = () => {
   const input =
     document.querySelector("[data-global-search]") ||
@@ -58,12 +27,25 @@ const focusGlobalSearch = () => {
   input.select?.();
 };
 
-const formatDate = (value) => {
+const formatActivityTime = (value) => {
   if (!value) return "";
 
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) return "";
+
+  const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
+
+  if (minutes < 0 || minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes}min ago`;
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+
+  if (days < 7) return `${days}d ago`;
 
   return date.toLocaleDateString(undefined, {
     day: "numeric",
@@ -71,59 +53,18 @@ const formatDate = (value) => {
   });
 };
 
+/* ========================================
+   LANDING PAGE
+======================================== */
+
 function MedicinesLanding({
   onOpenClass,
   onOpenGroup,
   onOpenMedicine,
   onResume,
 }) {
-  const [data, setData] = useState(readCache);
-  const [failed, setFailed] = useState(false);
-
-  // Device activity is read once per visit.
   const [recent] = useState(() => getRecentActivity(5));
   const [resume] = useState(getResumePoint);
-
-  /* ========================================
-     DATA
-  ======================================== */
-
-  useEffect(() => {
-    let active = true;
-
-    const load = async () => {
-      if (!navigator.onLine) return;
-
-      try {
-        const fresh = await getLandingData();
-
-        if (!active) return;
-
-        setData(fresh);
-        setFailed(false);
-        writeCache(fresh);
-      } catch {
-        if (active) setFailed(true);
-      }
-    };
-
-    load();
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const featured = useMemo(
-    () =>
-      data
-        ? pickFeaturedClasses(data.classes || [], recent)
-        : [],
-    [data, recent],
-  );
-
-  const groups = data?.groups || [];
-
 
   /* ========================================
      ACTIONS
@@ -139,8 +80,15 @@ function MedicinesLanding({
     }
   };
 
-  const getRecentIcon = (type) =>
-    TYPE_ICONS[type] || TYPE_ICONS.medicine;
+  const getActivityLabel = (type) => {
+    const labels = {
+      medicine: "Viewed medicine",
+      class: "Explored drug class",
+      group: "Explored therapeutic group",
+    };
+
+    return labels[type] || "Viewed medicine";
+  };
 
   /* ========================================
      RENDER
@@ -150,29 +98,11 @@ function MedicinesLanding({
     <main className={styles.landing}>
 
       {/* ====================================
-          EDITORIAL HEADER
+          PAGE HEADER
       ==================================== */}
 
       <header className={styles.header}>
-        <div className={styles.headerCopy}>
-          <span className={styles.kicker}>
-            RXCT / STUDY WORKSPACE
-          </span>
-
-          <h1>
-            Your study <span>space.</span>
-          </h1>
-
-          <p>
-            Explore medicines, understand therapeutic
-            relationships and pick up your learning
-            where you left off.
-          </p>
-        </div>
-
-        <div className={styles.headerMark} aria-hidden="true">
-          <i className="fa-solid fa-book-medical" />
-        </div>
+        <h1>RxCT medicines</h1>
       </header>
 
       {/* ====================================
@@ -261,7 +191,13 @@ function MedicinesLanding({
       )}
 
       {/* ====================================
-          RECENTLY STUDIED
+          MEDICINE INTERACTION CHECKER
+      ==================================== */}
+
+      <MedicineTools />
+
+      {/* ====================================
+          RECENT ACTIVITY / HISTORY
       ==================================== */}
 
       {recent.length > 0 && (
@@ -272,7 +208,7 @@ function MedicinesLanding({
                 YOUR ACTIVITY
               </span>
 
-              <h2>Recently explored</h2>
+              <h2>Recent activity</h2>
             </div>
 
             <Link to="/history" className={styles.textLink}>
@@ -282,7 +218,7 @@ function MedicinesLanding({
           </div>
 
           <ul className={styles.recentList}>
-            {recent.map((item) => (
+            {recent.slice(0, 3).map((item) => (
               <li key={`${item.type}-${item.name}`}>
                 <button
                   type="button"
@@ -295,31 +231,27 @@ function MedicinesLanding({
                     }`}
                     aria-hidden="true"
                   >
-                    <i
-                      className={`fa-solid ${getRecentIcon(
-                        item.type,
-                      )}`}
-                    />
+                    <i className="fa-solid fa-clock" />
                   </span>
 
                   <span className={styles.recentCopy}>
                     <strong>
-                      {item.type === "class"
-                        ? formatClassName(item.name)
-                        : item.name}
+                      {getActivityLabel(item.type)}
                     </strong>
 
                     <small>
-                      {TYPE_LABELS[item.type] || "Medicine"}
+                      {item.type === "class"
+                        ? formatClassName(item.name)
+                        : item.name}
                     </small>
                   </span>
 
                   <span className={styles.recentDate}>
-                    {formatDate(item.visitedAt)}
+                    {formatActivityTime(item.visitedAt)}
                   </span>
 
                   <i
-                    className={`fa-solid fa-arrow-up-right-from-square ${styles.recentArrow}`}
+                    className={`fa-solid fa-chevron-right ${styles.recentArrow}`}
                     aria-hidden="true"
                   />
                 </button>
@@ -330,163 +262,16 @@ function MedicinesLanding({
       )}
 
       {/* ====================================
-          DISCOVER DRUG CLASSES
+          MORE FEATURES
       ==================================== */}
 
-      <section className={styles.discoverSection}>
-        <div className={styles.sectionHeading}>
-          <div>
-            <span className={styles.eyebrow}>
-              EXPLORE THE KNOWLEDGE
-            </span>
+      <section className={styles.comingSoon}>
+        <span className={styles.eyebrow}>
+          WHAT'S NEXT
+        </span>
 
-            <h2>Drug classes</h2>
-
-            <p className={styles.sectionDescription}>
-              Understand medicines through their
-              pharmacological and therapeutic families.
-            </p>
-          </div>
-
-          <span className={styles.sectionIndex}>
-            02
-          </span>
-        </div>
-
-        {featured.length > 0 ? (
-          <ul className={styles.discoveryGrid}>
-            {featured.map((item, index) => (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  className={styles.discoveryCard}
-                  onClick={() => onOpenClass(item.name)}
-                >
-                  <span className={styles.discoveryNumber}>
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-
-                  <span
-                    className={styles.discoveryIcon}
-                    aria-hidden="true"
-                  >
-                    <i className="fa-solid fa-layer-group" />
-                  </span>
-
-                  <span className={styles.discoveryCopy}>
-                    <strong>
-                      {formatClassName(item.name)}
-                    </strong>
-
-                    <small>
-                      {item.groupName || "Drug class"}
-                      {" · "}
-                      {item.medicineCount}{" "}
-                      {item.medicineCount === 1
-                        ? "medicine"
-                        : "medicines"}
-                    </small>
-                  </span>
-
-                  <i
-                    className={`fa-solid fa-arrow-right ${styles.discoveryArrow}`}
-                    aria-hidden="true"
-                  />
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className={styles.discoverEmpty}>
-            <span className={styles.emptyIcon}>
-              <i className="fa-solid fa-layer-group" />
-            </span>
-
-            <div>
-              <strong>
-                {failed
-                  ? "Couldn't load drug classes"
-                  : "Explore the medicine database"}
-              </strong>
-
-              <p>
-                {failed
-                  ? "Try again when your connection is available. Previously opened profiles may still be accessible."
-                  : "Search for a medicine or therapeutic class to begin."}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={focusGlobalSearch}
-              aria-label="Search medicines"
-            >
-              <i className="fa-solid fa-arrow-right" />
-            </button>
-          </div>
-        )}
+        <h2>More features coming soon.</h2>
       </section>
-
-      {/* ====================================
-          THERAPEUTIC GROUPS
-      ==================================== */}
-
-      {groups.length > 0 && (
-        <section className={styles.discoverSection}>
-          <div className={styles.sectionHeading}>
-            <div>
-              <span className={styles.eyebrow}>
-                BROADER CLASSIFICATION
-              </span>
-
-              <h2>Therapeutic groups</h2>
-
-              <p className={styles.sectionDescription}>
-                Explore broader families and the
-                drug classes connected to them.
-              </p>
-            </div>
-
-            <span className={styles.sectionIndex}>
-              03
-            </span>
-          </div>
-
-          <ul className={styles.discoveryGrid}>
-            {groups.map((group, index) => (
-              <li key={group.id}>
-                <button
-                  type="button"
-                  className={styles.discoveryCard}
-                  onClick={() => onOpenGroup(group.name)}
-                >
-                  <span className={styles.discoveryNumber}>
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-
-                  <span
-                    className={styles.discoveryIcon}
-                    aria-hidden="true"
-                  >
-                    <i className="fa-solid fa-sitemap" />
-                  </span>
-
-                  <span className={styles.discoveryCopy}>
-                    <strong>{group.name}</strong>
-
-                    <small>Therapeutic group</small>
-                  </span>
-
-                  <i
-                    className={`fa-solid fa-arrow-right ${styles.discoveryArrow}`}
-                    aria-hidden="true"
-                  />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
 
     </main>
   );

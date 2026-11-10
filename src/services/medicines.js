@@ -153,8 +153,10 @@ export const INTENT_TO_SECTION = {
   contraindications: "contraindications",
   interactions: "interactions",
   dosage: "overview",
+  mechanism: "overview",
+  mechanism_of_action: "overview",
+  moa: "overview",
 };
-
 export async function parseSearchQuery(q) {
   return executeRequest(
     "parseSearchQuery",

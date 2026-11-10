@@ -9,7 +9,18 @@ const EXAMPLE_SEARCHES = [
   "warfarin interactions",
 ];
 
-const normalise = (value = "") => String(value).trim().toLowerCase();
+const normalise = (value = "") =>
+  String(value).trim().toLowerCase();
+
+const INTENT_LABELS = {
+  indications: "Indications",
+  contraindications: "Contraindications",
+  adverse_effects: "Adverse effects",
+  interactions: "Interactions",
+  mechanism: "Mechanism of action",
+  mechanism_of_action: "Mechanism of action",
+  moa: "Mechanism of action",
+};
 
 function SearchResultsList({
   search,
@@ -21,18 +32,25 @@ function SearchResultsList({
   const {
     kind,
     subject,
+    intent,
     notice,
     didYouMean,
-    medicines,
+    medicines = [],
     classResult,
-    interactions,
+    interactions = [],
   } = search;
 
   const hasInteractions = interactions.length > 0;
   const isEmpty = kind === "none" && !hasInteractions;
 
+  const intentLabel = INTENT_LABELS[intent];
+
+  const openMedicine = (name) => {
+    onOpenMedicine(name, intent);
+  };
+
   /* ========================================
-     MEDICINES
+     MEDICINE RESULTS
   ======================================== */
 
   const renderMedicines = () => (
@@ -46,11 +64,21 @@ function SearchResultsList({
           <h2>
             {didYouMean
               ? `No exact match for "${subject}"`
-              : "Matching medicines"}
+              : intentLabel
+                ? `Medicines matching ${intentLabel.toLowerCase()}`
+                : "Matching medicines"}
           </h2>
+
+          {intentLabel && (
+            <p>
+              Open a medicine to read its {intentLabel.toLowerCase()}.
+            </p>
+          )}
         </div>
 
-        <span className={styles.count}>{medicines.length}</span>
+        <span className={styles.count}>
+          {medicines.length}
+        </span>
       </div>
 
       <div className={styles.list}>
@@ -64,7 +92,7 @@ function SearchResultsList({
               type="button"
               className={styles.row}
               key={item.id}
-              onClick={() => onOpenMedicine(item.name)}
+              onClick={() => openMedicine(item.name)}
             >
               <span className={styles.rowText}>
                 <strong>{item.name}</strong>
@@ -82,7 +110,9 @@ function SearchResultsList({
               </span>
 
               {index === 0 && !didYouMean && (
-                <span className={styles.best}>Best match</span>
+                <span className={styles.best}>
+                  Best match
+                </span>
               )}
 
               <span className={styles.arrow}>→</span>
@@ -94,10 +124,79 @@ function SearchResultsList({
   );
 
   /* ========================================
-     CLASSES AND GROUPS
+     CLASS AND GROUP MEMBERS
+  ======================================== */
+
+  const renderClassMembers = () => {
+    if (!classResult) return null;
+
+    const members = [
+      ...new Map(
+        classResult.classes.flatMap((item) =>
+          item.medicines.map((medicine) => [
+            medicine.id,
+            {
+              ...medicine,
+              drugClass: item.drugClass,
+            },
+          ]),
+        ),
+      ).values(),
+    ];
+
+    if (!members.length) return null;
+
+    return (
+      <section className={styles.section}>
+        <div className={styles.sectionHeading}>
+          <div>
+            <span className={styles.eyebrow}>
+              MEDICINES IN THIS RESULT
+            </span>
+
+            <h2>Explore member medicines</h2>
+
+            <p>
+              Open an individual medicine profile directly.
+            </p>
+          </div>
+
+          <span className={styles.count}>
+            {members.length}
+          </span>
+        </div>
+
+        <div className={styles.list}>
+          {members.map((medicine) => (
+            <button
+              type="button"
+              className={styles.row}
+              key={medicine.id}
+              onClick={() => onOpenMedicine(medicine.name)}
+            >
+              <span className={styles.rowText}>
+                <strong>{medicine.name}</strong>
+
+                <small>
+                  {formatClassName(medicine.drugClass)}
+                </small>
+              </span>
+
+              <span className={styles.arrow}>→</span>
+            </button>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  /* ========================================
+     CLASSIFICATION
   ======================================== */
 
   const renderClasses = () => {
+    if (!classResult) return null;
+
     const isGroup = classResult.type === "group";
 
     return (
@@ -115,11 +214,8 @@ function SearchResultsList({
             </h2>
 
             <p>
-              {classResult.medicineCount}{" "}
-              {classResult.medicineCount === 1
-                ? "medicine"
-                : "medicines"}{" "}
-              across {classResult.classes.length}{" "}
+              {classResult.medicineCount} medicines across{" "}
+              {classResult.classes.length}{" "}
               {classResult.classes.length === 1
                 ? "drug class"
                 : "drug classes"}
@@ -139,33 +235,30 @@ function SearchResultsList({
 
         <div className={styles.classCards}>
           {classResult.classes.map((item) => (
-            <article className={styles.classCard} key={item.drugClass}>
+            <article
+              className={styles.classCard}
+              key={item.drugClass}
+            >
               <button
                 type="button"
                 className={styles.classHeader}
                 onClick={() => onOpenClass(item.drugClass)}
               >
-                <strong>{formatClassName(item.drugClass)}</strong>
+                <strong>
+                  {formatClassName(item.drugClass)}
+                </strong>
 
                 <span>
-                  {item.medicines.length}{" "}
-                  {item.medicines.length === 1 ? "medicine" : "medicines"}{" "}
-                  →
+                  Open class →
                 </span>
               </button>
 
-              <div className={styles.chips}>
-                {item.medicines.map((medicine) => (
-                  <button
-                    type="button"
-                    className={styles.chip}
-                    key={medicine.id}
-                    onClick={() => onOpenMedicine(medicine.name)}
-                  >
-                    {medicine.name}
-                  </button>
-                ))}
-              </div>
+              <p className={styles.classMeta}>
+                {item.medicines.length}{" "}
+                {item.medicines.length === 1
+                  ? "member medicine"
+                  : "member medicines"}
+              </p>
             </article>
           ))}
         </div>
@@ -174,23 +267,30 @@ function SearchResultsList({
   };
 
   /* ========================================
-     INTERACTION MENTIONS
+     INTERACTION TEXT MATCHES
   ======================================== */
 
   const renderInteractions = () => (
     <section className={styles.section}>
       <div className={styles.sectionHeading}>
         <div>
-          <span className={styles.eyebrow}>INTERACTION TEXT</span>
-          <h2>Labels that mention "{subject}"</h2>
+          <span className={styles.eyebrow}>
+            INTERACTION TEXT
+          </span>
+
+          <h2>
+            Labels mentioning "{subject}"
+          </h2>
 
           <p>
-            A text match across interaction sections. It is not a
-            verified interaction check.
+            These are text matches in medicine labels,
+            not verified interaction checks.
           </p>
         </div>
 
-        <span className={styles.count}>{interactions.length}</span>
+        <span className={styles.count}>
+          {interactions.length}
+        </span>
       </div>
 
       <div className={styles.list}>
@@ -212,7 +312,9 @@ function SearchResultsList({
               <span className={styles.arrow}>→</span>
             </button>
 
-            <p className={styles.snippet}>{item.snippet}</p>
+            <p className={styles.snippet}>
+              {item.snippet}
+            </p>
           </div>
         ))}
       </div>
@@ -232,11 +334,22 @@ function SearchResultsList({
         </div>
       )}
 
-      {kind === "classes" && classResult && renderClasses()}
+      {kind === "classes" && classResult && (
+        <>
+          {renderClassMembers()}
+          {renderClasses()}
+        </>
+      )}
 
       {kind === "medicines" && renderMedicines()}
 
-      {kind === "medicines" && classResult && renderClasses()}
+      {kind === "medicines" &&
+        classResult && (
+          <>
+            {renderClassMembers()}
+            {renderClasses()}
+          </>
+        )}
 
       {hasInteractions && renderInteractions()}
 
@@ -245,9 +358,10 @@ function SearchResultsList({
           <h3>No matching study profiles</h3>
 
           <p>
-            We couldn't find a medicine or drug class for "{subject}".
-            Check the spelling, or try a drug name, a class such as
-            "beta blockers", or an everyday word such as "painkillers".
+            We couldn't find a medicine or drug class for
+            {" "}"{subject}". Check the spelling, or try a drug
+            name, a class such as "beta blockers", or an
+            everyday word such as "painkillers".
           </p>
 
           <div className={styles.examples}>

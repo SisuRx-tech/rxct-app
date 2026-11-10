@@ -22,13 +22,14 @@ import styles from "./StudyProfile.module.css";
 ======================================== */
 
 const GROUP_SECTIONS = [
-  { key: "overview", label: "Overview", short: "Overview", icon: "fa-circle-info" },
-  {
+   {
     key: "classification",
     label: "Classification",
     short: "Classification",
     icon: "fa-sitemap",
   },
+  { key: "overview", label: "Overview", short: "Overview", icon: "fa-circle-info" },
+ 
   {
     key: "mechanisms_of_action",
     label: "Mechanisms of Action",
@@ -51,7 +52,7 @@ const GROUP_SECTIONS = [
 
 function GroupProfile({
   group,
-  initialSection,
+  initialSection = "classification",
   initialSub,
   onBack,
   onOpenClass,

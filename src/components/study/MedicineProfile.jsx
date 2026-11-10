@@ -303,62 +303,45 @@ function MedicineProfile({
      student most needs to see. Full text
      stays in the sections.
   ======================================== */
-
-  const points = (key) =>
-    (parsed[key]?.blocks || [])
-      .flatMap((block) => block.bullets)
-      .filter((text) => text.length >= 20 && text.length <= 220)
-      .slice(0, 3);
+const points = (key) =>
+  (parsed[key]?.blocks || [])
+    .flatMap((block) => block.bullets)
+    .filter((text) => text.length >= 20 && text.length <= 180)
+    .slice(0, 2);
 
   const contraindications = points("contraindications");
   const interactions = points("interactions");
 
-  const renderGlance = ({ jump }) => (
-    <>
-      {(medicine.group || medicine.drug_class) && (
-        <GlanceBlock title="Classification">
-          <LinkList
-            items={[
-              medicine.group && {
-                key: "group",
-                kind: "group",
-                label: medicine.group.name,
-                meta: "Therapeutic group",
-                onClick: () => onOpenGroup(medicine.group.name),
-              },
-              medicine.drug_class && {
-                key: "class",
-                kind: "class",
-                label: className,
-                meta: "Drug class",
-                onClick: () => onOpenClass(medicine.drug_class),
-              },
-            ].filter(Boolean)}
-          />
-        </GlanceBlock>
-      )}
+ const renderGlance = ({ jump }) => (
+  <>
+    {contraindications.length > 0 && (
+      <GlanceBlock title="Contraindications">
+        <GlancePoints
+          items={contraindications}
+          tone="warning"
+        />
 
-      {contraindications.length > 0 && (
-        <GlanceBlock title="Key contraindications">
-          <GlancePoints items={contraindications} tone="warning" />
+        <GlanceLink
+          onClick={() => jump("contraindications")}
+        >
+          View full section
+        </GlanceLink>
+      </GlanceBlock>
+    )}
 
-          <GlanceLink onClick={() => jump("contraindications")}>
-            Read all contraindications
-          </GlanceLink>
-        </GlanceBlock>
-      )}
+    {interactions.length > 0 && (
+      <GlanceBlock title="Interaction information">
+        <GlancePoints items={interactions} />
 
-      {interactions.length > 0 && (
-        <GlanceBlock title="Key interactions">
-          <GlancePoints items={interactions} />
-
-          <GlanceLink onClick={() => jump("interactions")}>
-            Read all interactions
-          </GlanceLink>
-        </GlanceBlock>
-      )}
-    </>
-  );
+        <GlanceLink
+          onClick={() => jump("interactions")}
+        >
+          View full section
+        </GlanceLink>
+      </GlanceBlock>
+    )}
+  </>
+);
 
   /* ========================================
      RENDER
@@ -380,7 +363,7 @@ function MedicineProfile({
       stateKey={`medicine:${medicine.name.toLowerCase()}`}
       kindLabel="MEDICINE"
       title={medicine.name}
-      subtitle={className || "Drug class not recorded"}
+   subtitle="Medicine profile"
       trail={trail}
       notices={[
         notice,

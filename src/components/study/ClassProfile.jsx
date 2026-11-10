@@ -21,6 +21,7 @@ import styles from "./StudyProfile.module.css";
 ======================================== */
 
 const CLASS_SECTIONS = [
+   { key: "members", label: "Class Members", short: "Members", icon: "fa-capsules" },
   { key: "overview", label: "Overview", short: "Overview", icon: "fa-circle-info" },
   {
     key: "mechanism_pharmacology",
@@ -40,12 +41,12 @@ const CLASS_SECTIONS = [
     short: "Safety",
     icon: "fa-shield-halved",
   },
-  { key: "members", label: "Class Members", short: "Members", icon: "fa-capsules" },
+ 
 ];
 
 function ClassProfile({
   drugClass,
-  initialSection,
+  initialSection = "members",
   initialSub,
   onBack,
   onOpenMedicine,
