@@ -1,0 +1,764 @@
+/* ========================================
+   MEDICINE TOOLS
+======================================== */
+
+.tools {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 5px 20px rgba(20, 45, 38, 0.035);
+  color: var(--text);
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
+.toolsHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+}
+
+.toolsHeading h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(17px, 2vw, 21px);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+
+.toolsHeading p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.headingIcon {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-alt);
+  color: var(--primary);
+}
+
+/* ========================================
+   SEARCH SLOTS
+======================================== */
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.slot {
+  position: relative;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.slotHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 17px;
+  margin-bottom: 8px;
+}
+
+.slotHeading > span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+}
+
+.removeSlot {
+  display: grid;
+  width: 23px;
+  height: 23px;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.removeSlot:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+/* ========================================
+   SEARCH INPUT
+======================================== */
+
+.searchControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 42px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-alt);
+  color: var(--muted);
+  transition: border-color 160ms ease;
+}
+
+.searchControl:focus-within {
+  border-color: var(--primary);
+}
+
+.searchControl > i {
+  flex: 0 0 auto;
+  font-size: 12px;
+}
+
+.searchControl input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.searchControl input::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+.searchControl input::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+.searchSpinner {
+  flex: 0 0 13px;
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 650ms linear infinite;
+}
+
+/* ========================================
+   SEARCH RESULTS
+======================================== */
+
+.searchResults {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% - 2px);
+  right: 8px;
+  left: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 12px 28px rgba(15, 35, 29, 0.13);
+}
+
+.searchResult {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.searchResult:last-child {
+  border-bottom: 0;
+}
+
+.searchResult:hover {
+  background: var(--surface-alt);
+}
+
+.searchResult > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+
+.searchResult strong {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.searchResult small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.searchResult > i {
+  flex: 0 0 auto;
+  color: var(--primary);
+  font-size: 11px;
+}
+
+.noResults {
+  margin: 7px 2px 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* ========================================
+   SELECTED MEDICINE
+======================================== */
+
+.selectedMedicine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  min-width: 0;
+}
+
+.selectedIcon {
+  display: grid;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--surface-alt);
+  color: var(--primary);
+  font-size: 12px;
+}
+
+.selectedCopy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+
+.selectedCopy strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectedCopy span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.changeMedicine {
+  display: grid;
+  flex: 0 0 27px;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+/* ========================================
+   ACTIONS
+======================================== */
+
+.toolActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.addButton,
+.compareButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 39px;
+  padding: 0 13px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.addButton {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.addButton:hover {
+  background: var(--surface-alt);
+}
+
+.compareButton {
+  margin-left: auto;
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: white;
+}
+
+.compareButton:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.compareButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.buttonSpinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 650ms linear infinite;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 10px 0 0;
+  color: #a4473d;
+  font-size: 11px;
+}
+
+/* ========================================
+   INTERACTION RESULTS
+======================================== */
+
+.results {
+  width: 100%;
+  min-width: 0;
+}
+
+.resultsHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 13px;
+}
+
+.resultsHeading h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 19px;
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+
+.resultsHeading p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ========================================
+   CHECKED MEDICINES
+======================================== */
+
+.checkedMedicines {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.checkedMedicines > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+/* ========================================
+   UNIFIED INTERACTION RESULT
+======================================== */
+
+.interactionSummary {
+  width: 100%;
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-alt);
+}
+
+.resultStatus {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--border);
+}
+
+.statusIndicator {
+  flex: 0 0 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.resultStatus > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.resultStatus strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.resultStatus span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* ========================================
+   INTERACTION FINDINGS
+======================================== */
+
+.interactionFindings {
+  display: grid;
+}
+
+.interactionFinding {
+  min-width: 0;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.findingHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+
+.findingHeading h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.severityBadge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 750;
+  text-transform: capitalize;
+}
+
+.severityHigh {
+  border-color: rgba(174, 66, 57, 0.25);
+  background: rgba(174, 66, 57, 0.09);
+  color: #a4473d;
+}
+
+.severityModerate {
+  border-color: rgba(194, 122, 58, 0.25);
+  background: rgba(194, 122, 58, 0.1);
+  color: #a66a2f;
+}
+
+.severityLow {
+  border-color: rgba(35, 119, 83, 0.2);
+  background: rgba(35, 119, 83, 0.08);
+  color: #287a56;
+}
+
+.severityUnknown {
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.findingField {
+  display: grid;
+  grid-template-columns: 105px minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 9px;
+}
+
+.findingField > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.findingField p {
+  margin: 0;
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.findingSource {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 11px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.findingSource i {
+  color: var(--primary);
+}
+
+.safetyNotice {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+/* ========================================
+   RESET
+======================================== */
+
+.resetButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 37px;
+  margin-top: 15px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resetButton:hover {
+  background: var(--surface-alt);
+}
+
+/* ========================================
+   ANIMATION
+======================================== */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 650px) {
+  .tools {
+    padding: 14px;
+    border-radius: 15px;
+  }
+
+  .slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .slot {
+    padding: 8px;
+  }
+
+  .searchControl {
+    gap: 5px;
+    padding: 0 7px;
+  }
+
+  .searchControl input {
+    font-size: 11px;
+  }
+
+  .selectedMedicine {
+    gap: 5px;
+  }
+
+  .selectedIcon {
+    flex-basis: 25px;
+    width: 25px;
+    height: 25px;
+    font-size: 10px;
+  }
+
+  .selectedCopy strong {
+    font-size: 10px;
+  }
+
+  .selectedCopy span {
+    font-size: 9px;
+  }
+
+  .toolActions {
+    flex-direction: row;
+  }
+
+  .addButton,
+  .compareButton {
+    flex: 1 1 auto;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  .interactionSummary {
+    padding: 13px;
+  }
+
+  .findingField {
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 9px;
+  }
+}
+
+@media (max-width: 380px) {
+  .toolsHeading p {
+    max-width: 230px;
+  }
+
+  .slots {
+    gap: 6px;
+  }
+
+  .slot {
+    padding: 7px;
+  }
+
+  .slotHeading > span {
+    font-size: 8px;
+  }
+
+  .selectedCopy strong {
+    font-size: 9px;
+  }
+
+  .toolActions {
+    flex-wrap: wrap;
+  }
+
+  .addButton,
+  .compareButton {
+    min-height: 36px;
+  }
+
+  .findingHeading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .findingField {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .searchSpinner,
+  .buttonSpinner {
+    animation-duration: 1.8s;
+  }
+
+  .searchControl,
+  .addButton,
+  .compareButton {
+    transition: none;
+  }
+}
