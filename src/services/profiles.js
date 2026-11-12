@@ -27,6 +27,7 @@ const escapeLike = (value) =>
 
 const CACHE_KEY = "rxct-profile-cache-v2";
 const CACHE_LIMIT = 12;
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 const readCache = () => {
   try {
@@ -54,6 +55,13 @@ const writeCache = (key, value) => {
 };
 
 async function withSavedCopy(key, load) {
+  const saved = readCache()[key];
+
+  // Reuse recently fetched profiles instead of requesting them again.
+  if (saved && Date.now() - saved.at < CACHE_TTL) {
+    return saved.value;
+  }
+
   try {
     const value = await load();
 
@@ -61,8 +69,6 @@ async function withSavedCopy(key, load) {
 
     return value;
   } catch (error) {
-    const saved = readCache()[key];
-
     if (saved) return { ...saved.value, fromCache: true };
 
     throw error;
