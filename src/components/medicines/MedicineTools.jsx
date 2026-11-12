@@ -107,14 +107,126 @@ function getMedicinePair(item, selectedMedicines, index) {
 }
 
 /* ========================================
+   MULTI-DRUG PATTERN FINDINGS
+======================================== */
+
+function InteractionPatternFindings({ patterns }) {
+  if (!patterns.length) return null;
+
+  return (
+    <div className={styles.interactionFindings}>
+      {patterns.map((pattern, index) => {
+        const severity = getSeverity(pattern);
+
+        const medicineNames =
+          pattern.medicine_names || [];
+
+        const roles = pattern.roles || [];
+
+        const effect =
+          pattern.clinical_effect ||
+          pattern.description;
+
+        const mechanism = pattern.mechanism;
+
+        const source = pattern.source_name;
+
+        return (
+          <article
+            className={styles.interactionFinding}
+            key={pattern.id || pattern.slug || index}
+          >
+            <div className={styles.findingHeading}>
+              <h4>{pattern.name || "Multi-drug interaction"}</h4>
+
+              {severity && (
+                <span
+                  className={`${styles.severityBadge} ${getSeverityClass(
+                    severity,
+                  )}`}
+                >
+                  {String(severity).replaceAll("_", " ")}
+                </span>
+              )}
+            </div>
+
+            {medicineNames.length > 0 && (
+              <div className={styles.findingField}>
+                <span>Combination</span>
+
+                <p>
+                  {medicineNames.join(" + ")}
+                </p>
+              </div>
+            )}
+
+            {roles.length > 0 && (
+              <div className={styles.findingField}>
+                <span>Components</span>
+
+                <p>
+                  {roles.map((item) => (
+                    `${item.role}: ${item.medicine}`
+                  )).join(" · ")}
+                </p>
+              </div>
+            )}
+
+            {effect && (
+              <div className={styles.findingField}>
+                <span>Clinical effect</span>
+
+                <p>
+                  <Scientific text={effect} />
+                </p>
+              </div>
+            )}
+
+            {mechanism && (
+              <div className={styles.findingField}>
+                <span>Mechanism</span>
+
+                <p>
+                  <Scientific text={mechanism} />
+                </p>
+              </div>
+            )}
+
+            {source && (
+              <div className={styles.findingSource}>
+                <i className="fa-solid fa-book-open" />
+                <span>{source}</span>
+              </div>
+            )}
+
+            {pattern.evidence_level && (
+              <div className={styles.findingSource}>
+                <i className="fa-solid fa-clipboard-check" />
+                <span>
+                  Evidence level: {pattern.evidence_level}
+                </span>
+              </div>
+            )}
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ========================================
    INTERACTION RESULT
 ======================================== */
 
 function InteractionEvidence({
   interactions,
+  patterns,
   selectedMedicines,
 }) {
-  if (!interactions.length) {
+  const hasInteractions = interactions.length > 0;
+  const hasPatterns = patterns.length > 0;
+
+  if (!hasInteractions && !hasPatterns) {
     return (
       <div className={styles.interactionSummary}>
         <div className={styles.resultStatus}>
@@ -135,6 +247,9 @@ function InteractionEvidence({
     );
   }
 
+  const totalFindings =
+    interactions.length + patterns.length;
+
   return (
     <div className={styles.interactionSummary}>
       <div className={styles.resultStatus}>
@@ -144,94 +259,114 @@ function InteractionEvidence({
 
         <div>
           <strong>Interaction evidence found</strong>
+
           <span>
-            {interactions.length} recorded finding
-            {interactions.length !== 1 ? "s" : ""}
+            {totalFindings} recorded finding
+            {totalFindings !== 1 ? "s" : ""}
+            {patterns.length > 0 &&
+              ` · ${patterns.length} multi-drug pattern${
+                patterns.length !== 1 ? "s" : ""
+              }`}
           </span>
         </div>
       </div>
 
-      <div className={styles.interactionFindings}>
-        {interactions.map((item, index) => {
-          const severity = getSeverity(item);
+      {hasPatterns && (
+        <InteractionPatternFindings
+          patterns={patterns}
+        />
+      )}
 
-          const effect =
-            item.clinical_effect ||
-            item.interaction_effect ||
-            item.effect ||
-            item.description ||
-            item.interaction_description;
+      {hasInteractions && (
+        <div className={styles.interactionFindings}>
+          {interactions.map((item, index) => {
+            const severity = getSeverity(item);
 
-          const safety =
-            item.safety_concern ||
-            item.safety_notes ||
-            item.risk_description ||
-            item.adverse_effects ||
-            item.clinical_risk;
+            const effect =
+              item.clinical_effect ||
+              item.interaction_effect ||
+              item.effect ||
+              item.description ||
+              item.interaction_description;
 
-          const mechanism = item.mechanism;
+            const safety =
+              item.safety_concern ||
+              item.safety_notes ||
+              item.risk_description ||
+              item.adverse_effects ||
+              item.clinical_risk ||
+              item.management;
 
-          const source =
-            item.source_name ||
-            item.source ||
-            item.source_reference;
+            const mechanism = item.mechanism;
 
-          const pair = getMedicinePair(
-            item,
-            selectedMedicines,
-            index,
-          );
+            const source =
+              item.source_name ||
+              item.source ||
+              item.source_reference;
 
-          return (
-            <article
-              className={styles.interactionFinding}
-              key={item.id || `${pair}-${index}`}
-            >
-              <div className={styles.findingHeading}>
-                <h4>{pair}</h4>
+            const pair = getMedicinePair(
+              item,
+              selectedMedicines,
+              index,
+            );
 
-                {severity && (
-                  <span
-                    className={`${styles.severityBadge} ${getSeverityClass(
-                      severity,
-                    )}`}
-                  >
-                    {String(severity).replaceAll("_", " ")}
-                  </span>
+            return (
+              <article
+                className={styles.interactionFinding}
+                key={item.id || `${pair}-${index}`}
+              >
+                <div className={styles.findingHeading}>
+                  <h4>{pair}</h4>
+
+                  {severity && (
+                    <span
+                      className={`${styles.severityBadge} ${getSeverityClass(
+                        severity,
+                      )}`}
+                    >
+                      {String(severity).replaceAll("_", " ")}
+                    </span>
+                  )}
+                </div>
+
+                {effect && (
+                  <div className={styles.findingField}>
+                    <span>Clinical effect</span>
+                    <p>
+                      <Scientific text={effect} />
+                    </p>
+                  </div>
                 )}
-              </div>
 
-              {effect && (
-                <div className={styles.findingField}>
-                  <span>Clinical effect</span>
-                  <p><Scientific text={effect} /></p>
-                </div>
-              )}
+                {safety && (
+                  <div className={styles.findingField}>
+                    <span>Safety</span>
+                    <p>
+                      <Scientific text={safety} />
+                    </p>
+                  </div>
+                )}
 
-              {safety && (
-                <div className={styles.findingField}>
-                  <span>Safety</span>
-                  <p><Scientific text={safety} /></p>
-                </div>
-              )}
+                {mechanism && (
+                  <div className={styles.findingField}>
+                    <span>Interaction</span>
+                    <p>
+                      <Scientific text={mechanism} />
+                    </p>
+                  </div>
+                )}
 
-              {mechanism && (
-                <div className={styles.findingField}>
-                  <span>Interaction</span>
-                  <p><Scientific text={mechanism} /></p>
-                </div>
-              )}
-
-              {source && (
-                <div className={styles.findingSource}>
-                  <i className="fa-solid fa-book-open" />
-                  <span>{source}</span>
-                </div>
-              )}
-            </article>
-          );
-        })}
-      </div>
+                {source && (
+                  <div className={styles.findingSource}>
+                    <i className="fa-solid fa-book-open" />
+                    <span>{source}</span>
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      )}
 
       <p className={styles.safetyNotice}>
         Findings reflect the interaction evidence currently
@@ -279,6 +414,7 @@ function MedicineSlot({
 
           <div className={styles.selectedCopy}>
             <strong>{slot.medicine.name}</strong>
+
             <span>
               {slot.medicine.drug_class || "Medicine"}
             </span>
@@ -325,6 +461,7 @@ function MedicineSlot({
                 >
                   <span>
                     <strong>{medicine.name}</strong>
+
                     <small>
                       {medicine.drug_class || "Medicine"}
                     </small>
@@ -365,6 +502,9 @@ function InteractionResults({
   const interactions =
     comparison.interactions || [];
 
+  const patterns =
+    comparison.interaction_patterns || [];
+
   return (
     <section className={styles.results}>
       <div className={styles.resultsHeading}>
@@ -400,6 +540,7 @@ function InteractionResults({
 
       <InteractionEvidence
         interactions={interactions}
+        patterns={patterns}
         selectedMedicines={selectedMedicines}
       />
 
@@ -598,6 +739,8 @@ function MedicineTools() {
         ...result,
         selectedMedicines: selected,
         interactions: result.interactions || [],
+        interaction_patterns:
+          result.interaction_patterns || [],
       });
     } catch (err) {
       setError(
