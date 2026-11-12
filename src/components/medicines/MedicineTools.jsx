@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { searchMedicines } from "../../services/medicines";
 import { compareMedicines } from "../../services/comparison";
-import { toScientific } from "../../utils/scientific";
+import Scientific from "../common/Scientific";
 
 import styles from "./MedicineTools.module.css";
 
@@ -138,7 +138,9 @@ function InteractionEvidence({
   return (
     <div className={styles.interactionSummary}>
       <div className={styles.resultStatus}>
-        <span className={styles.statusIndicator} />
+        <span
+          className={`${styles.statusIndicator} ${styles.statusFound}`}
+        />
 
         <div>
           <strong>Interaction evidence found</strong>
@@ -202,21 +204,21 @@ function InteractionEvidence({
               {effect && (
                 <div className={styles.findingField}>
                   <span>Clinical effect</span>
-                  <p>{toScientific(effect)}</p>
+                  <p><Scientific text={effect} /></p>
                 </div>
               )}
 
               {safety && (
                 <div className={styles.findingField}>
                   <span>Safety</span>
-                  <p>{toScientific(safety)}</p>
+                  <p><Scientific text={safety} /></p>
                 </div>
               )}
 
               {mechanism && (
                 <div className={styles.findingField}>
                   <span>Interaction</span>
-                  <p>{toScientific(mechanism)}</p>
+                  <p><Scientific text={mechanism} /></p>
                 </div>
               )}
 

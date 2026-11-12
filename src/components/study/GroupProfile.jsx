@@ -1,5 +1,7 @@
 import { formatClassName } from "../../utils/labelText";
 
+import Scientific from "../common/Scientific";
+
 import StudyProfile from "./StudyProfile";
 import {
 
@@ -57,6 +59,7 @@ function GroupProfile({
   initialSub,
   onBack,
   onOpenClass,
+  onOpenMedicine,
   onSectionChange,
 }) {
   const count = group.classes.length;
@@ -91,7 +94,12 @@ function GroupProfile({
       return (
         <>
           {classList}
-          <SourceBackedRecords records={sourceRecords} section={key} ctx={ctx} />
+          <SourceBackedRecords
+            records={sourceRecords}
+            section={key}
+            ctx={ctx}
+            onOpenMedicine={onOpenMedicine}
+          />
         </>
       );
     }
@@ -141,7 +149,9 @@ function GroupProfile({
 
   const renderGlance = ({ jump }) => (
     <GlanceBlock title="In brief">
-      <p className={styles.glanceText}>{brief}</p>
+      <p className={styles.glanceText}>
+        <Scientific text={brief} />
+      </p>
 
       <GlanceLink onClick={() => jump("overview")}>
         Read the overview

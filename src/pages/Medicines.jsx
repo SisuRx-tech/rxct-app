@@ -337,6 +337,7 @@ if (view?.status === "error") {
           initialSub={sub}
           onBack={goBack}
           onOpenClass={openClass}
+          onOpenMedicine={openMedicine}
           onSectionChange={handleSectionChange}
         />
       )}

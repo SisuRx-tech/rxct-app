@@ -524,6 +524,49 @@
 
 
 /* ========================================
+   LABEL TEXT BLOCKS
+   Medicine records shown on class and
+   group pages.
+======================================== */
+
+.recordBlock + .recordBlock {
+  padding-top: 14px;
+  margin-top: 14px;
+
+  border-top: 1px solid var(--border);
+}
+
+.blockHeading {
+  margin: 0 0 8px;
+
+  color: var(--secondary);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.openProfile {
+  min-height: 40px;
+  padding: 0;
+  margin: 6px 0 4px;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.openProfile::after {
+  content: " →";
+  color: var(--accent);
+}
+
+
+/* ========================================
    LINK LIST
 ======================================== */
 
@@ -652,7 +695,8 @@
 .subTitle button:focus-visible,
 .showMore:focus-visible,
 .linkList button:focus-visible,
-.pager button:focus-visible {
+.pager button:focus-visible,
+.openProfile:focus-visible {
   outline: 2px solid var(--secondary);
   outline-offset: 2px;
 }

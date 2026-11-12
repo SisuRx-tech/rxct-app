@@ -1,4 +1,5 @@
-import { toScientific } from "../../utils/scientific";
+import Scientific from "../common/Scientific";
+import { parseSectionBody } from "../../utils/labelText";
 import {
   REVIEW_LABELS,
   parseEditorial,
@@ -70,7 +71,7 @@ export function Bullets({ id, items, ctx, tone }) {
         }
       >
         {visible.map((item, index) => (
-          <li key={index}>{toScientific(item)}</li>
+          <li key={index}><Scientific text={item} /></li>
         ))}
       </ul>
 
@@ -102,7 +103,7 @@ function Nodes({ nodes, id, ctx }) {
   return nodes.map((node, index) =>
     node.type === "p" ? (
       <p className={styles.prose} key={index}>
-        {toScientific(node.text)}
+        <Scientific text={node.text} />
       </p>
     ) : (
       <Bullets
@@ -154,18 +155,101 @@ export function SourceLine({ source, status }) {
   );
 }
 
-export function SourceBackedRecords({ records = [], section, ctx }) {
-  return records.map((record, index) => (
-    <section className={styles.sourceRecord} key={`${record.medicineName}-${record.section}-${index}`}>
-      <h3 className={styles.sourceRecordTitle}>{record.medicineName}</h3>
-      <SourceLine source={record.sources?.name} status={record.review_status} />
-      <EditorialBody
-        body={record.body}
-        section={`${section}.${record.medicineName}.${index}`}
-        ctx={ctx}
-      />
-    </section>
-  ));
+/* ========================================
+   MEDICINE LABEL TEXT ON CLASS AND GROUP PAGES
+   Cleaned the same way as a medicine's own
+   profile: headings, short points, a source
+   line and the label link. Each medicine is
+   its own collapsible block. A few medicines
+   open by default, a long list stays closed.
+======================================== */
+
+const OPEN_BY_DEFAULT_LIMIT = 3;
+
+export function SourceBackedRecords({
+  records = [],
+  section,
+  ctx,
+  onOpenMedicine,
+}) {
+  const openByDefault = records.length <= OPEN_BY_DEFAULT_LIMIT;
+
+  const blocks = records
+    .map((record, index) => {
+      const body = String(record.body ?? "");
+      const editorial = /(^|\n)##\s/.test(body);
+      const data = editorial ? null : parseSectionBody(body);
+
+      if (!editorial && data.blocks.length === 0) return null;
+
+      const id = `${section}.${slug(record.medicineName)}.${index}`;
+
+      return (
+        <Subsection
+          key={id}
+          id={id}
+          title={record.medicineName}
+          open={ctx.isOpen(id, openByDefault)}
+          onToggle={() => ctx.toggle(id, openByDefault)}
+        >
+          <SourceLine
+            source={record.sources?.name}
+            status={record.review_status}
+          />
+
+          {editorial ? (
+            <EditorialBody body={body} section={id} ctx={ctx} />
+          ) : (
+            data.blocks.map((block, blockIndex) => (
+              <div className={styles.recordBlock} key={blockIndex}>
+                {block.title && (
+                  <h4 className={styles.blockHeading}>{block.title}</h4>
+                )}
+
+                <Bullets
+                  id={`${id}.${blockIndex}`}
+                  items={block.bullets}
+                  ctx={ctx}
+                  tone={
+                    section === "contraindications" ? "warning" : undefined
+                  }
+                />
+              </div>
+            ))
+          )}
+
+          {data && (
+            <SourceFooter source={data.source} truncated={data.truncated} />
+          )}
+
+          {onOpenMedicine && (
+            <button
+              type="button"
+              className={styles.openProfile}
+              onClick={() => onOpenMedicine(record.medicineName)}
+            >
+              Open {record.medicineName} profile
+            </button>
+          )}
+        </Subsection>
+      );
+    })
+    .filter(Boolean);
+
+  if (blocks.length === 0) return null;
+
+  return (
+    <>
+      {blocks.length > 1 && (
+        <p className={styles.muted}>
+          {blocks.length} medicines have label text for this section.
+          Open one to read it.
+        </p>
+      )}
+
+      {blocks}
+    </>
+  );
 }
 
 // Exact label details for text imported from a drug label.
@@ -241,7 +325,7 @@ export function GlancePoints({ items = [], tone }) {
       }
     >
       {items.map((item, index) => (
-        <li key={index}>{toScientific(item)}</li>
+        <li key={index}><Scientific text={item} /></li>
       ))}
     </ul>
   );

@@ -8,11 +8,11 @@
   max-width: 100%;
   margin: 0;
   padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--border);
   border-radius: 18px;
-  background: var(--primary);
+  background: var(--surface);
   box-shadow: none;
-  color: var(--text-light);
+  color: var(--text);
 }
 
 /* ========================================
@@ -38,7 +38,7 @@
 
 .toolsHeading h2 {
   margin: 0;
-  color: var(--text-light);
+  color: var(--text);
   font-size: clamp(17px, 2vw, 21px);
   font-weight: 750;
   letter-spacing: -0.035em;
@@ -46,7 +46,7 @@
 
 .toolsHeading p {
   margin: 5px 0 0;
-  color: var(--soft);
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -79,7 +79,7 @@
   padding: 11px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: var(--surface);
+  background: var(--bg);
 }
 
 .slotHeading {
@@ -133,7 +133,7 @@
 }
 
 .searchControl:focus-within {
-  border-color: var(--primary);
+  border-color: var(--text);
 }
 
 .searchControl > i {
@@ -167,7 +167,7 @@
   width: 13px;
   height: 13px;
   border: 2px solid var(--border);
-  border-top-color: var(--primary);
+  border-top-color: var(--text);
   border-radius: 50%;
   animation: spin 650ms linear infinite;
 }
@@ -238,7 +238,7 @@
 
 .searchResult > i {
   flex: 0 0 auto;
-  color: var(--primary);
+  color: var(--text);
   font-size: 11px;
 }
 
@@ -268,7 +268,7 @@
   place-items: center;
   border-radius: 9px;
   background: var(--surface-alt);
-  color: var(--primary);
+  color: var(--text);
   font-size: 12px;
 }
 
@@ -352,9 +352,9 @@
 
 .compareButton {
   margin-left: auto;
-  border: 1px solid var(--surface);
-  background: var(--surface);
-  color: var(--primary);
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--bg);
 }
 
 .compareButton i {
@@ -373,8 +373,8 @@
 .buttonSpinner {
   width: 13px;
   height: 13px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: white;
+  border: 2px solid rgba(128, 128, 128, 0.35);
+  border-top-color: var(--bg);
   border-radius: 50%;
   animation: spin 650ms linear infinite;
 }
@@ -485,7 +485,11 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--primary);
+  background: var(--muted);
+}
+
+.statusFound {
+  background: var(--accent);
 }
 
 .resultStatus > div {
@@ -561,9 +565,9 @@
 }
 
 .severityLow {
-  border-color: rgba(35, 119, 83, 0.2);
-  background: rgba(35, 119, 83, 0.08);
-  color: #287a56;
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
 }
 
 .severityUnknown {
@@ -601,7 +605,7 @@
 }
 
 .findingSource i {
-  color: var(--primary);
+  color: var(--muted);
 }
 
 .safetyNotice {

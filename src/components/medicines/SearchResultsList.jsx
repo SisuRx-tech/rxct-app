@@ -1,5 +1,7 @@
 import { formatClassName } from "../../utils/labelText";
 
+import Scientific from "../common/Scientific";
+
 import styles from "./SearchResultsList.module.css";
 
 const EXAMPLE_SEARCHES = [
@@ -313,7 +315,7 @@ function SearchResultsList({
             </button>
 
             <p className={styles.snippet}>
-              {item.snippet}
+              <Scientific text={item.snippet} />
             </p>
           </div>
         ))}

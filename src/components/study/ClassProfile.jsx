@@ -1,5 +1,7 @@
 import { formatClassName } from "../../utils/labelText";
 
+import Scientific from "../common/Scientific";
+
 import StudyProfile from "./StudyProfile";
 import {
 
@@ -62,7 +64,14 @@ function ClassProfile({
     const sourceRecords = drugClass.verifiedSections?.[key] || [];
 
     if (!record?.body?.trim() && sourceRecords.length > 0) {
-      return <SourceBackedRecords records={sourceRecords} section={key} ctx={ctx} />;
+      return (
+        <SourceBackedRecords
+          records={sourceRecords}
+          section={key}
+          ctx={ctx}
+          onOpenMedicine={onOpenMedicine}
+        />
+      );
     }
 
     if (!record?.body?.trim()) {
@@ -141,7 +150,9 @@ function ClassProfile({
 
   const renderGlance = ({ jump }) => (
     <GlanceBlock title="In brief">
-      <p className={styles.glanceText}>{brief}</p>
+      <p className={styles.glanceText}>
+        <Scientific text={brief} />
+      </p>
 
       <GlanceLink onClick={() => jump("overview")}>
         Read the overview

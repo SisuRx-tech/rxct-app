@@ -110,6 +110,14 @@ export function cleanLabelText(raw) {
       /^\s*\d{1,2}(?:\.\d{1,2})?\s+[A-Z][A-Z ,&/'-]{2,}?(?=\s+[A-Z][a-z])/,
       "",
     )
+    // "12 CLINICAL PHARMACOLOGY 12.1 Mechanism..." at the start of a block
+    .replace(
+      /^\s*\d{1,2}\s+[A-Z][A-Z ,&/'-]{2,}?\s+(?=\d{1,2}\.\d{1,2}\s)/,
+      "",
+    )
+    .replace(/^\s*\d{1,2}\.\d{1,2}\s+(?=[A-Z])/, "")
+    // image placeholder text the importer leaves at the end of a section
+    .replace(/\s+description formula\s*$/i, "")
     .replace(/\s+([.,;:])/g, "$1")
     .replace(/\.(\s*\.)+/g, ".")
     .replace(/\s+/g, " ")
