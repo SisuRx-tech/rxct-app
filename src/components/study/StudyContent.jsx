@@ -154,6 +154,20 @@ export function SourceLine({ source, status }) {
   );
 }
 
+export function SourceBackedRecords({ records = [], section, ctx }) {
+  return records.map((record, index) => (
+    <section className={styles.sourceRecord} key={`${record.medicineName}-${record.section}-${index}`}>
+      <h3 className={styles.sourceRecordTitle}>{record.medicineName}</h3>
+      <SourceLine source={record.sources?.name} status={record.review_status} />
+      <EditorialBody
+        body={record.body}
+        section={`${section}.${record.medicineName}.${index}`}
+        ctx={ctx}
+      />
+    </section>
+  ));
+}
+
 // Exact label details for text imported from a drug label.
 export function SourceFooter({ source, truncated }) {
   return (

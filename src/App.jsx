@@ -10,8 +10,15 @@ import Settings from "./pages/Settings";
 import { useState } from "react";
 import Splash from "./components/Splash";
 
+function isInstalledApp() {
+  return (
+    window.matchMedia?.("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true
+  );
+}
+
 function App() {
-const [showSplash, setShowSplash] = useState(true);
+const [showSplash, setShowSplash] = useState(isInstalledApp);
 
 return (
 showSplash ? (

@@ -11,6 +11,34 @@ import { classifyError } from "./diagnostics/classifyError";
 ======================================== */
 
 const DIRECT_MATCH_SCORE = 0.95;
+const EDITORIAL_DRAFT_SOURCE = "RxCT pharmacology editorial draft";
+
+const isVerifiedSourceRecord = (record) =>
+  record?.body?.trim() &&
+  record.sources?.name &&
+  record.sources.name !== EDITORIAL_DRAFT_SOURCE;
+
+const sectionMatches = (section, names) => {
+  const value = String(section || "").toLowerCase();
+  return names.some((name) => value.includes(name));
+};
+
+// Class/group editorial rows are not yet populated with reviewed content.
+// Reuse the linked medicine-label rows in the existing profile sections so the
+// UI never invents class claims or falls back to the internal draft source.
+const buildVerifiedSections = (records, sectionMap) => {
+  const verified = records || [];
+
+  return Object.fromEntries(
+    Object.entries(sectionMap).map(([key, names]) => {
+      const matching = verified.filter((record) =>
+        sectionMatches(record.section, names),
+      );
+
+      return [key, matching.length > 0 ? matching : verified];
+    }),
+  );
+};
 
 // Escapes % and _ so names are matched literally.
 const escapeLike = (value) =>
@@ -195,7 +223,9 @@ export function getClassProfile(name) {
 
           supabase
             .from("medicines")
-            .select("id, name")
+            .select(
+              "id, name, medicine_sections(section, body, review_status, sources(name))",
+            )
             .eq("class_id", drugClass.id)
             .order("name"),
 
@@ -205,10 +235,37 @@ export function getClassProfile(name) {
         if (content.error) throw content.error;
         if (medicines.error) throw medicines.error;
 
+        const evidence = (medicines.data || []).flatMap((medicine) =>
+          (medicine.medicine_sections || [])
+            .filter(isVerifiedSourceRecord)
+            .map((record) => ({
+              ...record,
+              medicineName: medicine.name,
+            })),
+        );
+
         return {
           ...drugClass,
-          content: content.data || [],
-          medicines: medicines.data || [],
+          content: (content.data || []).filter(isVerifiedSourceRecord),
+          medicines: (medicines.data || []).map((medicine) => ({
+            ...medicine,
+            medicine_sections: (medicine.medicine_sections || []).filter(
+              isVerifiedSourceRecord,
+            ),
+          })),
+          verifiedSections: buildVerifiedSections(evidence, {
+            overview: ["overview", "summary"],
+            mechanism_pharmacology: ["mechanism", "pharmacology", "overview"],
+            therapeutic_applications: ["indication", "use", "overview"],
+            safety_limitations: [
+              "contraindication",
+              "adverse",
+              "interaction",
+              "warning",
+              "precaution",
+              "safety",
+            ],
+          }),
           group,
         };
       }),
@@ -239,7 +296,11 @@ export function getGroupProfile(name) {
             .select("section, body, review_status, sources(name)")
             .eq("group_id", group.id),
 
-          supabase.from("drug_classes").select("id, name, medicines(count)"),
+          supabase
+            .from("drug_classes")
+            .select(
+              "id, name, medicines(id, name, medicine_sections(section, body, review_status, sources(name)))",
+            ),
         ]);
 
         if (content.error) throw content.error;
@@ -256,17 +317,42 @@ export function getGroupProfile(name) {
           .map((item) => ({
             id: item.id,
             name: item.name,
-            medicineCount: item.medicines?.[0]?.count ?? 0,
+            medicineCount: item.medicines?.length ?? 0,
+            medicines: item.medicines || [],
           }))
           .sort((a, b) => a.name.localeCompare(b.name));
+
+        const evidence = classes.flatMap((drugClass) =>
+          drugClass.medicines.flatMap((medicine) =>
+            (medicine.medicine_sections || [])
+              .filter(isVerifiedSourceRecord)
+              .map((record) => ({
+                ...record,
+                medicineName: medicine.name,
+              })),
+          ),
+        );
 
         return {
           id: group.id,
           name: group.name,
           slug: group.slug,
           description: group.description,
-          content: content.data || [],
+          content: (content.data || []).filter(isVerifiedSourceRecord),
           classes,
+          verifiedSections: buildVerifiedSections(evidence, {
+            overview: ["overview", "summary"],
+            mechanisms_of_action: ["mechanism", "pharmacology", "overview"],
+            therapeutic_applications: ["indication", "use", "overview"],
+            important_considerations: [
+              "contraindication",
+              "adverse",
+              "interaction",
+              "warning",
+              "precaution",
+              "safety",
+            ],
+          }),
         };
       }),
     { query: name },

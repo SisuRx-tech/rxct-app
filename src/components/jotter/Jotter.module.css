@@ -52,6 +52,8 @@
   border-radius: 16px;
   background: var(--surface);
   box-shadow: 0 10px 32px var(--shadow);
+  max-height: calc(100dvh - 150px);
+  overflow-y: auto;
 }
 
 .header {
@@ -122,6 +124,50 @@
   justify-content: flex-end;
 
   margin-top: 12px;
+}
+
+.savedNotes {
+  padding-top: 14px;
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.savedNotes h3 {
+  margin: 0 0 9px;
+  color: var(--primary);
+  font-size: 12px;
+}
+
+.noteList {
+  display: grid;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.note {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-alt);
+}
+
+.note p {
+  margin: 0 0 4px;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.note small,
+.noNotes {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.noNotes {
+  margin: 0;
 }
 
 .save {

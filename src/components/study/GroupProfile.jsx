@@ -10,6 +10,7 @@ import {
   Subsection,
   GlanceBlock,
   GlanceLink,
+  SourceBackedRecords,
 } from "./StudyContent";
 import { parseEditorial } from "../../utils/studyContent";
 import styles from "./StudyProfile.module.css";
@@ -62,6 +63,7 @@ function GroupProfile({
 
   const renderContent = (key) => (ctx) => {
     const record = group.content.find((item) => item.section === key);
+    const sourceRecords = group.verifiedSections?.[key] || [];
 
     const classList =
       key === "classification" && count > 0 ? (
@@ -85,6 +87,15 @@ function GroupProfile({
         </Subsection>
       ) : null;
 
+    if (!record?.body?.trim() && sourceRecords.length > 0) {
+      return (
+        <>
+          {classList}
+          <SourceBackedRecords records={sourceRecords} section={key} ctx={ctx} />
+        </>
+      );
+    }
+
     if (!record?.body?.trim()) {
       return classList || (
         <EmptySection>
@@ -95,6 +106,8 @@ function GroupProfile({
 
     return (
       <>
+        {classList}
+
         <SourceLine
           source={record.sources?.name}
           status={record.review_status}
@@ -102,12 +115,15 @@ function GroupProfile({
 
         <EditorialBody body={record.body} section={key} ctx={ctx} />
 
-        {classList}
       </>
     );
   };
 
-  const sections = GROUP_SECTIONS.map(({ key, label, short, icon }) => ({
+  const sections = GROUP_SECTIONS.filter(({ key }) =>
+    key === "classification" ||
+    group.content.some((item) => item.section === key && item.body?.trim()) ||
+    (group.verifiedSections?.[key]?.length ?? 0) > 0,
+  ).map(({ key, label, short, icon }) => ({
     key,
     label,
     short,

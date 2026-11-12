@@ -8,11 +8,11 @@
   max-width: 100%;
   margin: 0;
   padding: 18px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 18px;
-  background: var(--surface);
-  box-shadow: 0 5px 20px rgba(20, 45, 38, 0.035);
-  color: var(--text);
+  background: var(--primary);
+  box-shadow: none;
+  color: var(--text-light);
 }
 
 /* ========================================
@@ -30,7 +30,7 @@
 .eyebrow {
   display: block;
   margin-bottom: 6px;
-  color: var(--muted);
+  color: var(--accent);
   font-size: 9px;
   font-weight: 750;
   letter-spacing: 0.13em;
@@ -38,7 +38,7 @@
 
 .toolsHeading h2 {
   margin: 0;
-  color: var(--text);
+  color: var(--text-light);
   font-size: clamp(17px, 2vw, 21px);
   font-weight: 750;
   letter-spacing: -0.035em;
@@ -46,7 +46,7 @@
 
 .toolsHeading p {
   margin: 5px 0 0;
-  color: var(--muted);
+  color: var(--soft);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -57,10 +57,10 @@
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(194, 122, 58, 0.35);
   border-radius: 12px;
-  background: var(--surface-alt);
-  color: var(--primary);
+  background: rgba(194, 122, 58, 0.12);
+  color: var(--accent);
 }
 
 /* ========================================
@@ -352,9 +352,13 @@
 
 .compareButton {
   margin-left: auto;
-  border: 1px solid var(--primary);
-  background: var(--primary);
-  color: white;
+  border: 1px solid var(--surface);
+  background: var(--surface);
+  color: var(--primary);
+}
+
+.compareButton i {
+  color: var(--accent);
 }
 
 .compareButton:hover:not(:disabled) {

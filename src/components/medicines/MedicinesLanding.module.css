@@ -84,6 +84,14 @@
   line-height: 1.6;
 }
 
+.eyebrow {
+  display: block;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.35px;
+}
+
 .textLink {
   display: inline-flex;
   align-items: center;
@@ -107,7 +115,9 @@
   position: relative;
   overflow: hidden;
 
-  border: 1px solid rgba(194, 122, 58, 0.45);
+  padding: 20px 24px 24px;
+
+  border: 1px solid var(--soft);
 
   border-radius: 18px;
   background: var(--primary);
@@ -161,8 +171,8 @@
 }
 
 .resumeMain {
-  align-items: flex-end;
-  margin-top: 24px;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .resumeCopy {
@@ -225,9 +235,10 @@
   justify-content: space-between;
   gap: 22px;
   padding: 22px 24px;
-  border: 1px solid var(--soft);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 18px;
-  background: var(--surface-alt);
+  background: var(--primary);
+  color: var(--text-light);
 }
 
 .startCopy {
@@ -236,7 +247,7 @@
 
 .startCopy h2 {
   margin: 7px 0 0;
-  color: var(--primary);
+  color: var(--text-light);
   font-size: 22px;
   font-weight: 760;
   letter-spacing: -0.6px;
@@ -245,7 +256,7 @@
 .startCopy p {
   max-width: 480px;
   margin: 8px 0 0;
-  color: var(--muted);
+  color: var(--soft);
   font-size: 13px;
   line-height: 1.65;
 }
@@ -257,13 +268,21 @@
   gap: 10px;
   min-height: 42px;
   padding: 0 15px;
-  border: 1px solid var(--soft);
+  border: 1px solid var(--accent);
   border-radius: 11px;
-  background: var(--surface);
-  color: var(--primary);
+  background: transparent;
+  color: var(--accent);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.startButton i {
+  color: var(--accent);
+}
+
+.startButton:hover {
+  background: rgba(194, 122, 58, 0.12);
 }
 /* ========================================
    RECENT ACTIVITIES
@@ -385,7 +404,7 @@
 
 @media (max-width: 700px) {
  .landing {
-  padding: 22px 24px 150px;
+  padding: 22px 0 150px;
 }
   .header {
     padding-bottom: 12px;
@@ -486,7 +505,7 @@
   min-width: 0;
   margin-bottom: 0;
   padding: 18px;
-  border: 1px solid rgba(194, 122, 58, 0.45);
+  border: 1px solid var(--soft);
   border-radius: 16px;
   background: var(--surface);
 }

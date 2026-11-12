@@ -38,8 +38,8 @@ export default defineConfig({
         name: 'RxCT',
         short_name: 'RxCT',
         description: 'Your pharmacy learning workspace.',
-background_color: '#164a45',
-theme_color: '#FAF9F5',
+        background_color: '#164a45',
+        theme_color: '#164a45',
 display: 'standalone',
 
         start_url: '/',
@@ -47,17 +47,17 @@ display: 'standalone',
 
         icons: [
           {
-            src: '/pwa-192.png',
+            src: '/rxct-x-icon-192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: '/pwa-512.png',
+            src: '/rxct-x-icon-512.png',
             sizes: '512x512',
             type: 'image/png',
           },
           {
-            src: '/pwa-maskable-512.png',
+            src: '/rxct-x-icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',

@@ -4,7 +4,13 @@ import {
   getStudyContext,
   subscribeStudyContext,
 } from "../../services/studyContext";
-import { addNote, getDraft, saveDraft, clearDraft } from "../../services/notes";
+import {
+  addNote,
+  getAllNotes,
+  getDraft,
+  saveDraft,
+  clearDraft,
+} from "../../services/notes";
 
 import styles from "./Jotter.module.css";
 
@@ -28,6 +34,7 @@ function Jotter() {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState(getDraft);
   const [saved, setSaved] = useState(false);
+  const [notes, setNotes] = useState(getAllNotes);
 
   const textareaRef = useRef(null);
 
@@ -96,7 +103,7 @@ function Jotter() {
     if (addNote(context, note)) {
       clearDraft();
       setText("");
-      setOpen(false);
+      setNotes(getAllNotes());
       setSaved(true);
     }
   };
@@ -147,6 +154,29 @@ function Jotter() {
               Save note
             </button>
           </div>
+
+          <section className={styles.savedNotes} aria-labelledby="jotter-saved-notes">
+            <h3 id="jotter-saved-notes">Saved notes</h3>
+            {(() => {
+              const key = context
+                ? `${context.type}:${context.name.toLowerCase()}`
+                : "general";
+              const entries = notes[key]?.entries || [];
+
+              return entries.length > 0 ? (
+                <div className={styles.noteList}>
+                  {entries.slice(0, 5).map((entry) => (
+                    <article className={styles.note} key={entry.id}>
+                      <p>{entry.text}</p>
+                      <small>{entry.section || "General note"}</small>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className={styles.noNotes}>No notes for this study yet.</p>
+              );
+            })()}
+          </section>
         </div>
       )}
 

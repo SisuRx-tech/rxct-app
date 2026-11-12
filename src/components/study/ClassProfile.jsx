@@ -9,6 +9,7 @@ import {
   LinkList,
   GlanceBlock,
   GlanceLink,
+  SourceBackedRecords,
 } from "./StudyContent";
 import { parseEditorial } from "../../utils/studyContent";
 import styles from "./StudyProfile.module.css";
@@ -21,7 +22,7 @@ import styles from "./StudyProfile.module.css";
 ======================================== */
 
 const CLASS_SECTIONS = [
-   { key: "members", label: "Class Members", short: "Members", icon: "fa-capsules" },
+  { key: "members", label: "Class Members", short: "Members", icon: "fa-capsules" },
   { key: "overview", label: "Overview", short: "Overview", icon: "fa-circle-info" },
   {
     key: "mechanism_pharmacology",
@@ -58,6 +59,11 @@ function ClassProfile({
 
   const renderContent = (key) => (ctx) => {
     const record = drugClass.content.find((item) => item.section === key);
+    const sourceRecords = drugClass.verifiedSections?.[key] || [];
+
+    if (!record?.body?.trim() && sourceRecords.length > 0) {
+      return <SourceBackedRecords records={sourceRecords} section={key} ctx={ctx} />;
+    }
 
     if (!record?.body?.trim()) {
       return (
@@ -109,13 +115,18 @@ function ClassProfile({
     drugClass.content.some((item) => item.section === key && item.body?.trim());
 
   const sections = CLASS_SECTIONS.filter(
-    ({ key }) => key === "members" || hasBody(key),
+    ({ key }) =>
+      key === "members" ||
+      hasBody(key) || (drugClass.verifiedSections?.[key]?.length ?? 0) > 0,
   ).map(({ key, label, short, icon }) => ({
     key,
     label,
     short,
     icon,
-    render: key === "members" ? renderMembers : renderContent(key),
+    render:
+      key === "members"
+        ? renderMembers
+        : renderContent(key),
   }));
 
   // A glance only when it adds something the sections do not already
