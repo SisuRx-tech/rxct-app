@@ -1,31 +1,36 @@
 import { formatClassName } from "../../utils/labelText";
-
 import Scientific from "../common/Scientific";
-
 import StudyProfile from "./StudyProfile";
 import {
-
   EditorialBody,
   SourceLine,
   EmptySection,
   LinkList,
   GlanceBlock,
   GlanceLink,
-  SourceBackedRecords,
 } from "./StudyContent";
 import { parseEditorial } from "../../utils/studyContent";
 import styles from "./StudyProfile.module.css";
 
 /* ========================================
    DRUG CLASS PROFILE
-   The class itself: what unites it and how
-   it works. Medicine-specific detail lives
-   in each medicine's own profile.
+   Class members are medicines. All remaining
+   tabs are rendered only from class_content.
 ======================================== */
 
 const CLASS_SECTIONS = [
-  { key: "members", label: "Class Members", short: "Members", icon: "fa-capsules" },
-  { key: "overview", label: "Overview", short: "Overview", icon: "fa-circle-info" },
+  {
+    key: "members",
+    label: "Classification",
+    short: "Classification",
+    icon: "fa-sitemap",
+  },
+  {
+    key: "overview",
+    label: "Overview",
+    short: "Overview",
+    icon: "fa-circle-info",
+  },
   {
     key: "mechanism_pharmacology",
     label: "Mechanism and Pharmacology",
@@ -44,7 +49,6 @@ const CLASS_SECTIONS = [
     short: "Safety",
     icon: "fa-shield-halved",
   },
- 
 ];
 
 function ClassProfile({
@@ -57,22 +61,11 @@ function ClassProfile({
   onSectionChange,
 }) {
   const title = formatClassName(drugClass.name);
-  const count = drugClass.medicines.length;
+  const medicines = drugClass.medicines || [];
+  const count = medicines.length;
 
   const renderContent = (key) => (ctx) => {
     const record = drugClass.content.find((item) => item.section === key);
-    const sourceRecords = drugClass.verifiedSections?.[key] || [];
-
-    if (!record?.body?.trim() && sourceRecords.length > 0) {
-      return (
-        <SourceBackedRecords
-          records={sourceRecords}
-          section={key}
-          ctx={ctx}
-          onOpenMedicine={onOpenMedicine}
-        />
-      );
-    }
 
     if (!record?.body?.trim()) {
       return (
@@ -88,7 +81,6 @@ function ClassProfile({
           source={record.sources?.name}
           status={record.review_status}
         />
-
         <EditorialBody body={record.body} section={key} ctx={ctx} />
       </>
     );
@@ -96,23 +88,17 @@ function ClassProfile({
 
   const renderMembers = () =>
     count === 0 ? (
-      <EmptySection>
-        No medicines are linked to this class yet.
-      </EmptySection>
+      <EmptySection>No medicines are linked to this class yet.</EmptySection>
     ) : (
       <>
-        <p
-          style={{ margin: "0 0 12px", color: "var(--muted)", fontSize: 13 }}
-        >
-          Class-level information applies to the class as a whole.
-          Individual medicines can differ, so open a medicine for its
-          own details.
+        <p className={styles.prose}>
+          This profile describes the class as a whole. Individual medicines
+          can differ; open a medicine for its own indications, dosage,
+          contraindications, adverse effects and interactions.
         </p>
-
         <LinkList
-          items={drugClass.medicines.map((medicine) => ({
+          items={medicines.map((medicine) => ({
             key: medicine.id,
-            kind: "medicine",
             label: medicine.name,
             onClick: () => onOpenMedicine(medicine.name),
           }))}
@@ -124,22 +110,15 @@ function ClassProfile({
     drugClass.content.some((item) => item.section === key && item.body?.trim());
 
   const sections = CLASS_SECTIONS.filter(
-    ({ key }) =>
-      key === "members" ||
-      hasBody(key) || (drugClass.verifiedSections?.[key]?.length ?? 0) > 0,
+    ({ key }) => key === "members" || hasBody(key),
   ).map(({ key, label, short, icon }) => ({
     key,
     label,
     short,
     icon,
-    render:
-      key === "members"
-        ? renderMembers
-        : renderContent(key),
+    render: key === "members" ? renderMembers : renderContent(key),
   }));
 
-  // A glance only when it adds something the sections do not already
-  // show. The members have their own section, so they are not repeated.
   const overview = drugClass.content.find(
     (item) => item.section === "overview",
   )?.body;
@@ -153,7 +132,6 @@ function ClassProfile({
       <p className={styles.glanceText}>
         <Scientific text={brief} />
       </p>
-
       <GlanceLink onClick={() => jump("overview")}>
         Read the overview
       </GlanceLink>

@@ -28,43 +28,45 @@ export default defineConfig({
 
     VitePWA({
       registerType: 'autoUpdate',
-
       includeAssets: [
         'favicon.png',
         'apple-touch-icon.png',
+        'rxct-logo.png',
+        'rxct-x-mark.png',
+        'rxct-x-icon-192.png',
+        'rxct-x-icon-512.png',
+        'rxct-maskable-512.png',
       ],
-
       manifest: {
         name: 'RxCT',
         short_name: 'RxCT',
         description: 'Your pharmacy learning workspace.',
-        background_color: '#164a45',
-        theme_color: '#164a45',
-display: 'standalone',
-
+        background_color: '#164b45',
+        theme_color: '#164b45',
+        display: 'standalone',
         start_url: '/',
         scope: '/',
-
         icons: [
           {
             src: '/rxct-x-icon-192.png',
             sizes: '192x192',
             type: 'image/png',
+            purpose: 'any',
           },
           {
             src: '/rxct-x-icon-512.png',
             sizes: '512x512',
             type: 'image/png',
+            purpose: 'any',
           },
           {
-            src: '/rxct-x-icon-512.png',
+            src: '/rxct-maskable-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
           },
         ],
       },
-
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
       },

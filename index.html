@@ -2,28 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
-
-    <meta
-      name="description"
-      content="Your pharmacy learning workspace."
-    />
-
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Your pharmacy learning workspace." />
     <meta name="application-name" content="RxCT" />
-
+    <meta name="theme-color" content="#164b45" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="RxCT" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-<link rel="icon" type="image/png" sizes="48x48" href="/favicon.png" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" as="image" href="/rxct-x-mark.png" fetchpriority="high" />
+    <link rel="preload" as="image" href="/rxct-logo.png" fetchpriority="high" />
 
     <link
       rel="stylesheet"
@@ -31,10 +21,192 @@
     />
 
     <title>RxCT</title>
+
+    <style>
+      html,
+      body {
+        min-height: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: #164b45;
+      }
+
+      #rxct-boot-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: #164b45;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition:
+          opacity 320ms ease,
+          visibility 0s linear 320ms;
+      }
+
+      .rxct-browser #rxct-boot-splash {
+        display: none;
+      }
+
+      #rxct-boot-splash.is-exiting {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .rxct-boot-logo {
+        position: relative;
+        width: min(72vw, 420px);
+        aspect-ratio: 525 / 233;
+      }
+
+      .rxct-boot-logo img {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .rxct-boot-mark {
+        z-index: 2;
+        width: min(34vw, 176px) !important;
+        height: auto !important;
+        top: 50% !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) scale(.78);
+        animation:
+          rxct-mark-arrive 620ms cubic-bezier(.22, 1, .36, 1) both,
+          rxct-mark-handoff 520ms ease-in 930ms forwards;
+      }
+
+      .rxct-boot-wordmark {
+        z-index: 1;
+        opacity: 0;
+        transform: scale(.965);
+        animation: rxct-wordmark-arrive 720ms cubic-bezier(.22, 1, .36, 1) 720ms forwards;
+      }
+
+      @keyframes rxct-mark-arrive {
+        from { opacity: 0; transform: translate(-50%, -50%) scale(.78); }
+        72% { opacity: 1; transform: translate(-50%, -50%) scale(1.045); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      }
+
+      @keyframes rxct-mark-handoff {
+        to { opacity: 0; transform: translate(-50%, -50%) scale(.88); }
+      }
+
+      @keyframes rxct-wordmark-arrive {
+        from { opacity: 0; transform: scale(.965); }
+        to { opacity: 1; transform: scale(1); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .rxct-boot-mark {
+          display: none !important;
+          animation: none !important;
+        }
+
+        .rxct-boot-wordmark {
+          opacity: 1;
+          transform: none;
+          animation: none;
+        }
+
+        #rxct-boot-splash {
+          transition-duration: 120ms;
+        }
+      }
+    </style>
+
+    <script>
+      (() => {
+        const standalone =
+          window.matchMedia?.("(display-mode: standalone)").matches ||
+          window.navigator.standalone === true;
+
+        if (!standalone) {
+          document.documentElement.classList.add("rxct-browser");
+        }
+
+        const startedAt = performance.now();
+        const minimumVisibleMs = 1750;
+        let dismissed = false;
+
+        const dismiss = () => {
+          if (dismissed) return;
+          dismissed = true;
+
+          const wait = Math.max(
+            0,
+            minimumVisibleMs - (performance.now() - startedAt),
+          );
+
+          window.setTimeout(() => {
+            const splash = document.getElementById("rxct-boot-splash");
+            if (!splash) return;
+
+            splash.classList.add("is-exiting");
+            window.setTimeout(() => splash.remove(), 380);
+          }, wait);
+        };
+
+        window.addEventListener(
+          "rxct-app-ready",
+          () => {
+            const fontsReady = document.fonts?.ready || Promise.resolve();
+            const fontTimeout = new Promise((resolve) =>
+              window.setTimeout(resolve, 900),
+            );
+
+            Promise.race([fontsReady, fontTimeout]).then(() => {
+              requestAnimationFrame(() => {
+                requestAnimationFrame(dismiss);
+              });
+            });
+          },
+          { once: true },
+        );
+
+        window.setTimeout(dismiss, 7000);
+      })();
+    </script>
   </head>
 
   <body>
     <div id="root"></div>
+
+    <div id="rxct-boot-splash" aria-hidden="true">
+      <div class="rxct-boot-logo">
+        <img
+          class="rxct-boot-mark"
+          src="/rxct-x-mark.png"
+          alt=""
+          width="512"
+          height="512"
+          fetchpriority="high"
+        />
+        <img
+          class="rxct-boot-wordmark"
+          src="/rxct-logo.png"
+          alt=""
+          width="525"
+          height="233"
+          fetchpriority="high"
+        />
+      </div>
+    </div>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

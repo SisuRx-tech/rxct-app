@@ -1,10 +1,7 @@
 import { formatClassName } from "../../utils/labelText";
-
 import Scientific from "../common/Scientific";
-
 import StudyProfile from "./StudyProfile";
 import {
-
   EditorialBody,
   SourceLine,
   EmptySection,
@@ -12,27 +9,29 @@ import {
   Subsection,
   GlanceBlock,
   GlanceLink,
-  SourceBackedRecords,
 } from "./StudyContent";
 import { parseEditorial } from "../../utils/studyContent";
 import styles from "./StudyProfile.module.css";
 
 /* ========================================
    THERAPEUTIC GROUP PROFILE
-   The broadest level: what the group covers,
-   which classes belong to it and how they
-   relate therapeutically.
+   Classification lists the group's classes.
+   Every other section displays group_content.
 ======================================== */
 
 const GROUP_SECTIONS = [
-   {
+  {
     key: "classification",
     label: "Classification",
     short: "Classification",
     icon: "fa-sitemap",
   },
-  { key: "overview", label: "Overview", short: "Overview", icon: "fa-circle-info" },
- 
+  {
+    key: "overview",
+    label: "Overview",
+    short: "Overview",
+    icon: "fa-circle-info",
+  },
   {
     key: "mechanisms_of_action",
     label: "Mechanisms of Action",
@@ -59,53 +58,39 @@ function GroupProfile({
   initialSub,
   onBack,
   onOpenClass,
-  onOpenMedicine,
   onSectionChange,
 }) {
-  const count = group.classes.length;
+  const classes = group.classes || [];
+  const count = classes.length;
+
+  const renderClassification = (ctx) =>
+    count === 0 ? (
+      <EmptySection>No drug classes are linked to this group yet.</EmptySection>
+    ) : (
+      <Subsection
+        id="classification.classes"
+        title="Drug classes in this group"
+        open={ctx.isOpen("classification.classes")}
+        onToggle={() => ctx.toggle("classification.classes")}
+      >
+        <LinkList
+          items={classes.map((item) => ({
+            key: item.id,
+            label: formatClassName(item.name),
+            meta: `${item.medicineCount} ${
+              item.medicineCount === 1 ? "medicine" : "medicines"
+            }`,
+            onClick: () => onOpenClass(item.name),
+          }))}
+        />
+      </Subsection>
+    );
 
   const renderContent = (key) => (ctx) => {
     const record = group.content.find((item) => item.section === key);
-    const sourceRecords = group.verifiedSections?.[key] || [];
-
-    const classList =
-      key === "classification" && count > 0 ? (
-        <Subsection
-          id="classification.classes"
-          title="Drug classes in this group"
-          open={ctx.isOpen("classification.classes")}
-          onToggle={() => ctx.toggle("classification.classes")}
-        >
-          <LinkList
-            items={group.classes.map((item) => ({
-              key: item.id,
-              kind: "class",
-              label: formatClassName(item.name),
-              meta: `${item.medicineCount} ${
-                item.medicineCount === 1 ? "medicine" : "medicines"
-              }`,
-              onClick: () => onOpenClass(item.name),
-            }))}
-          />
-        </Subsection>
-      ) : null;
-
-    if (!record?.body?.trim() && sourceRecords.length > 0) {
-      return (
-        <>
-          {classList}
-          <SourceBackedRecords
-            records={sourceRecords}
-            section={key}
-            ctx={ctx}
-            onOpenMedicine={onOpenMedicine}
-          />
-        </>
-      );
-    }
 
     if (!record?.body?.trim()) {
-      return classList || (
+      return (
         <EmptySection>
           Study content for this section has not been added yet.
         </EmptySection>
@@ -114,29 +99,27 @@ function GroupProfile({
 
     return (
       <>
-        {classList}
-
         <SourceLine
           source={record.sources?.name}
           status={record.review_status}
         />
-
         <EditorialBody body={record.body} section={key} ctx={ctx} />
-
       </>
     );
   };
 
   const sections = GROUP_SECTIONS.filter(({ key }) =>
     key === "classification" ||
-    group.content.some((item) => item.section === key && item.body?.trim()) ||
-    (group.verifiedSections?.[key]?.length ?? 0) > 0,
+    group.content.some((item) => item.section === key && item.body?.trim()),
   ).map(({ key, label, short, icon }) => ({
     key,
     label,
     short,
     icon,
-    render: renderContent(key),
+    render:
+      key === "classification"
+        ? renderClassification
+        : renderContent(key),
   }));
 
   const overview = group.content.find(
@@ -152,7 +135,6 @@ function GroupProfile({
       <p className={styles.glanceText}>
         <Scientific text={brief} />
       </p>
-
       <GlanceLink onClick={() => jump("overview")}>
         Read the overview
       </GlanceLink>

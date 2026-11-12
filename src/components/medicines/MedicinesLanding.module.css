@@ -576,3 +576,7 @@
   font-weight: 650;
   letter-spacing: -0.2px;
 }
+/* Spacing below the interaction checker */
+.recentSection {
+  margin-top: 32px;
+}

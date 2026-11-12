@@ -2,43 +2,17 @@ import { supabase } from "./supabase";
 import { executeRequest } from "./diagnostics/executeRequest";
 import { smartSearch } from "./medicines";
 import { classifyError } from "./diagnostics/classifyError";
+
 /* ========================================
    STUDY PROFILE DATA
-   Loads one medicine, drug class or
-   therapeutic group with everything its
-   profile needs, and works out which of
-   the three a search term means.
+   Medicines use medicine_sections.
+   Drug classes use class_content.
+   Therapeutic groups use group_content.
 ======================================== */
 
 const DIRECT_MATCH_SCORE = 0.95;
-const EDITORIAL_DRAFT_SOURCE = "RxCT pharmacology editorial draft";
 
-const isVerifiedSourceRecord = (record) =>
-  record?.body?.trim() &&
-  record.sources?.name &&
-  record.sources.name !== EDITORIAL_DRAFT_SOURCE;
-
-const sectionMatches = (section, names) => {
-  const value = String(section || "").toLowerCase();
-  return names.some((name) => value.includes(name));
-};
-
-// Class/group editorial rows are not yet populated with reviewed content.
-// Reuse the linked medicine-label rows in the existing profile sections so the
-// UI never invents class claims or falls back to the internal draft source.
-const buildVerifiedSections = (records, sectionMap) => {
-  const verified = records || [];
-
-  return Object.fromEntries(
-    Object.entries(sectionMap).map(([key, names]) => {
-      const matching = verified.filter((record) =>
-        sectionMatches(record.section, names),
-      );
-
-      return [key, matching.length > 0 ? matching : verified];
-    }),
-  );
-};
+const hasStudyContent = (record) => Boolean(record?.body?.trim());
 
 // Escapes % and _ so names are matched literally.
 const escapeLike = (value) =>
@@ -46,12 +20,12 @@ const escapeLike = (value) =>
 
 /* ========================================
    SAVED COPIES (offline)
-   The last few profiles opened are kept on
-   the device so they still open without a
-   connection.
+   Version 2 deliberately invalidates the old
+   cache, which contained medicine-label
+   fallback records in class/group profiles.
 ======================================== */
 
-const CACHE_KEY = "rxct-profile-cache-v1";
+const CACHE_KEY = "rxct-profile-cache-v2";
 const CACHE_LIMIT = 12;
 
 const readCache = () => {
@@ -115,8 +89,6 @@ async function getGroupOfClass(className) {
 
 /* ========================================
    LOOK-UPS
-   Light queries that only answer "does this
-   name exist, and what is it called".
 ======================================== */
 
 async function lookupMedicine(name) {
@@ -174,7 +146,7 @@ async function lookupGroup(name) {
 }
 
 /* ========================================
-   PROFILES
+   MEDICINE PROFILE
 ======================================== */
 
 export function getMedicineProfile(name) {
@@ -200,6 +172,13 @@ export function getMedicineProfile(name) {
   );
 }
 
+/* ========================================
+   DRUG CLASS PROFILE
+   Only class_content supplies study sections.
+   Medicines are returned as members, not as
+   fallback content inside those sections.
+======================================== */
+
 export function getClassProfile(name) {
   return executeRequest(
     "getClassProfile",
@@ -223,9 +202,7 @@ export function getClassProfile(name) {
 
           supabase
             .from("medicines")
-            .select(
-              "id, name, medicine_sections(section, body, review_status, sources(name))",
-            )
+            .select("id, name")
             .eq("class_id", drugClass.id)
             .order("name"),
 
@@ -235,43 +212,25 @@ export function getClassProfile(name) {
         if (content.error) throw content.error;
         if (medicines.error) throw medicines.error;
 
-        const evidence = (medicines.data || []).flatMap((medicine) =>
-          (medicine.medicine_sections || [])
-            .filter(isVerifiedSourceRecord)
-            .map((record) => ({
-              ...record,
-              medicineName: medicine.name,
-            })),
-        );
-
         return {
           ...drugClass,
-          content: (content.data || []).filter(isVerifiedSourceRecord),
-          medicines: (medicines.data || []).map((medicine) => ({
-            ...medicine,
-            medicine_sections: (medicine.medicine_sections || []).filter(
-              isVerifiedSourceRecord,
-            ),
-          })),
-          verifiedSections: buildVerifiedSections(evidence, {
-            overview: ["overview", "summary"],
-            mechanism_pharmacology: ["mechanism", "pharmacology", "overview"],
-            therapeutic_applications: ["indication", "use", "overview"],
-            safety_limitations: [
-              "contraindication",
-              "adverse",
-              "interaction",
-              "warning",
-              "precaution",
-              "safety",
-            ],
-          }),
+          // Imported content remains visible. Review status is presented
+          // by SourceLine; imported does not mean reviewed or approved.
+          content: (content.data || []).filter(hasStudyContent),
+          medicines: medicines.data || [],
           group,
         };
       }),
     { query: name },
   );
 }
+
+/* ========================================
+   THERAPEUTIC GROUP PROFILE
+   Only group_content supplies study sections.
+   Classes and their medicine counts supply
+   the structured Classification section.
+======================================== */
 
 export function getGroupProfile(name) {
   return executeRequest(
@@ -298,61 +257,34 @@ export function getGroupProfile(name) {
 
           supabase
             .from("drug_classes")
-            .select(
-              "id, name, medicines(id, name, medicine_sections(section, body, review_status, sources(name)))",
-            ),
+            .select("id, name, medicines(id, name)"),
         ]);
 
         if (content.error) throw content.error;
         if (classRows.error) throw classRows.error;
 
         const wanted = new Set(
-          group.drug_class_group_members.map((member) =>
+          (group.drug_class_group_members || []).map((member) =>
             member.drug_class.toLowerCase(),
           ),
         );
 
-        const classes = classRows.data
+        const classes = (classRows.data || [])
           .filter((item) => wanted.has(item.name.toLowerCase()))
           .map((item) => ({
             id: item.id,
             name: item.name,
             medicineCount: item.medicines?.length ?? 0,
-            medicines: item.medicines || [],
           }))
           .sort((a, b) => a.name.localeCompare(b.name));
-
-        const evidence = classes.flatMap((drugClass) =>
-          drugClass.medicines.flatMap((medicine) =>
-            (medicine.medicine_sections || [])
-              .filter(isVerifiedSourceRecord)
-              .map((record) => ({
-                ...record,
-                medicineName: medicine.name,
-              })),
-          ),
-        );
 
         return {
           id: group.id,
           name: group.name,
           slug: group.slug,
           description: group.description,
-          content: (content.data || []).filter(isVerifiedSourceRecord),
+          content: (content.data || []).filter(hasStudyContent),
           classes,
-          verifiedSections: buildVerifiedSections(evidence, {
-            overview: ["overview", "summary"],
-            mechanisms_of_action: ["mechanism", "pharmacology", "overview"],
-            therapeutic_applications: ["indication", "use", "overview"],
-            important_considerations: [
-              "contraindication",
-              "adverse",
-              "interaction",
-              "warning",
-              "precaution",
-              "safety",
-            ],
-          }),
         };
       }),
     { query: name },
@@ -361,8 +293,6 @@ export function getGroupProfile(name) {
 
 /* ========================================
    SEARCH
-   Results are kept for the session so going
-   back restores them without searching again.
 ======================================== */
 
 const searchCache = new Map();
@@ -377,7 +307,6 @@ async function runSearch(query) {
   return searchCache.get(key);
 }
 
-// One clear winner opens its profile. Anything less clear shows a list.
 const pickDirectMatch = (found) => {
   if (found.kind !== "medicines" || found.didYouMean) return null;
 
@@ -391,12 +320,6 @@ const pickDirectMatch = (found) => {
 
 /* ========================================
    RESOLVE
-   Turns whatever the student searched into
-   one of: a medicine, a class, a group, or
-   a list of search results.
-
-   Explicit names always win. Search only
-   runs when nothing matches exactly.
 ======================================== */
 
 const PROFILE_LOADERS = {
@@ -414,27 +337,27 @@ const LOOKUPS = {
 export async function resolveQuery(query, kind) {
   const kinds = LOOKUPS[kind] ? [kind] : ["medicine", "class", "group"];
 
- const results = await Promise.allSettled(
-  kinds.map((type) => LOOKUPS[type](query)),
-);
+  const results = await Promise.allSettled(
+    kinds.map((type) => LOOKUPS[type](query)),
+  );
 
-const names = results.map((result) =>
-  result.status === "fulfilled" ? result.value : null
-);
+  const names = results.map((result) =>
+    result.status === "fulfilled" ? result.value : null,
+  );
 
-const lookupErrors = results
-  .filter((result) => result.status === "rejected")
-  .map((result) => result.reason);
+  const lookupErrors = results
+    .filter((result) => result.status === "rejected")
+    .map((result) => result.reason);
 
-const connectionError = lookupErrors.find((error) =>
-  ["OFFLINE", "NETWORK", "TIMEOUT", "SERVER"].includes(
-    classifyError(error)
-  )
-);
+  const connectionError = lookupErrors.find((error) =>
+    ["OFFLINE", "NETWORK", "TIMEOUT", "SERVER"].includes(
+      classifyError(error),
+    ),
+  );
 
-if (!names.some(Boolean) && connectionError) {
-  throw connectionError;
-}
+  if (!names.some(Boolean) && connectionError) {
+    throw connectionError;
+  }
 
   const index = names.findIndex(Boolean);
 
@@ -460,8 +383,6 @@ if (!names.some(Boolean) && connectionError) {
         type: "medicine",
         name: data.name,
         data,
-        // Only an explicit request ("metronidazole adverse effects")
-        // jumps to a section. Otherwise the full profile opens at the top.
         openSection: ["overview", "dosage"].includes(found.intent)
           ? ""
           : found.openSection,
