@@ -1,7 +1,9 @@
 import logo from "../../assets/rxct-logo.png";
 import avatar from "../../assets/circle_avatar.png";
 import styles from "./Topbar.module.css";
+
 import { useState, useRef, useEffect } from "react";
+
 import {
   Link,
   useNavigate,
@@ -11,6 +13,8 @@ import {
 
 function Topbar({ onOpenPanel, panelOpen }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchExpanded, setSearchExpanded] = useState(false);
+
   const menuRef = useRef(null);
 
   const navigate = useNavigate();
@@ -49,6 +53,7 @@ function Topbar({ onOpenPanel, panelOpen }) {
     };
   }, [menuOpen]);
 
+  // Handle search submission.
   function handleSearch(event) {
     event.preventDefault();
 
@@ -56,11 +61,17 @@ function Topbar({ onOpenPanel, panelOpen }) {
 
     if (!value) return;
 
+    setSearchExpanded(false);
+
     navigate("/medicines?q=" + encodeURIComponent(value));
   }
 
   return (
-    <header className={styles.topbar}>
+    <header
+      className={`${styles.topbar} ${
+        searchExpanded ? styles.searchExpanded : ""
+      }`}
+    >
       <div className={styles.brand}>
         <img src={logo} alt="RxCT" />
       </div>
@@ -82,6 +93,8 @@ function Topbar({ onOpenPanel, panelOpen }) {
           type="search"
           placeholder="Search medicines, classes..."
           onChange={(event) => setText(event.target.value)}
+          onFocus={() => setSearchExpanded(true)}
+          onBlur={() => setSearchExpanded(false)}
         />
       </form>
 
