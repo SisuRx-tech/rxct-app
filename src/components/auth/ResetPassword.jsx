@@ -34,25 +34,28 @@ export default function ResetPassword() {
 
     setLoading(true);
 
-    const { error: updateError } = await updatePassword(password);
+    try {
+      const { error: updateError } = await updatePassword(password);
 
-    setLoading(false);
+      if (updateError) {
+        setError(updateError.message);
+        return;
+      }
 
-    if (updateError) {
-      setError(updateError.message);
-      return;
+      setSuccess("Your password has been updated.");
+      setTimeout(() => navigate("/", { replace: true }), 1200);
+    } catch (err) {
+      setError(err.message || "Unable to update your password. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setSuccess("Your password has been updated.");
-
-    setTimeout(() => navigate("/", { replace: true }), 1200);
   };
 
   return (
     <main className="auth-screen">
       <section className="auth-card">
         <div className="auth-brand">
-          <div className="auth-mark">X</div>
+          <img src="/rxct-logo.png" alt="RxCT" />
           <span>RxCT</span>
         </div>
 
@@ -84,8 +87,17 @@ export default function ResetPassword() {
             required
           />
 
-          {error && <p className="auth-feedback error" role="alert">{error}</p>}
-          {success && <p className="auth-feedback success" role="status">{success}</p>}
+          {error && (
+            <p className="auth-feedback error" role="alert">
+              {error}
+            </p>
+          )}
+
+          {success && (
+            <p className="auth-feedback success" role="status">
+              {success}
+            </p>
+          )}
 
           <button className="auth-submit" type="submit" disabled={loading || !user}>
             {loading ? "Updating..." : "Update password"}
