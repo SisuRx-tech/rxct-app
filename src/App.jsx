@@ -17,11 +17,15 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
 function AuthGate() {
-  const { user, loading } = useAuth();
+  const { user, loading, isPasswordRecovery } = useAuth();
   const location = useLocation();
 
-if (loading) return null;
-  if (location.pathname === "/reset-password") {
+  if (loading) return null;
+
+  if (
+    location.pathname === "/reset-password" ||
+    isPasswordRecovery
+  ) {
     return <ResetPassword />;
   }
 
