@@ -1,0 +1,27 @@
+diff --git a/src/utils/labelText.js b/src/utils/labelText.js
+--- a/src/utils/labelText.js
++++ b/src/utils/labelText.js
+@@ -307,4 +307,8 @@
+       return prefix + body.charAt(0).toUpperCase() + body.slice(1);
+     })
+-    .join(" ");
++    .join(" ")
++    .replace(
++      /(\d+)([a-z])\b/gi,
++      (_match, digits, suffix) => `${digits}${suffix.toUpperCase()}`,
++    );
+ }
+diff --git a/src/components/medicines/MedicinesLanding.module.css b/src/components/medicines/MedicinesLanding.module.css
+--- a/src/components/medicines/MedicinesLanding.module.css
++++ b/src/components/medicines/MedicinesLanding.module.css
+@@ -34,5 +34,10 @@
+ .comingSoon {
+   margin-bottom: 36px;
+ }
++
++/* Separate the interaction checker from the independent activity feed. */
++.recentSection {
++  margin-top: 32px;
++}
+
+ .sectionHeading {

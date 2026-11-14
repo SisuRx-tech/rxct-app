@@ -230,14 +230,10 @@ const isSearch = view?.status === "ready" && view.type === "search";
 if (isLoading) {
   return (
     <main className={styles.workspace}>
-      <div
-        className={styles.loading}
-        role="status"
-        aria-live="polite"
-      >
-        <span className={styles.loader} />
-        <p>Preparing your results...</p>
-      </div>
+      <SearchResultsList
+        search={{ kind: "medicines", subject: params.get("q") || "" }}
+        loading
+      />
     </main>
   );
 }

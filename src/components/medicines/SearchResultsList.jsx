@@ -30,6 +30,7 @@ function SearchResultsList({
   onOpenClass,
   onOpenGroup,
   onSearch,
+  loading = false,
 }) {
   const {
     kind,
@@ -50,6 +51,37 @@ function SearchResultsList({
   const openMedicine = (name) => {
     onOpenMedicine(name, intent);
   };
+
+  if (loading) {
+    return (
+      <div className={styles.results} role="status" aria-label="Loading medicine results">
+        <section className={styles.section}>
+          <div className={styles.sectionHeading}>
+            <div>
+              <span className={styles.eyebrow}>SEARCHING</span>
+              <h2>Searching results…</h2>
+            </div>
+            <span className={`${styles.count} ${styles.shimmer} ${styles.skeletonCount}`} />
+          </div>
+
+          <div className={styles.list}>
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div className={styles.row} key={index} aria-hidden="true">
+                <span className={styles.rowText}>
+                  <span className={`${styles.shimmer} ${styles.skeletonName}`} />
+                  <span className={`${styles.shimmer} ${styles.skeletonClass}`} />
+                </span>
+                {index === 0 && (
+                  <span className={`${styles.shimmer} ${styles.skeletonBadge}`} />
+                )}
+                <span className={`${styles.shimmer} ${styles.skeletonArrow}`} />
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   /* ========================================
      MEDICINE RESULTS

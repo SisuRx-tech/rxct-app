@@ -1,0 +1,7 @@
+Source artwork: user-supplied 1248x1248 X-on-green image.
+Exact background: #164b45 (RGB 22,75,69).
+Off-white: #faf9f5 (RGB 250,249,245).
+Amber: #ba7d46 (RGB 186,125,70).
+Regular launcher X width: 76% of canvas.
+Maskable launcher X width: 70% of canvas.
+Transparent splash X: 480px artwork in a 512px transparent canvas.

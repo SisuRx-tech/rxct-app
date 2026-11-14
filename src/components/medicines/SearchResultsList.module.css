@@ -353,3 +353,58 @@
     transition: none;
   }
 }
+
+/* SEARCH RESULT SKELETON */
+
+.shimmer {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--surface-alt) 25%,
+    var(--surface) 50%,
+    var(--surface-alt) 75%
+  );
+  background-size: 200% 100%;
+  animation: resultShimmer 1.35s ease-in-out infinite;
+}
+
+.skeletonCount {
+  width: 27px;
+  height: 25px;
+  padding: 0;
+}
+
+.skeletonName {
+  width: min(48%, 190px);
+  height: 13px;
+  border-radius: 4px;
+}
+
+.skeletonClass {
+  width: min(34%, 135px);
+  height: 10px;
+  margin-top: 7px;
+  border-radius: 4px;
+}
+
+.skeletonBadge {
+  width: 76px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 20px;
+}
+
+.skeletonArrow {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+@keyframes resultShimmer {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer { animation: none; }
+}

@@ -584,29 +584,75 @@
    LOADING AND ERRORS
 ======================================== */
 
-.loading {
+.skeletonList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-top: 12px;
+}
+
+.skeletonCard {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  min-height: 300px;
   gap: 13px;
-  color: var(--muted);
-  font-size: 13px;
+  min-height: 76px;
+  padding: 14px;
+  border: 1px solid var(--border, #e5e9e5);
+  border-radius: 13px;
+  background: var(--surface);
 }
 
-.loader {
-  width: 25px;
-  height: 25px;
-  border: 2px solid var(--surface-alt);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.skeletonIcon,
+.skeletonTitle,
+.skeletonSubtitle,
+.skeletonArrow {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--surface-alt, #e9eeea) 25%,
+    var(--surface, #f7f8f6) 50%,
+    var(--surface-alt, #e9eeea) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
 }
 
-@keyframes spin {
+.skeletonIcon {
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  border-radius: 11px;
+}
+
+.skeletonContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.skeletonTitle {
+  width: 55%;
+  height: 12px;
+  border-radius: 5px;
+}
+
+.skeletonSubtitle {
+  width: 35%;
+  height: 9px;
+  border-radius: 5px;
+}
+
+.skeletonArrow {
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+@keyframes skeletonShimmer {
   to {
-    transform: rotate(360deg);
+    background-position: -200% 0;
   }
 }
 
