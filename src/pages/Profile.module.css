@@ -216,3 +216,71 @@
     padding: 15px 0;
   }
 }
+/* PROFILE EDITING */
+.field {
+  display: grid;
+  gap: 7px;
+  margin-top: 20px;
+  min-width: 0;
+}
+
+.field > span {
+  color: #65716b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.field input {
+  width: 100%;
+  min-height: 43px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #dfe6e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #24332f;
+  font: inherit;
+  font-size: 14px;
+}
+
+.field input:focus {
+  outline: 2px solid #c27a3a;
+  outline-offset: 2px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 22px;
+}
+
+.profileHint {
+  margin: 18px 0 0;
+  color: #7b847e;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.editButton:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.successMessage,
+.errorMessage {
+  margin: 14px 0 0;
+  font-size: 13px;
+}
+
+.successMessage { color: #21664c; }
+.errorMessage { color: #a33b32; }
+
+@container (max-width: 600px) {
+  .formGrid { grid-template-columns: 1fr; }
+}

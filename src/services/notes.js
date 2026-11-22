@@ -1,49 +1,20 @@
-/* ========================================
-   MEDICINE NOTES
-   Notes written in Jotter. They are grouped
-   by what the student was studying, so each
-   medicine, class or group has one note
-   collection that entries are added to,
-   never a pile of duplicate records.
+import {
+  readAccountStorage,
+  writeAccountStorage,
+  getActiveAccountId,
+} from "./accountStorage";
 
-   {
-     "medicine:amoxicillin": {
-       type, name, className, groupName,
-       entries: [{ id, text, section, createdAt }]
-     }
-   }
-
-   Stored on the device. Resources reads it
-   from here.
-======================================== */
-
-const NOTES_KEY = "rxct-medicine-notes-v1";
-const DRAFT_KEY = "rxct-jotter-draft";
-
-const read = (key, fallback) => {
-  try {
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : fallback;
-  } catch {
-    return fallback;
-  }
-};
-
-const write = (key, value) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-
-    return true;
-  } catch {
-    return false;
-  }
-};
+const NOTES_KEY = "medicine-notes-v1";
+const DRAFT_KEY = "jotter-draft";
 
 const entityKey = (context) =>
   context ? `${context.type}:${context.name.toLowerCase()}` : "general";
 
 export function addNote(context, text) {
-  const all = read(NOTES_KEY, {});
+  const userId = getActiveAccountId();
+  if (!userId || !text?.trim()) return false;
+
+  const all = readAccountStorage(NOTES_KEY, {});
   const key = entityKey(context);
 
   const collection = all[key] || {
@@ -63,22 +34,30 @@ export function addNote(context, text) {
 
   all[key] = collection;
 
-  return write(NOTES_KEY, all);
+  return writeAccountStorage(NOTES_KEY, all, userId);
 }
 
-export const getAllNotes = () => read(NOTES_KEY, {});
+export const getAllNotes = () =>
+  readAccountStorage(NOTES_KEY, {});
 
-// An unfinished note survives closing Jotter or reloading the page.
-export const getDraft = () => read(DRAFT_KEY, "");
+export const getDraft = () =>
+  readAccountStorage(DRAFT_KEY, "");
 
 export function saveDraft(text) {
-  write(DRAFT_KEY, text);
+  const userId = getActiveAccountId();
+  if (!userId) return;
+
+  writeAccountStorage(DRAFT_KEY, text, userId);
 }
 
 export function clearDraft() {
+  const userId = getActiveAccountId();
+  if (!userId) return;
+
   try {
-    localStorage.removeItem(DRAFT_KEY);
+    const storageKey = `rxct:user:${encodeURIComponent(userId)}:${DRAFT_KEY}`;
+    localStorage.removeItem(storageKey);
   } catch {
-    // Nothing to clear.
+    // Storage may be unavailable.
   }
 }

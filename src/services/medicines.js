@@ -232,7 +232,7 @@ export function groupClassRows(rows) {
     interactions: [{ medicine_id, medicine_name, drug_class, snippet }],
   }
 */
-export async function smartSearch(rawQuery) {
+export async function smartSearch(rawQuery, options = {}) {
   const query = (rawQuery ?? "").trim();
 
   const empty = {
@@ -246,6 +246,7 @@ export async function smartSearch(rawQuery) {
     medicines: [],
     classResult: null,
     interactions: [],
+    academicContext: options.academicContext || null,
   };
 
   if (!query) return empty;

@@ -14,6 +14,8 @@ import { getUserErrorMessage } from "../services/diagnostics/messages";
 import { recordVisit, saveResume } from "../services/activity";
 import { useScrollMemory } from "../hooks/useScrollMemory";
 import { formatClassName } from "../utils/labelText";
+import { useAuth } from "../context/useAuth";
+import { getAcademicContext } from "../services/academicContext";
 
 import styles from "./Medicines.module.css";
 
@@ -33,6 +35,8 @@ import styles from "./Medicines.module.css";
 
 function MedicinesView() {
   const [params, setParams] = useSearchParams();
+  const { user } = useAuth();
+  const academicContext = getAcademicContext(user);
   const navigate = useNavigate();
 
   const query = params.get("q") || "";
@@ -56,7 +60,7 @@ const [retryCount, setRetryCount] = useState(0);
 
     let active = true;
 
-    resolveQuery(query, kind)
+    resolveQuery(query, kind, academicContext)
       .then((result) => {
         if (active) {
           setView({
@@ -90,7 +94,7 @@ const [retryCount, setRetryCount] = useState(0);
     return () => {
       active = false;
     };
-}, [query, kind, queryKey, isLanding, retryCount]);
+}, [query, kind, queryKey, isLanding, retryCount, user?.id, academicContext.university, academicContext.programme, academicContext.level, academicContext.part, academicContext.semester]);
 
   const isLoading =
     !isLanding &&

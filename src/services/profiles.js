@@ -2,6 +2,11 @@ import { supabase } from "./supabase";
 import { executeRequest } from "./diagnostics/executeRequest";
 import { smartSearch } from "./medicines";
 import { classifyError } from "./diagnostics/classifyError";
+import {
+  readAccountStorage,
+  writeAccountStorage,
+  getActiveAccountId,
+} from "./accountStorage";
 
 /* ========================================
    STUDY PROFILE DATA
@@ -25,21 +30,19 @@ const escapeLike = (value) =>
    fallback records in class/group profiles.
 ======================================== */
 
-const CACHE_KEY = "rxct-profile-cache-v2";
+const CACHE_KEY = "profile-cache-v2";
 const CACHE_LIMIT = 12;
-const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+const CACHE_TTL = 15 * 60 * 1000;
 
-const readCache = () => {
-  try {
-    return JSON.parse(localStorage.getItem(CACHE_KEY)) || {};
-  } catch {
-    return {};
+const readCache = (userId) =>
+  readAccountStorage(CACHE_KEY, {}, userId);
+
+const writeCache = (key, value, expectedUserId) => {
+  if (!expectedUserId || getActiveAccountId() !== expectedUserId) {
+    return false;
   }
-};
 
-const writeCache = (key, value) => {
-  const all = readCache();
-
+  const all = readCache(expectedUserId);
   all[key] = { value, at: Date.now() };
 
   Object.keys(all)
@@ -47,17 +50,18 @@ const writeCache = (key, value) => {
     .slice(CACHE_LIMIT)
     .forEach((old) => delete all[old]);
 
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(all));
-  } catch {
-    // Storage may be full. The profile still works online.
-  }
+  return writeAccountStorage(CACHE_KEY, all, expectedUserId);
 };
 
 async function withSavedCopy(key, load) {
-  const saved = readCache()[key];
+  const userId = getActiveAccountId();
 
-  // Reuse recently fetched profiles instead of requesting them again.
+  if (!userId) {
+    return load();
+  }
+
+  const saved = readCache(userId)[key];
+
   if (saved && Date.now() - saved.at < CACHE_TTL) {
     return saved.value;
   }
@@ -65,10 +69,20 @@ async function withSavedCopy(key, load) {
   try {
     const value = await load();
 
-    if (value) writeCache(key, value);
+    // Never let a request started by one account write into
+    // another account's cache or return stale account data.
+    if (getActiveAccountId() !== userId) {
+      return null;
+    }
+
+    if (value) writeCache(key, value, userId);
 
     return value;
   } catch (error) {
+    if (getActiveAccountId() !== userId) {
+      return null;
+    }
+
     if (saved) return { ...saved.value, fromCache: true };
 
     throw error;
@@ -303,11 +317,13 @@ export function getGroupProfile(name) {
 
 const searchCache = new Map();
 
-async function runSearch(query) {
-  const key = query.trim().toLowerCase();
+async function runSearch(query, academicContext) {
+  const account = getActiveAccountId() || "anonymous";
+  const contextKey = JSON.stringify(academicContext || null);
+  const key = `${account}:${query.trim().toLowerCase()}:${contextKey}`;
 
   if (!searchCache.has(key)) {
-    searchCache.set(key, await smartSearch(query));
+    searchCache.set(key, await smartSearch(query, { academicContext }));
   }
 
   return searchCache.get(key);
@@ -340,7 +356,7 @@ const LOOKUPS = {
   group: lookupGroup,
 };
 
-export async function resolveQuery(query, kind) {
+export async function resolveQuery(query, kind, academicContext = null) {
   const kinds = LOOKUPS[kind] ? [kind] : ["medicine", "class", "group"];
 
   const results = await Promise.allSettled(
@@ -374,7 +390,7 @@ export async function resolveQuery(query, kind) {
     if (data) return { type, name: data.name, data };
   }
 
-  const found = await runSearch(query);
+  const found = await runSearch(query, academicContext);
   const direct = pickDirectMatch(found);
 
   if (direct) {

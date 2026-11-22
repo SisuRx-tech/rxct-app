@@ -1,13 +1,8 @@
-/* ========================================
-   STUDY CONTEXT
-   What the student is looking at right now.
-   Jotter reads this so a note is attached
-   to the medicine, class or group and the
-   section being studied.
-
-   { type, name, className, groupName,
-     section }  or  null
-======================================== */
+/*
+ * STUDY CONTEXT
+ * Tracks what the student is currently studying.
+ * Automatically resets when the authenticated account changes.
+ */
 
 let current = null;
 const listeners = new Set();
@@ -21,6 +16,11 @@ export function setStudyContext(next) {
 
 export function subscribeStudyContext(listener) {
   listeners.add(listener);
-
   return () => listeners.delete(listener);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("rxct-account-change", () => {
+    setStudyContext(null);
+  });
 }

@@ -2,7 +2,22 @@ import { Link } from "react-router-dom";
 import SectionHeading from "./SectionHeading";
 import styles from "./Dashboard.module.css";
 
-function RecentlyOpened({ items }) {
+const formatOpenedAt = (value) => {
+  if (!value) return "Recently";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Recently";
+  return `Opened ${date.toLocaleDateString("en-GB", {
+    day: "numeric", month: "short",
+  })}`;
+};
+
+const labels = {
+  medicine: "Medicine",
+  class: "Drug class",
+  group: "Therapeutic group",
+};
+
+function RecentlyOpened({ items = [] }) {
   return (
     <section className={styles.activitySection} aria-labelledby="activity-title">
       <SectionHeading
@@ -12,43 +27,30 @@ function RecentlyOpened({ items }) {
         action="See all history"
         to="/history"
       />
-
       <div className={styles.activityList}>
-        {items.map((item) => (
-          <Link
-            className={styles.activityItem}
-            to={
-              item.type === "medicine"
-                ? `/medicines/${item.id}`
-                : `/resources/${item.id}`
-            }
-            key={`${item.type}-${item.id}`}
-          >
-            <span
-              className={`${styles.itemIcon} ${
-                item.type === "medicine" ? styles.medicineIcon : ""
-              }`}
+        {items.map((item) => {
+          const params = new URLSearchParams({ kind: item.type, q: item.name });
+          const isMedicine = item.type === "medicine";
+          return (
+            <Link
+              className={styles.activityItem}
+              to={`/medicines?${params.toString()}`}
+              key={`${item.type}-${item.name}`}
             >
-              <i
-                className={`fa-solid ${
-                  item.type === "medicine" ? "fa-pills" : "fa-file-lines"
-                }`}
-                aria-hidden="true"
-              />
-            </span>
-
-            <span className={styles.itemContent}>
-              <span className={styles.itemEyebrow}>{item.detail}</span>
-              <strong>{item.title}</strong>
-              <span className={styles.itemMeta}>Opened {item.openedAt}</span>
-            </span>
-
-            <span className={styles.itemAction}>
-              {item.type === "medicine" ? "View medicine" : "Open"}
-              <i className="fa-solid fa-arrow-right" aria-hidden="true" />
-            </span>
-          </Link>
-        ))}
+              <span className={`${styles.itemIcon} ${isMedicine ? styles.medicineIcon : ""}`}>
+                <i className={`fa-solid ${isMedicine ? "fa-pills" : "fa-layer-group"}`} aria-hidden="true" />
+              </span>
+              <span className={styles.itemContent}>
+                <span className={styles.itemEyebrow}>{labels[item.type] || "Study item"}</span>
+                <strong>{item.name}</strong>
+                <span className={styles.itemMeta}>{formatOpenedAt(item.visitedAt)}</span>
+              </span>
+              <span className={styles.itemAction}>
+                Open <i className="fa-solid fa-arrow-right" aria-hidden="true" />
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

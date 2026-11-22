@@ -1,34 +1,41 @@
-/* ========================================
-   READING STATE
-   Remembers, per medicine / class / group:
-   the active section, scroll position per
-   section and which subsections are open.
+import {
+  readAccountStorage,
+  writeAccountStorage,
+  getActiveAccountId,
+} from "./accountStorage";
 
-   Stored on the device so it also works
-   offline. Moves to IndexedDB with the
-   offline phase; only this file changes.
-======================================== */
-
-const STORAGE_KEY = "rxct-reading-state-v1";
+const STORAGE_KEY = "reading-state-v1";
 const MAX_ENTRIES = 60;
 const SAVE_DELAY = 400;
 
 let cache = null;
+let cacheAccountId = null;
 let timer = 0;
 
 const load = () => {
-  if (cache) return cache;
+  const userId = getActiveAccountId();
 
-  try {
-    cache = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-  } catch {
+  if (!userId) return {};
+
+  if (cache && cacheAccountId === userId) {
+    return cache;
+  }
+
+  cacheAccountId = userId;
+  cache = readAccountStorage(STORAGE_KEY, {}, userId);
+
+  if (!cache || typeof cache !== "object" || Array.isArray(cache)) {
     cache = {};
   }
 
   return cache;
 };
 
-const persist = () => {
+const persist = (expectedUserId) => {
+  if (!expectedUserId || getActiveAccountId() !== expectedUserId) {
+    return;
+  }
+
   const all = load();
   const keys = Object.keys(all);
 
@@ -39,23 +46,23 @@ const persist = () => {
       .forEach((key) => delete all[key]);
   }
 
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  } catch {
-    // Storage may be unavailable or full.
-  }
+  writeAccountStorage(STORAGE_KEY, all, expectedUserId);
 };
 
-const schedulePersist = () => {
+const schedulePersist = (expectedUserId) => {
   clearTimeout(timer);
-  timer = setTimeout(persist, SAVE_DELAY);
+  timer = setTimeout(() => persist(expectedUserId), SAVE_DELAY);
 };
 
 export function getReadingState(key) {
+  if (!getActiveAccountId()) return null;
   return load()[key] || null;
 }
 
 export function saveReadingState(key, patch) {
+  const userId = getActiveAccountId();
+  if (!userId) return;
+
   const all = load();
   const current = all[key] || {};
 
@@ -67,12 +74,15 @@ export function saveReadingState(key, patch) {
     updatedAt: Date.now(),
   };
 
-  schedulePersist();
+  schedulePersist(userId);
 }
 
 if (typeof window !== "undefined") {
   window.addEventListener("pagehide", () => {
     clearTimeout(timer);
-    persist();
+
+    if (cacheAccountId) {
+      persist(cacheAccountId);
+    }
   });
 }
