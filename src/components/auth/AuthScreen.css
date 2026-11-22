@@ -448,3 +448,24 @@ url("/rxct-auth-bg.webp");
   background-color: #20534d !important;
   color: #faf9f5 !important;
 }
+
+/* Reset password: preserve theme during paste and autofill */
+.reset-password-form .auth-input-wrap input,
+.reset-password-form .auth-input-wrap input:hover,
+.reset-password-form .auth-input-wrap input:focus,
+.reset-password-form .auth-input-wrap input:active {
+  background-color: #20534d !important;
+  color: #faf9f5 !important;
+  -webkit-text-fill-color: #faf9f5 !important;
+  caret-color: #faf9f5 !important;
+  color-scheme: dark;
+}
+
+.reset-password-form .auth-input-wrap input:-webkit-autofill,
+.reset-password-form .auth-input-wrap input:-webkit-autofill:hover,
+.reset-password-form .auth-input-wrap input:-webkit-autofill:focus,
+.reset-password-form .auth-input-wrap input:-webkit-autofill:active {
+  -webkit-text-fill-color: #faf9f5 !important;
+  -webkit-box-shadow: 0 0 0 1000px #20534d inset !important;
+  box-shadow: 0 0 0 1000px #20534d inset !important;
+}
