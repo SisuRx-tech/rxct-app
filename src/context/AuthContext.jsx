@@ -87,6 +87,16 @@ export function AuthProvider({ children }) {
     });
   }, []);
 
+  const resendSignupEmail = useCallback((email) => {
+    return supabase.auth.resend({
+      type: "signup",
+      email: email.trim(),
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+    });
+  }, []);
+
   const signOut = useCallback(() => {
     return supabase.auth.signOut({ scope: "local" });
   }, []);
@@ -98,14 +108,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   const updatePassword = useCallback(async (password) => {
-    const result = await supabase.auth.updateUser({ password });
-
-    if (!result.error) {
-      setIsPasswordRecovery(false);
+    if (!isPasswordRecovery) {
+      return {
+        error: new Error("A valid password recovery link is required."),
+      };
     }
 
-    return result;
-  }, []);
+    return supabase.auth.updateUser({ password });
+  }, [isPasswordRecovery]);
 
   const value = {
     session,
@@ -115,6 +125,7 @@ export function AuthProvider({ children }) {
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
+    resendSignupEmail,
     signOut,
     resetPassword,
     updatePassword,

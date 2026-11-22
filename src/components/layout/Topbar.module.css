@@ -430,3 +430,58 @@
   color: var(--muted);
   font-size: 0.85rem;
 }
+/* Keep search input stable across Chromium paste and autofill states */
+.searchInput,
+.searchInput:focus,
+.searchInput:active {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text);
+  color-scheme: light;
+  caret-color: var(--primary);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.searchInput:-webkit-autofill,
+.searchInput:-webkit-autofill:hover,
+.searchInput:-webkit-autofill:focus,
+.searchInput:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset !important;
+  box-shadow: 0 0 0 1000px var(--surface) inset !important;
+  transition: background-color 9999s ease-out;
+}
+
+.searchInput::selection {
+  background: rgba(186, 125, 70, 0.25);
+  color: var(--text);
+}
+
+/* Keep search input stable across Chromium paste and autofill states */
+.searchInput,
+.searchInput:focus,
+.searchInput:active {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text);
+  color-scheme: light;
+  caret-color: var(--primary);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.searchInput:-webkit-autofill,
+.searchInput:-webkit-autofill:hover,
+.searchInput:-webkit-autofill:focus,
+.searchInput:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset !important;
+  box-shadow: 0 0 0 1000px var(--surface) inset !important;
+  transition: background-color 9999s ease-out;
+}
+
+.searchInput::selection {
+  background: rgba(186, 125, 70, 0.25);
+  color: var(--text);
+}

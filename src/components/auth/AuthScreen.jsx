@@ -1,27 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/useAuth";
 import "./AuthScreen.css";
 
 function GoogleIcon() {
   return (
     <svg viewBox="0 0 48 48" aria-hidden="true">
-      <path
-        fill="#EA4335"
-        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"
-        transform="translate(0 5)"
-      />
-      <path
-        fill="#4285F4"
-        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.25 5.48-4.73 7.18l7.62 5.91c4.45-4.11 7.15-10.16 7.15-17.56Z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.75-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19Z"
-      />
-      <path
-        fill="#34A853"
-        d="M24 48c6.47 0 11.92-2.13 15.89-5.89l-7.62-5.91c-2.12 1.42-4.84 2.27-8.27 2.27-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"
-      />
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z" transform="translate(0 5)" />
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.25 5.48-4.73 7.18l7.62 5.91c4.45-4.11 7.15-10.16 7.15-17.56Z" />
+      <path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.75-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19Z" />
+      <path fill="#34A853" d="M24 48c6.47 0 11.92-2.13 15.89-5.89l-7.62-5.91c-2.12 1.42-4.84 2.27-8.27 2.27-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z" />
     </svg>
   );
 }
@@ -62,17 +49,13 @@ function EyeIcon({ hidden }) {
 }
 
 function ActionIcon({ mode }) {
-  if (mode === "register") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="9" cy="8" r="4" />
-        <path d="M2 21v-2a7 7 0 0 1 14 0v2" />
-        <path d="M19 8v6M16 11h6" />
-      </svg>
-    );
-  }
-
-  return (
+  return mode === "register" ? (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="9" cy="8" r="4" />
+      <path d="M2 21v-2a7 7 0 0 1 14 0v2" />
+      <path d="M19 8v6M16 11h6" />
+    </svg>
+  ) : (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M10 17l5-5-5-5" />
       <path d="M15 12H3" />
@@ -81,11 +64,17 @@ function ActionIcon({ mode }) {
   );
 }
 
+function getCooldownSeconds(error) {
+  const match = error?.message?.match(/after\s+(\d+)\s+seconds?/i);
+  return match ? Math.max(1, Number(match[1])) : 60;
+}
+
 export default function AuthScreen() {
   const {
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
+    resendSignupEmail,
     resetPassword,
   } = useAuth();
 
@@ -96,6 +85,19 @@ export default function AuthScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [resetRequested, setResetRequested] = useState(false);
+
+  useEffect(() => {
+    if (cooldown <= 0) return undefined;
+
+    const timer = window.setInterval(() => {
+      setCooldown((value) => Math.max(0, value - 1));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [cooldown > 0]);
 
   const clearFeedback = () => {
     setError("");
@@ -106,8 +108,14 @@ export default function AuthScreen() {
     setMode(nextMode);
     setPassword("");
     setShowPassword(false);
+    setPendingVerification(false);
+    setResetRequested(false);
+    setCooldown(0);
     clearFeedback();
   };
+
+  const formatCooldown = (seconds) =>
+    `00:${String(seconds).padStart(2, "0")}`;
 
   const handleGoogle = async () => {
     clearFeedback();
@@ -123,8 +131,36 @@ export default function AuthScreen() {
     }
   };
 
+  const handleResend = async () => {
+    clearFeedback();
+    setLoading(true);
+
+    try {
+      const result =
+        mode === "forgot"
+          ? await resetPassword(email)
+          : await resendSignupEmail(email);
+
+      if (result.error) throw result.error;
+
+      setMessage(
+        mode === "forgot"
+          ? "If an account exists for that email, a reset link has been sent."
+          : "A new verification email has been sent. Check your inbox and spam folder."
+      );
+
+      setCooldown(60);
+    } catch (err) {
+      setError(err.message || "Unable to resend the email. Please try again.");
+      setCooldown(getCooldownSeconds(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (mode === "forgot" && cooldown > 0) return;
 
     clearFeedback();
     setLoading(true);
@@ -138,6 +174,8 @@ export default function AuthScreen() {
         setMessage(
           "If an account exists for that email, a password reset link has been sent."
         );
+        setResetRequested(true);
+        setCooldown(60);
       } else if (mode === "register") {
         if (password.length < 10) {
           throw new Error(
@@ -152,11 +190,25 @@ export default function AuthScreen() {
 
         if (authError) throw authError;
 
-        setMessage(
-          data.session
-            ? "Your account has been created."
-            : "Check your email for a verification link before signing in."
-        );
+        if (
+          data.user &&
+          Array.isArray(data.user.identities) &&
+          data.user.identities.length === 0
+        ) {
+          setPendingVerification(false);
+          setCooldown(0);
+          setMessage(
+            "An account may already be associated with this email. Try signing in, or use Forgot password if you cannot access it."
+          );
+        } else if (data.session) {
+          setMessage("Your account has been created.");
+        } else {
+          setPendingVerification(true);
+          setMessage(
+            "Check your email for a verification link before signing in. If it doesn't arrive, you can resend it below."
+          );
+          setCooldown(60);
+        }
       } else {
         const { error: authError } = await signInWithEmail(
           email,
@@ -171,6 +223,10 @@ export default function AuthScreen() {
       }
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
+
+      if (/after\s+\d+\s+seconds?/i.test(err.message || "")) {
+        setCooldown(getCooldownSeconds(err));
+      }
     } finally {
       setLoading(false);
     }
@@ -183,15 +239,14 @@ export default function AuthScreen() {
   };
 
   const descriptions = {
- register: "Start your pharmacy learning.",
-login: "Continue where your learning left off.",
-forgot: "Enter your email to receive a reset link."
+    register: "Start your pharmacy learning.",
+    login: "Continue where your learning left off.",
+    forgot: "Enter your email to receive a reset link.",
   };
 
   return (
     <main className="auth-screen">
       <section className="auth-card">
-
         <div className="auth-brand">
           <img
             className="auth-wordmark"
@@ -216,7 +271,7 @@ forgot: "Enter your email to receive a reset link."
               <span className="auth-google-icon">
                 <GoogleIcon />
               </span>
-              Continue with Google
+              {mode === "register" ? "Sign up with Google" : "Continue with Google"}
             </button>
 
             <div className="auth-divider">
@@ -301,22 +356,48 @@ forgot: "Enter your email to receive a reset link."
           <button
             className="auth-submit"
             type="submit"
-            disabled={loading}
+            disabled={loading || (mode === "forgot" && cooldown > 0)}
           >
             {loading ? (
               "Please wait..."
+            ) : mode === "forgot" ? (
+              <>
+                <ActionIcon mode={mode} />
+                {resetRequested ? "Resend reset link" : "Send reset link"}
+                {cooldown > 0 ? ` · ${formatCooldown(cooldown)}` : ""}
+              </>
             ) : (
               <>
                 <ActionIcon mode={mode} />
-                {mode === "register"
-                  ? "Create account"
-                  : mode === "login"
-                    ? "Sign in"
-                    : "Send reset link"}
+                {mode === "register" ? "Create account" : "Sign in"}
               </>
             )}
           </button>
         </form>
+
+        {pendingVerification && (
+          <div className="auth-resend">
+            <p>
+              {cooldown > 0
+                ? `Try again in ${formatCooldown(cooldown)}`
+                : "Didn't receive the email?"}
+            </p>
+
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={loading || cooldown > 0 || !email.trim()}
+            >
+              {loading
+                ? "Sending..."
+                : cooldown > 0
+                  ? `Resend in ${formatCooldown(cooldown)}`
+                  : mode === "forgot"
+                    ? "Resend reset link"
+                    : "Resend verification email"}
+            </button>
+          </div>
+        )}
 
         <div className="auth-links">
           {mode === "register" && (
@@ -368,7 +449,6 @@ forgot: "Enter your email to receive a reset link."
         <p className="auth-footer">
           Your pharmacy learning space.
         </p>
-
       </section>
     </main>
   );

@@ -264,7 +264,6 @@ url("/rxct-auth-bg.webp");
   background: #fff0ed;
   color: #a33b2e;
 }
-
 .auth-feedback.success {
   background: #e8f2e9;
   color: #286044;
@@ -349,4 +348,103 @@ url("/rxct-auth-bg.webp");
   .auth-heading h1 {
     font-size: 23px;
   }
+}
+/* Autofill and pasted input colours */
+
+.auth-input-wrap input,
+.reset-password-input {
+  color: #faf9f5;
+  caret-color: #faf9f5;
+  -webkit-text-fill-color: #faf9f5;
+}
+
+.auth-input-wrap input:-webkit-autofill,
+.auth-input-wrap input:-webkit-autofill:hover,
+.auth-input-wrap input:-webkit-autofill:focus,
+.reset-password-input:-webkit-autofill,
+.reset-password-input:-webkit-autofill:hover,
+.reset-password-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #faf9f5;
+  caret-color: #faf9f5;
+  -webkit-box-shadow: 0 0 0 1000px #20534d inset;
+  box-shadow: 0 0 0 1000px #20534d inset;
+  transition: background-color 9999s ease-out 0s;
+}
+
+/* Resend email */
+
+.auth-resend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  color: #c4d5ce;
+  font-size: 12px;
+}
+
+.auth-resend p {
+  margin: 0;
+}
+
+.auth-resend button {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(226, 237, 230, 0.24);
+  border-radius: 8px;
+  background: rgba(250, 249, 245, 0.08);
+  color: #e2b77e;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-resend button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Reset password fields */
+
+.reset-password-input {
+  padding-left: 14px !important;
+  padding-right: 44px !important;
+}
+
+.reset-password-form .auth-input-wrap {
+  margin-bottom: 2px;
+}
+
+.reset-password-input:focus {
+  border-color: #ba9a69;
+  box-shadow: 0 0 0 3px rgba(186, 125, 70, 0.13);
+}
+/* Keep authentication inputs consistent across browser states */
+.auth-input-wrap input,
+.auth-input-wrap input:hover,
+.auth-input-wrap input:focus,
+.auth-input-wrap input:active {
+  background-color: #20534d !important;
+  color: #faf9f5 !important;
+  -webkit-text-fill-color: #faf9f5 !important;
+  caret-color: #faf9f5;
+  color-scheme: dark;
+}
+
+/* Chromium autofill override */
+.auth-input-wrap input:-webkit-autofill,
+.auth-input-wrap input:-webkit-autofill:hover,
+.auth-input-wrap input:-webkit-autofill:focus,
+.auth-input-wrap input:-webkit-autofill:active {
+  -webkit-text-fill-color: #faf9f5 !important;
+  -webkit-box-shadow: 0 0 0 1000px #20534d inset !important;
+  box-shadow: 0 0 0 1000px #20534d inset !important;
+  caret-color: #faf9f5;
+  transition: background-color 9999s ease-out;
+}
+
+/* Standard autofill state */
+.auth-input-wrap input:autofill {
+  background-color: #20534d !important;
+  color: #faf9f5 !important;
 }
