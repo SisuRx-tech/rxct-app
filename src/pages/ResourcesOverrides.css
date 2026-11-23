@@ -1,0 +1,189 @@
+/* Final resource-library alignment with the Medicines section navigation. */
+.libraryShellRoot {
+  overflow: visible;
+}
+
+.resumeSection + .libraryShellRoot {
+  margin-top: 22px;
+}
+
+.libraryToolbarRoot {
+  border-bottom: 0;
+}
+
+.libraryTabsRoot {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  gap: 7px;
+  margin: 0 14px;
+  padding: 11px 0;
+  overflow-x: auto;
+  border: 0;
+  background: var(--bg);
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.libraryTabsRoot::-webkit-scrollbar {
+  display: none;
+}
+
+.libraryTabsRoot button {
+  flex: 0 0 auto;
+  padding: 9px 13px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.libraryTabsRoot button.activeTab {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--text-light);
+  box-shadow: none;
+}
+
+.libraryContentRoot {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: auto;
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+  touch-action: pan-y;
+}
+
+.libraryContentRoot::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+.libraryUploadCard {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin: 11px 14px 4px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface);
+}
+
+.libraryUploadIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--class-bg);
+  color: var(--primary);
+}
+
+.libraryUploadEyebrow {
+  display: block;
+  color: var(--accent);
+  font-size: .56rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.libraryUploadCard strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--primary);
+  font-size: .75rem;
+}
+
+.libraryUploadCard p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: .62rem;
+}
+
+.libraryUploadButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--primary);
+  color: var(--text-light);
+  font: inherit;
+  font-size: .64rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.modalHeaderActions {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.copyIconButton,
+.copyTextButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 7px;
+  background: var(--class-bg);
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.shareError {
+  margin: 12px 0;
+  padding: 11px 12px;
+  border: 1px solid rgba(179, 67, 47, .28);
+  border-radius: 9px;
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.shareError strong {
+  display: block;
+  font-size: .72rem;
+}
+
+.shareError p,
+.shareError small {
+  display: block;
+  margin: 5px 0 0;
+  font-size: .65rem;
+  line-height: 1.45;
+}
+
+.copyIconButton {
+  width: 30px;
+  height: 30px;
+}
+
+.copyTextButton {
+  padding: 8px 10px;
+  font: inherit;
+  font-size: .65rem;
+  font-weight: 750;
+}
+
+@media (max-width: 760px) {
+  .libraryTabsRoot {
+    margin: 0 10px;
+  }
+
+  .libraryUploadCard {
+    grid-template-columns: auto 1fr;
+  }
+
+  .libraryUploadButton {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
