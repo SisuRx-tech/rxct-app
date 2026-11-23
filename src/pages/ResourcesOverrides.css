@@ -187,3 +187,349 @@
     justify-self: start;
   }
 }
+
+/* Visible upload feedback */
+.resourceToast {
+  position: fixed;
+  right: 16px;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(440px, calc(100vw - 32px));
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 12px 36px rgba(22, 48, 43, .18);
+  font-size: .76rem;
+  line-height: 1.4;
+  animation: resourceToastIn .18s ease-out;
+}
+
+.resourceToast > i {
+  flex: none;
+  color: var(--primary);
+}
+
+.resourceToast > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.resourceToast > button {
+  flex: none;
+  width: 27px;
+  height: 27px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--surface-alt);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.resourceToast-error {
+  border-color: rgba(179, 67, 47, .35);
+}
+
+.resourceToast-error > i {
+  color: var(--danger);
+}
+
+.resourceToast-progress > i {
+  color: var(--accent);
+}
+
+@keyframes resourceToastIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Course folders */
+.resourceCourseGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.resourceCourseTile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.resourceCourseTile:hover {
+  border-color: rgba(22, 74, 69, .45);
+  background: var(--surface-alt);
+}
+
+.resourceFolderIcon {
+  display: grid;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--class-bg);
+  color: var(--primary);
+  font-size: .9rem;
+}
+
+.resourceCourseText {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.resourceCourseText strong,
+.resourceFolderHeading strong {
+  color: var(--primary);
+  font-size: .7rem;
+  letter-spacing: .04em;
+}
+
+.resourceCourseText > span {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: .7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resourceCourseText small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: .62rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resourceCourseCount {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: .62rem;
+}
+
+.resourceCourseArrow {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  color: #9aa8a3;
+  font-size: .65rem;
+}
+
+.resourceCourseFolder {
+  display: grid;
+  gap: 13px;
+}
+
+.resourceBackButton {
+  justify-self: start;
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font: inherit;
+  font-size: .69rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resourceBackButton i {
+  margin-right: 5px;
+}
+
+.resourceFolderHeading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.resourceFolderHeading > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.resourceFolderHeading h3 {
+  margin: 3px 0 0;
+  font-size: .92rem;
+}
+
+.resourceFolderHeading > span:last-child {
+  color: var(--muted);
+  font-size: .64rem;
+  white-space: nowrap;
+}
+
+.resourceDescriptionForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 8px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface-alt);
+}
+
+.resourceDescriptionForm label {
+  grid-column: 1 / -1;
+  color: var(--ink);
+  font-size: .67rem;
+  font-weight: 750;
+}
+
+.resourceDescriptionForm label span {
+  margin-left: 5px;
+  color: var(--muted);
+  font-size: .6rem;
+  font-weight: 400;
+}
+
+.resourceDescriptionForm input {
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: .67rem;
+}
+
+.resourceDescriptionForm button {
+  padding: 7px 11px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--primary);
+  color: var(--text-light);
+  font: inherit;
+  font-size: .65rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Course decision prompt */
+.resourceCoursePrompt {
+  width: min(100%, 490px);
+}
+
+.resourcePromptFile {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--class-bg);
+  color: var(--primary);
+}
+
+.resourceSuggestionList {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.resourceSuggestionList > span,
+.resourceCourseSelectLabel {
+  color: var(--muted);
+  font-size: .65rem;
+  font-weight: 750;
+}
+
+.resourceSuggestionList button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.resourceSuggestionList button.selected {
+  border-color: var(--primary);
+  background: var(--surface-alt);
+}
+
+.resourceSuggestionList button span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.resourceSuggestionList button strong {
+  color: var(--primary);
+  font-size: .67rem;
+}
+
+.resourceSuggestionList button small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: .63rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resourceSuggestionList button em {
+  color: var(--muted);
+  font-size: .6rem;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.resourceCourseSelectLabel {
+  display: block;
+  margin: 13px 0 5px;
+}
+
+.resourceCoursePrompt select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: .68rem;
+}
+
+.resourceCoursePrompt .modalActions {
+  justify-content: space-between;
+}
+
+@media (max-width: 600px) {
+  .resourceCourseGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .resourceToast {
+    right: 10px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: calc(100vw - 20px);
+  }
+
+  .resourceFolderHeading {
+    align-items: flex-start;
+  }
+
+  .resourceFolderHeading > span:last-child {
+    padding-top: 5px;
+  }
+}
