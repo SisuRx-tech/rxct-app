@@ -624,63 +624,66 @@ function Resources() {
     setShareProgress({ stage: "uploading", completed: 0, total: shareSelection.length });
 
     try {
-      const selectedResources = resources.filter((resource) => shareSelection.includes(resource.id));
-      const driveLinked = selectedResources.find((resource) => resource.driveUrl);
-      if (driveLinked) {
-        if (selectedResources.length !== 1) {
-          throw new Error("Share Google Drive documents one at a time. Select just one Drive document to create its link instantly.");
-        }
+            const selectedResources = resources.filter((resource) =>
+        shareSelection.includes(resource.id)
+      );
 
-        const link = driveLinked.driveUrl;
-        setShareLink(link);
-        setShareProgress({ stage: "complete", completed: 1, total: 1 });
-
-        try {
-          await navigator.clipboard.writeText(link);
-          notify("success", "Google Drive link copied. The original PDF was not uploaded again.");
-        } catch {
-          notify("success", "Google Drive link ready. Use Copy link to copy it.");
-        }
-        return;
-      }
-      const cloudResources = [];
+      const shareResources = [];
 
       for (let index = 0; index < selectedResources.length; index += 1) {
         const resource = selectedResources[index];
-        if (resource.cloudItemId) {
-          cloudResources.push(resource);
-        } else {
-          if (!resource.blob) {
-            throw new Error(`${resource.name} is local-only and its PDF is unavailable for automatic upload.`);
-          }
 
-          setShareProgress({
-            stage: "uploading",
-            completed: index,
-            total: selectedResources.length,
-            name: resource.name,
-          });
-          const uploaded = await uploadCloudPdf(resource.blob, resource.courseId || null, {
+        // Google Drive documents stay on Google Drive.
+        if (resource.driveFileId && resource.driveUrl) {
+          shareResources.push(resource);
+          continue;
+        }
+
+        // Already-uploaded RxCT documents need no re-upload.
+        if (resource.cloudItemId) {
+          shareResources.push(resource);
+          continue;
+        }
+
+        // Upload local PDFs to RxCT before sharing.
+        if (!resource.blob) {
+          throw new Error(
+            `${resource.name} is local-only and its PDF is unavailable for automatic upload.`
+          );
+        }
+
+        setShareProgress({
+          stage: "uploading",
+          completed: index,
+          total: selectedResources.length,
+          name: resource.name,
+        });
+
+        const uploaded = await uploadCloudPdf(
+          resource.blob,
+          resource.courseId || null,
+          {
             last_opened_at: resource.lastOpenedAt || null,
             last_opened_section: resource.lastOpenedSection || "Document",
             progress: resource.progress || {},
-          });
-          const syncedResource = cloudItemToResource(uploaded.item, accountId, resource);
-          await saveResource(syncedResource);
-          cloudResources.push(syncedResource);
-        }
+          }
+        );
+
+        const syncedResource = cloudItemToResource(
+          uploaded.item,
+          accountId,
+          resource
+        );
+
+        await saveResource(syncedResource);
+        shareResources.push(syncedResource);
       }
 
-      await refresh();
-      const link = await createLibraryShare(
-        cloudResources,
-        accountId,
-        (progress) => setShareProgress(progress),
-        controller.signal,
-      );
+await refresh();
 
-      if (controller.signal.aborted) return;
+const link = await createLibraryShare(shareResources);
 
+if (controller.signal.aborted) return;
       setShareLink(link);
       setShareProgress({ stage: "complete", completed: shareSelection.length, total: shareSelection.length });
 
