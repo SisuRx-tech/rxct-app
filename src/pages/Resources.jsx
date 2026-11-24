@@ -286,18 +286,215 @@ function Resources() {
     .sort((a, b) => new Date(b.lastOpenedAt) - new Date(a.lastOpenedAt))[0] || null,
   [resources]);
 
+ 
   const handleFile = async (event) => {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files || []);
     event.target.value = "";
 
-    if (!file || !accountId) return;
+    if (!files.length || !accountId) return;
 
-    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-      notify("error", "Please choose a PDF file.");
+    const validFiles = files.filter(
+      (file) =>
+        file.type === "application/pdf" ||
+        file.name.toLowerCase().endsWith(".pdf"),
+    );
+
+    const invalidCount = files.length - validFiles.length;
+
+    if (!validFiles.length) {
+      notify("error", "Please select PDF documents.");
       return;
     }
 
     setUploading(true);
+
+    let savedCount = 0;
+    let duplicateCount = 0;
+    const failures = [];
+    const unassignedResources = [];
+
+    try {
+      for (let index = 0; index < validFiles.length; index += 1) {
+        const file = validFiles[index];
+
+        notify(
+          "progress",
+          `Processing ${index + 1} of ${validFiles.length}: ${file.name}`,
+        );
+
+        try {
+          const contentHash = await hashPdfContent(file);
+          const duplicate = await findDuplicateResource(
+            accountId,
+            contentHash,
+          );
+
+          if (duplicate) {
+            if (duplicate.cloudItemId) {
+              await updateCloudResource(duplicate.cloudItemId, {
+                display_name: file.name,
+              });
+            }
+
+            await renameDuplicateResource(
+              accountId,
+              duplicate,
+              file.name,
+            );
+
+            duplicateCount += 1;
+            continue;
+          }
+
+          const { text, pageCount } = await extractPdfText(file);
+          const documentFingerprint = await fingerprint(file, text);
+
+          const recognition = recognizeCourse(
+            text,
+            OAU_PHARMD_COURSES,
+          );
+
+          const learned = getRememberedCorrection(
+            accountId,
+            documentFingerprint,
+            text,
+          );
+
+          const learnedCourse = learned
+            ? OAU_PHARMD_COURSES.find(
+                (course) => course.id === learned.courseId,
+              )
+            : null;
+
+          const assignedCourse =
+            learnedCourse ||
+            (recognition.highConfidence
+              ? recognition.best?.course
+              : null);
+
+          const now = new Date().toISOString();
+
+          const resource = {
+            id: `${accountId}-${documentFingerprint}`,
+            accountId,
+            fingerprint: documentFingerprint,
+            contentHash,
+            name: file.name,
+            mimeType: "application/pdf",
+            size: file.size,
+            lastModified: file.lastModified,
+            blob: file,
+            text,
+            pageCount,
+            courseId: assignedCourse?.id || null,
+            course: assignedCourse || null,
+            assignmentStatus: learnedCourse
+              ? "learned"
+              : assignedCourse
+                ? "auto"
+                : "unassigned",
+            confidence: learned
+              ? Math.round(learned.confidence * 100)
+              : recognition.confidence,
+            suggestions: recognition.suggestions.map(
+              ({ course, score }) => ({
+                courseId: course.id,
+                score,
+              }),
+            ),
+            createdAt: now,
+            updatedAt: now,
+          };
+
+          let cloudItem = null;
+
+          try {
+            const cloudResult = await uploadCloudPdf(
+              file,
+              assignedCourse?.id || null,
+              {
+                last_opened_section: "Document",
+                progress: {},
+              },
+            );
+
+            cloudItem = cloudResult.item;
+          } catch (cloudError) {
+            console.warn(
+              `Cloud upload failed for ${file.name}:`,
+              cloudError,
+            );
+          }
+
+          const savedResource = cloudItem
+            ? cloudItemToResource(
+                cloudItem,
+                accountId,
+                resource,
+              )
+            : resource;
+
+          await saveResource(savedResource);
+
+          savedCount += 1;
+
+          if (!assignedCourse) {
+            unassignedResources.push({
+              resource: savedResource,
+              suggestedCourseId:
+                recognition.best?.course?.id || "",
+            });
+          }
+        } catch (fileError) {
+          failures.push(
+            `${file.name}: ${fileError.message || "Could not process this file."}`,
+          );
+        }
+      }
+
+      await refresh();
+
+      if (unassignedResources.length) {
+        if (!pendingResources.length) {
+          setPendingCourseId(
+            unassignedResources[0].suggestedCourseId,
+          );
+        }
+
+        setPendingResources((current) => [
+          ...current,
+          ...unassignedResources,
+        ]);
+      }
+
+      const summary = [
+        `${savedCount} saved`,
+        duplicateCount ? `${duplicateCount} duplicates skipped` : "",
+        failures.length ? `${failures.length} failed` : "",
+        invalidCount ? `${invalidCount} unsupported files skipped` : "",
+      ].filter(Boolean).join(" · ");
+
+      if (failures.length || invalidCount) {
+        notify(
+          savedCount || duplicateCount ? "success" : "error",
+          `${summary}${failures.length ? `. ${failures.slice(0, 2).join("; ")}` : ""}`,
+        );
+      } else {
+        notify(
+          "success",
+          `${summary}. Your library has been updated.`,
+        );
+      }
+    } catch (batchError) {
+      notify(
+        "error",
+        batchError.message || "The document batch could not be processed.",
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+   setUploading(true);
     notify("progress", `Reading ${file.name} locally…`);
 
     try {
