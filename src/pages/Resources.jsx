@@ -444,13 +444,31 @@ function Resources() {
 
   const confirmDeleteResource = async () => {
     if (!removeTarget) return;
+
     const resource = removeTarget;
+
     try {
-      if (resource.cloudItemId) await deleteCloudResource(resource.cloudItemId);
+      if (resource.cloudItemId) {
+        try {
+          await deleteCloudResource(resource.cloudItemId);
+        } catch (cloudError) {
+          const message = String(cloudError?.message || "");
+          const alreadyMissing =
+            /resource not found|not in your library|library item not found/i.test(message);
+
+          if (!alreadyMissing) throw cloudError;
+        }
+      }
+
       await removeResource(accountId, resource.id);
-      setPendingResources((current) => current.filter((item) => item.resource.id !== resource.id));
+
+      setPendingResources((current) =>
+        current.filter((item) => item.resource.id !== resource.id)
+      );
+
       setRemoveTarget(null);
       await refresh();
+
       notify("success", "Document removed from this account's library.");
     } catch (deleteError) {
       notify("error", deleteError.message || "Could not remove this document.");
