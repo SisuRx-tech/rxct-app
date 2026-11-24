@@ -1314,14 +1314,15 @@ if (controller.signal.aborted) return;
           <div className={styles.heroActions}>
             <button className={styles.primaryAction} type="button" onClick={openUpload} disabled={uploading}>
               <i className="fa-solid fa-cloud-arrow-up" />
-              {uploading ? "Reading PDF…" : "Upload document"}
+              {uploading ? "Reading PDFs…" : "Upload documents"}
             </button>
             <span>{levelLabel || "Your course-aware archive"}</span>
           </div>
-          <input
+                    <input
             ref={fileInput}
             type="file"
             accept="application/pdf,.pdf"
+            multiple
             onChange={handleFile}
             hidden
           />
