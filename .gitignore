@@ -31,3 +31,7 @@ dist-ssr
 .env
 .env.*
 .env
+
+# Local backup files
+*.bak
+*.replaced

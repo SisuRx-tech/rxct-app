@@ -71,7 +71,7 @@
 }
 
 .welcome .eyebrow {
-  color: #efc69f;
+  color: var(--accent);
 }
 
 .welcome h1 {
@@ -84,7 +84,7 @@
 }
 
 .welcome h1 span {
-  color: #efc69f;
+  color: var(--accent);
 }
 
 .welcome p {
@@ -127,7 +127,7 @@
 }
 
 .asideLink:hover {
-  color: #efc69f;
+  color: var(--accent);
 }
 
 .asideLink i {

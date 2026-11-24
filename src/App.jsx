@@ -1,5 +1,13 @@
 import "./App.css";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+
+import { AuthProvider } from "./context/AuthContext";
+import { useAuth } from "./context/useAuth";
+
+import AuthScreen from "./components/auth/AuthScreen";
+import ResetPassword from "./components/auth/ResetPassword";
+import Splash from "./components/Splash";
+
 import AppLayout from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Medicines from "./pages/Medicines";
@@ -8,7 +16,23 @@ import History from "./pages/History";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
-function App() {
+function AuthGate() {
+  const { user, loading, isPasswordRecovery } = useAuth();
+  const location = useLocation();
+
+  if (loading) return null;
+
+  if (
+    location.pathname === "/reset-password" ||
+    isPasswordRecovery
+  ) {
+    return <ResetPassword />;
+  }
+
+  if (!user) {
+    return <AuthScreen />;
+  }
+
   return (
     <Routes>
       <Route element={<AppLayout />}>
@@ -22,6 +46,15 @@ function App() {
       <Route path="/settings" element={<Settings />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AuthGate />
+      <Splash />
+    </AuthProvider>
   );
 }
 

@@ -1,0 +1,23 @@
+/* ========================================
+   SCIENTIFIC TEXT
+   Subscripts and superscripts that do not
+   push the lines of a paragraph apart.
+======================================== */
+
+.sub,
+.sup {
+  position: relative;
+
+  font-size: 0.72em;
+  font-weight: inherit;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+.sub {
+  bottom: -0.28em;
+}
+
+.sup {
+  top: -0.5em;
+}

@@ -1,0 +1,1735 @@
+=== src/services/medicines.js ===
+import { supabase } from "./supabase";
+import { executeRequest } from "./diagnostics/executeRequest";
+
+export async function getMedicineByName(name) {
+  return executeRequest(
+    "getMedicineByName",
+    async () => {
+      const { data, error } = await supabase
+        .from("medicines")
+        .select(
+          "name, drug_class, medicine_sections(id, section, body, review_status, sources(name))",
+        )
+        .eq("name", name)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    { query: name },
+  );
+}
+
+export async function searchMedicines(q) {
+  return executeRequest(
+    "searchMedicines",
+    async () => {
+      const { data, error } = await supabase.rpc("search_medicines", { q });
+
+      if (error) throw error;
+      return data;
+    },
+    { query: q },
+  );
+}
+
+export async function getDrugClasses() {
+  return executeRequest("getDrugClasses", async () => {
+    const { data, error } = await supabase
+      .from("medicines")
+      .select("drug_class")
+      .not("drug_class", "is", null)
+      .order("drug_class");
+
+    if (error) throw error;
+
+    return [...new Set(data.map((item) => item.drug_class))];
+  });
+}
+export async function getTherapeuticGroups() {
+  return executeRequest("getTherapeuticGroups", async () => {
+    const { data, error } = await supabase
+      .from("drug_class_groups")
+      .select("id, name, sort_order, drug_class_group_members(drug_class)")
+      .order("sort_order");
+
+    if (error) throw error;
+
+    return data;
+  });
+}
+export async function getMedicinesByClass(drugClass) {
+  return executeRequest(
+    "getMedicinesByClass",
+    async () => {
+      const { data, error } = await supabase
+        .from("medicines")
+        .select("id, name, drug_class")
+        .eq("drug_class", drugClass)
+        .order("name");
+
+      if (error) throw error;
+      return data;
+    },
+    { query: drugClass },
+  );
+}
+
+export async function getClassStudy(drugClass) {
+  return executeRequest(
+    "getClassStudy",
+    async () => {
+      const { data, error } = await supabase
+        .from("medicines")
+        .select("id, name, drug_class, medicine_sections(id, section, body, review_status, sources(name))")
+        .eq("drug_class", drugClass)
+        .order("name");
+
+      if (error) throw error;
+      return data;
+    },
+    { query: drugClass },
+  );
+}
+
+export async function searchDrugClasses(q) {
+  return executeRequest(
+    "searchDrugClasses",
+    async () => {
+      const { data, error } = await supabase.rpc("search_drug_classes", {
+        q,
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    { query: q },
+  );
+}
+
+export async function searchSuggestions(q) {
+  return executeRequest(
+    "searchSuggestions",
+    async () => {
+      const { data, error } = await supabase.rpc("search_suggestions", {
+        q,
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    { query: q },
+  );
+}
+
+/* ------------------------------------------------------------------
+   Smart search
+   ------------------------------------------------------------------
+   One entry point for the whole search bar. The UI calls smartSearch()
+   and renders whatever comes back. It never needs to know which
+   Supabase function produced a result.
+
+   Pipeline:
+     query -> parse_search_query (subject + intent)
+           -> search_medicines / search_drug_classes / search_interactions
+           -> one normalised result object
+------------------------------------------------------------------ */
+
+// RxCT deliberately has no dosing content. Dosing errors can be fatal.
+export const DOSAGE_NOTICE =
+  "RxCT does not include dosing. Dosing errors can cause serious harm, " +
+  "so check the BNF, the product label, or a pharmacist for doses.";
+
+// A medicine counts as a confident match at or above this score.
+// Below it, the UI should show "Did you mean" instead of jumping in.
+const CONFIDENT_SCORE = 0.75;
+
+// Which of the 5 medicine sections a search intent should open first.
+// There is no dosing section, so "dosage" falls back to the overview.
+export const INTENT_TO_SECTION = {
+  overview: "overview",
+  indications: "indications",
+  adverse_effects: "adverse_effects",
+  contraindications: "contraindications",
+  interactions: "interactions",
+  dosage: "overview",
+};
+
+export async function parseSearchQuery(q) {
+  return executeRequest(
+    "parseSearchQuery",
+    async () => {
+      const { data, error } = await supabase.rpc("parse_search_query", { q });
+
+      if (error) throw error;
+      return data?.[0] ?? null;
+    },
+    { query: q },
+  );
+}
+
+export async function searchInteractions(q) {
+  return executeRequest(
+    "searchInteractions",
+    async () => {
+      const { data, error } = await supabase.rpc("search_interactions", { q });
+
+      if (error) throw error;
+      return data;
+    },
+    { query: q },
+  );
+}
+
+// search_drug_classes returns one flat row per (class, medicine).
+// This folds those rows into { type, title, slug, classes: [...] }.
+export function groupClassRows(rows) {
+  if (!rows || rows.length === 0) return null;
+
+  const first = rows[0];
+  const isGroup = first.result_type === "group";
+  const byClass = new Map();
+
+  for (const row of rows) {
+    if (!byClass.has(row.drug_class)) {
+      byClass.set(row.drug_class, []);
+    }
+
+    byClass.get(row.drug_class).push({
+      id: row.medicine_id,
+      name: row.medicine_name,
+    });
+  }
+
+  return {
+    type: isGroup ? "group" : "classes",
+    title: isGroup ? first.group_name : null,
+    slug: isGroup ? first.group_slug : null,
+    classes: [...byClass].map(([drugClass, medicines]) => ({
+      drugClass,
+      medicines,
+    })),
+    medicineCount: rows.length,
+  };
+}
+
+/*
+  smartSearch(query) always resolves to this shape:
+
+  {
+    kind:         "medicines" | "classes" | "none",
+    query:        what the user typed,
+    subject:      the query with intent words stripped ("warfarin"),
+    intent:       "overview" | "indications" | "adverse_effects" |
+                  "contraindications" | "interactions" | "dosage",
+    openSection:  which medicine section to open first,
+    notice:       a message to show above results, or null,
+    didYouMean:   true when the medicine matches are weak,
+    medicines:    [{ id, name, drug_class, matched_term, score }],
+    classResult:  output of groupClassRows(), or null,
+    interactions: [{ medicine_id, medicine_name, drug_class, snippet }],
+  }
+*/
+export async function smartSearch(rawQuery) {
+  const query = (rawQuery ?? "").trim();
+
+  const empty = {
+    kind: "none",
+    query,
+    subject: "",
+    intent: "overview",
+    openSection: "overview",
+    notice: null,
+    didYouMean: false,
+    medicines: [],
+    classResult: null,
+    interactions: [],
+  };
+
+  if (!query) return empty;
+
+  const parsed = await parseSearchQuery(query);
+
+  const subject = parsed?.subject ?? query;
+  const intent = parsed?.intent ?? "overview";
+  const wantsClass = parsed?.wants_class ?? false;
+
+  const base = {
+    ...empty,
+    subject,
+    intent,
+    openSection: INTENT_TO_SECTION[intent] ?? "overview",
+    notice: intent === "dosage" ? DOSAGE_NOTICE : null,
+  };
+
+  // Everything was an intent word ("dosage" on its own): nothing to search.
+  if (!subject) return base;
+
+  const [medicines, classRows, interactions] = await Promise.all([
+    searchMedicines(query),
+    searchDrugClasses(query),
+    intent === "interactions" ? searchInteractions(query) : Promise.resolve([]),
+  ]);
+
+  const classResult = groupClassRows(classRows);
+  const topScore = medicines[0]?.score ?? 0;
+  const hasConfidentMedicine = topScore >= CONFIDENT_SCORE;
+
+  let kind = "none";
+
+  if (wantsClass && classResult) {
+    kind = "classes";
+  } else if (hasConfidentMedicine) {
+    kind = "medicines";
+  } else if (classResult) {
+    kind = "classes";
+  } else if (medicines.length > 0) {
+    kind = "medicines";
+  }
+
+  return {
+    ...base,
+    kind,
+    didYouMean: kind === "medicines" && !hasConfidentMedicine,
+    medicines,
+    classResult,
+    interactions,
+  };
+}
+
+=== src/services/studyContext.js ===
+/* ========================================
+   STUDY CONTEXT
+   What the student is looking at right now.
+   Jotter reads this so a note is attached
+   to the medicine, class or group and the
+   section being studied.
+
+   { type, name, className, groupName,
+     section }  or  null
+======================================== */
+
+let current = null;
+const listeners = new Set();
+
+export const getStudyContext = () => current;
+
+export function setStudyContext(next) {
+  current = next;
+  listeners.forEach((listener) => listener(current));
+}
+
+export function subscribeStudyContext(listener) {
+  listeners.add(listener);
+
+  return () => listeners.delete(listener);
+}
+
+=== src/services/activity.js ===
+/* ========================================
+   STUDY ACTIVITY
+   Recent activity and the resume point.
+
+   Uses the same storage keys the Medicines
+   page has always used. Moves to IndexedDB
+   with the offline phase.
+======================================== */
+
+const HISTORY_KEY = "rxct-medicine-history";
+const PROGRESS_KEY = "rxct-study-progress";
+const HISTORY_LIMIT = 30;
+
+const readStorage = (key, fallback) => {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const writeStorage = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Storage may be unavailable or full.
+  }
+};
+
+const same = (a, b) =>
+  a.type === b.type &&
+  String(a.name).toLowerCase() === String(b.name).toLowerCase();
+
+export function getRecentActivity(limit = 5) {
+  const history = readStorage(HISTORY_KEY, []);
+
+  return Array.isArray(history) ? history.slice(0, limit) : [];
+}
+
+// Record that a medicine, class or group was opened.
+export function recordVisit({ type, name }) {
+  const item = { type, name };
+  const history = readStorage(HISTORY_KEY, []);
+
+  writeStorage(
+    HISTORY_KEY,
+    [
+      { ...item, visitedAt: new Date().toISOString() },
+      ...history.filter((entry) => !same(entry, item)),
+    ].slice(0, HISTORY_LIMIT),
+  );
+}
+
+export function getResumePoint() {
+  const progress = readStorage(PROGRESS_KEY, null);
+
+  if (!progress?.destination) return null;
+
+  return {
+    destination: progress.destination,
+    title: progress.title || progress.name || "",
+    section: progress.section || "",
+  };
+}
+
+// The place to pick up from: where, and in which section.
+export function saveResume({ destination, title, section }) {
+  writeStorage(PROGRESS_KEY, { destination, title, section });
+}
+
+=== src/services/notes.js ===
+/* ========================================
+   MEDICINE NOTES
+   Notes written in Jotter. They are grouped
+   by what the student was studying, so each
+   medicine, class or group has one note
+   collection that entries are added to,
+   never a pile of duplicate records.
+
+   {
+     "medicine:amoxicillin": {
+       type, name, className, groupName,
+       entries: [{ id, text, section, createdAt }]
+     }
+   }
+
+   Stored on the device. Resources reads it
+   from here.
+======================================== */
+
+const NOTES_KEY = "rxct-medicine-notes-v1";
+const DRAFT_KEY = "rxct-jotter-draft";
+
+const read = (key, fallback) => {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const write = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const entityKey = (context) =>
+  context ? `${context.type}:${context.name.toLowerCase()}` : "general";
+
+export function addNote(context, text) {
+  const all = read(NOTES_KEY, {});
+  const key = entityKey(context);
+
+  const collection = all[key] || {
+    type: context?.type || "general",
+    name: context?.name || "General",
+    className: context?.className || null,
+    groupName: context?.groupName || null,
+    entries: [],
+  };
+
+  collection.entries.unshift({
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    text,
+    section: context?.sectionLabel || null,
+    createdAt: new Date().toISOString(),
+  });
+
+  all[key] = collection;
+
+  return write(NOTES_KEY, all);
+}
+
+export const getAllNotes = () => read(NOTES_KEY, {});
+
+// An unfinished note survives closing Jotter or reloading the page.
+export const getDraft = () => read(DRAFT_KEY, "");
+
+export function saveDraft(text) {
+  write(DRAFT_KEY, text);
+}
+
+export function clearDraft() {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {
+    // Nothing to clear.
+  }
+}
+
+=== src/services/landing.js ===
+import { supabase } from "./supabase";
+import { executeRequest } from "./diagnostics/executeRequest";
+
+/* ========================================
+   LANDING PAGE DATA
+   Classes (with how many medicines each
+   holds and which group they belong to)
+   and the therapeutic groups.
+======================================== */
+
+const FEATURED_LIMIT = 5;
+
+const normalise = (value = "") => String(value).trim().toLowerCase();
+
+export async function getLandingData() {
+  return executeRequest("getLandingData", async () => {
+    const [classResult, groupResult] = await Promise.all([
+      supabase
+        .from("drug_classes")
+        .select("id, name, slug, medicines(name)")
+        .order("name"),
+
+      supabase
+        .from("drug_class_groups")
+        .select(
+          "id, name, sort_order, drug_class_group_members(drug_class)",
+        )
+        .order("sort_order"),
+    ]);
+
+    if (classResult.error) throw classResult.error;
+    if (groupResult.error) throw groupResult.error;
+
+    // class name -> the first group that contains it
+    const groupOfClass = new Map();
+
+    for (const group of groupResult.data) {
+      for (const member of group.drug_class_group_members || []) {
+        const key = normalise(member.drug_class);
+
+        if (!groupOfClass.has(key)) {
+          groupOfClass.set(key, group.name);
+        }
+      }
+    }
+
+    const classes = classResult.data
+      .map((row) => {
+        const names = (row.medicines || [])
+          .map((medicine) => medicine.name)
+          .sort((a, b) => a.localeCompare(b));
+
+        return {
+          id: row.id,
+          name: row.name,
+          medicineCount: names.length,
+          members: names.slice(0, 3),
+          groupName: groupOfClass.get(normalise(row.name)) || "",
+        };
+      })
+      .filter((item) => item.medicineCount > 0);
+
+    return { classes };
+  });
+}
+
+/* ========================================
+   WHICH CLASSES TO FEATURE
+   Restrained on purpose: classes the
+   student explored recently come first,
+   then the classes with the most medicines
+   in the catalogue. Never more than five.
+======================================== */
+
+export function pickFeaturedClasses(classes, recentActivity = []) {
+  const recentNames = recentActivity
+    .filter((item) => item.type === "class")
+    .map((item) => normalise(item.name));
+
+  const recentRank = (item) => {
+    const index = recentNames.indexOf(normalise(item.name));
+
+    return index === -1 ? Infinity : index;
+  };
+
+  return [...classes]
+    .sort((a, b) => {
+      const byRecent = recentRank(a) - recentRank(b);
+
+      // Infinity - Infinity is NaN, so compare explicitly
+      if (recentRank(a) !== recentRank(b)) return byRecent < 0 ? -1 : 1;
+
+      if (b.medicineCount !== a.medicineCount) {
+        return b.medicineCount - a.medicineCount;
+      }
+
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, FEATURED_LIMIT);
+}
+
+=== src/services/supabase.js ===
+import  {createClient} from '@supabase/supabase-js'
+const supabaseURL = import.meta.env.VITE_SUPABASE_URL
+const supabaseKEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+export const supabase = createClient(supabaseURL, supabaseKEY)
+
+=== src/services/activity.js.bak ===
+/* ========================================
+   STUDY ACTIVITY
+   One place that reads the student's
+   recent activity and resume point.
+
+   Uses the same storage keys the Medicines
+   page already writes, so nothing is lost.
+   This moves to IndexedDB with the offline
+   work later; only this file will change.
+======================================== */
+
+const HISTORY_KEY = "rxct-medicine-history";
+const PROGRESS_KEY = "rxct-study-progress";
+
+const readStorage = (key, fallback) => {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+// Most recently explored medicines, classes and groups.
+export function getRecentActivity(limit = 5) {
+  const history = readStorage(HISTORY_KEY, []);
+
+  return Array.isArray(history) ? history.slice(0, limit) : [];
+}
+
+// The study session the student can pick back up, or null.
+// Only returned when it points somewhere real.
+export function getResumePoint() {
+  const progress = readStorage(PROGRESS_KEY, null);
+
+  if (!progress?.destination) return null;
+
+  return {
+    destination: progress.destination,
+    title: progress.title || progress.name || "",
+    section: progress.section || "",
+  };
+}
+
+=== src/services/readingState.js ===
+/* ========================================
+   READING STATE
+   Remembers, per medicine / class / group:
+   the active section, scroll position per
+   section and which subsections are open.
+
+   Stored on the device so it also works
+   offline. Moves to IndexedDB with the
+   offline phase; only this file changes.
+======================================== */
+
+const STORAGE_KEY = "rxct-reading-state-v1";
+const MAX_ENTRIES = 60;
+const SAVE_DELAY = 400;
+
+let cache = null;
+let timer = 0;
+
+const load = () => {
+  if (cache) return cache;
+
+  try {
+    cache = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch {
+    cache = {};
+  }
+
+  return cache;
+};
+
+const persist = () => {
+  const all = load();
+  const keys = Object.keys(all);
+
+  if (keys.length > MAX_ENTRIES) {
+    keys
+      .sort((a, b) => (all[a].updatedAt || 0) - (all[b].updatedAt || 0))
+      .slice(0, keys.length - MAX_ENTRIES)
+      .forEach((key) => delete all[key]);
+  }
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  } catch {
+    // Storage may be unavailable or full.
+  }
+};
+
+const schedulePersist = () => {
+  clearTimeout(timer);
+  timer = setTimeout(persist, SAVE_DELAY);
+};
+
+export function getReadingState(key) {
+  return load()[key] || null;
+}
+
+export function saveReadingState(key, patch) {
+  const all = load();
+  const current = all[key] || {};
+
+  all[key] = {
+    ...current,
+    ...patch,
+    scroll: { ...current.scroll, ...patch.scroll },
+    expanded: { ...current.expanded, ...patch.expanded },
+    updatedAt: Date.now(),
+  };
+
+  schedulePersist();
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("pagehide", () => {
+    clearTimeout(timer);
+    persist();
+  });
+}
+
+=== src/services/diagnostics/reportError.js ===
+import { classifyError } from "./classifyError";
+import { getUserErrorMessage } from "./messages";
+
+function generateRequestId() {
+  if (globalThis.crypto?.randomUUID) {
+return `rxct_${globalThis.crypto.randomUUID()}`;
+  }
+
+  return `rxct_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+export function reportError({
+  operation,
+  error,
+  durationMs,
+  query = null,
+}) {
+  const category = classifyError(error);
+
+  const diagnostic = {
+    requestId: generateRequestId(),
+    timestamp: new Date().toISOString(),
+    operation,
+    category,
+    durationMs,
+    query,
+    error: {
+      name: error?.name || "UnknownError",
+      code: error?.code || null,
+      status: error?.status || error?.statusCode || null,
+      message: error?.message || "Unknown error",
+      details: error?.details || null,
+      hint: error?.hint || null,
+    },
+  };
+
+  if (import.meta.env.DEV) {
+    console.error("[RxCT Diagnostic]", diagnostic);
+  }
+
+  return {
+    ...diagnostic,
+    userMessage: getUserErrorMessage(category),
+  };
+}
+=== src/services/diagnostics/executeRequest.js ===
+import { reportError } from "./reportError";
+
+export async function executeRequest(operation, request, context = {}) {
+  const startedAt = Date.now();
+
+  try {
+    return await request();
+  } catch (error) {
+    const diagnostic = reportError({
+      operation,
+      error,
+      durationMs: Date.now() - startedAt,
+      query: context.query || null,
+    });
+
+    const appError = new Error(error?.message || "Request failed", {
+      cause: error,
+    });
+
+    Object.assign(appError, {
+      code: error?.code,
+      status: error?.status || error?.statusCode,
+      details: error?.details,
+      hint: error?.hint,
+      diagnostic,
+    });
+
+    throw appError;
+  }
+}
+=== src/services/diagnostics/classifyError.js ===
+const NETWORK_CODES = ["FETCH_ERROR", "NETWORK_ERROR"];
+
+const TIMEOUT_CODES = ["57014", "ETIMEDOUT", "ESOCKETTIMEDOUT"];
+
+const PERMISSION_CODES = ["42501", "401", "403"];
+
+const NOT_FOUND_CODES = ["PGRST116", "404"];
+
+const VALIDATION_CODES = ["22P02", "23502", "23503", "23505"];
+
+export function classifyError(error) {
+  const code = String(error?.code || "").toUpperCase();
+  const status = Number(error?.status || error?.statusCode);
+  const message = String(error?.message || "").toLowerCase();
+
+  if (
+    TIMEOUT_CODES.includes(code) ||
+    message.includes("timeout") ||
+    message.includes("timed out")
+  ) {
+    return "TIMEOUT";
+  }
+
+  if (
+    NETWORK_CODES.includes(code) ||
+    message.includes("failed to fetch") ||
+    message.includes("network request failed") ||
+    message.includes("networkerror")
+  ) {
+    return "NETWORK";
+  }
+
+  if (
+    PERMISSION_CODES.includes(code) ||
+    status === 401 ||
+    status === 403
+  ) {
+    return "PERMISSION";
+  }
+
+  if (
+    NOT_FOUND_CODES.includes(code) ||
+    status === 404
+  ) {
+    return "NOT_FOUND";
+  }
+
+  if (VALIDATION_CODES.includes(code)) {
+    return "VALIDATION";
+  }
+
+  if (
+    status >= 500 ||
+    code.startsWith("08") ||
+    code.startsWith("53")
+  ) {
+    return "SERVER";
+  }
+
+  if (code || error?.details || error?.hint) {
+    return "DATABASE";
+  }
+
+  return "UNKNOWN";
+}
+=== src/services/diagnostics/messages.js ===
+const ERROR_MESSAGES = {
+  NETWORK: {
+    title: "Connection problem",
+    message:
+      "RxCT couldn't reach the server. Check your internet connection and try again.",
+    action: "Retry",
+  },
+
+  TIMEOUT: {
+    title: "Request took too long",
+    message:
+      "The server didn't respond in time. Your connection may be slow, or the service may be busy.",
+    action: "Try again",
+  },
+
+  DATABASE: {
+    title: "Information retrieval failed",
+    message:
+      "RxCT encountered a problem retrieving this information. Please try again shortly.",
+    action: "Retry",
+  },
+
+  PERMISSION: {
+    title: "Access restricted",
+    message:
+      "Your account doesn't currently have permission to access this information.",
+    action: "Check access",
+  },
+
+  NOT_FOUND: {
+    title: "Information not found",
+    message:
+      "RxCT couldn't retrieve the requested record. It may not exist or may no longer be available.",
+    action: "Go back",
+  },
+
+  VALIDATION: {
+    title: "Request could not be processed",
+    message:
+      "Something about this request wasn't accepted. Check your input and try again.",
+    action: "Review input",
+  },
+
+  SERVER: {
+    title: "Service temporarily unavailable",
+    message:
+      "RxCT is having trouble processing your request. Please try again shortly.",
+    action: "Retry",
+  },
+
+  UNKNOWN: {
+    title: "Something went wrong",
+    message:
+      "RxCT encountered an unexpected problem. Please try again.",
+    action: "Retry",
+  },
+};
+
+export function getUserErrorMessage(category) {
+  return ERROR_MESSAGES[category] || ERROR_MESSAGES.UNKNOWN;
+}
+=== src/services/profiles.js.bak ===
+import { supabase } from "./supabase";
+import { executeRequest } from "./diagnostics/executeRequest";
+import { smartSearch } from "./medicines";
+
+/* ========================================
+   STUDY PROFILE DATA
+   Loads one medicine, drug class or
+   therapeutic group with everything its
+   profile needs, and works out which of
+   the three a search term means.
+======================================== */
+
+const DIRECT_MATCH_SCORE = 0.95;
+
+// Escapes % and _ so names are matched literally.
+const escapeLike = (value) =>
+  String(value).trim().replace(/[\\%_]/g, (match) => "\\" + match);
+
+/* ========================================
+   SAVED COPIES (offline)
+   The last few profiles opened are kept on
+   the device so they still open without a
+   connection.
+======================================== */
+
+const CACHE_KEY = "rxct-profile-cache-v1";
+const CACHE_LIMIT = 12;
+
+const readCache = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CACHE_KEY)) || {};
+  } catch {
+    return {};
+  }
+};
+
+const writeCache = (key, value) => {
+  const all = readCache();
+
+  all[key] = { value, at: Date.now() };
+
+  Object.keys(all)
+    .sort((a, b) => all[b].at - all[a].at)
+    .slice(CACHE_LIMIT)
+    .forEach((old) => delete all[old]);
+
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(all));
+  } catch {
+    // Storage may be full. The profile still works online.
+  }
+};
+
+async function withSavedCopy(key, load) {
+  try {
+    const value = await load();
+
+    if (value) writeCache(key, value);
+
+    return value;
+  } catch (error) {
+    const saved = readCache()[key];
+
+    if (saved) return { ...saved.value, fromCache: true };
+
+    throw error;
+  }
+}
+
+/* ========================================
+   RELATIONS
+======================================== */
+
+async function getGroupOfClass(className) {
+  if (!className) return null;
+
+  const { data, error } = await supabase
+    .from("drug_class_group_members")
+    .select("drug_class_groups(id, name)")
+    .ilike("drug_class", escapeLike(className))
+    .limit(1);
+
+  if (error) throw error;
+
+  return data?.[0]?.drug_class_groups || null;
+}
+
+/* ========================================
+   LOOK-UPS
+   Light queries that only answer "does this
+   name exist, and what is it called".
+======================================== */
+
+async function lookupMedicine(name) {
+  const { data, error } = await supabase
+    .from("medicines")
+    .select("name")
+    .ilike("name", escapeLike(name))
+    .limit(1);
+
+  if (error) throw error;
+
+  return data?.[0]?.name || null;
+}
+
+async function lookupClass(name) {
+  const direct = await supabase
+    .from("drug_classes")
+    .select("name")
+    .ilike("name", escapeLike(name))
+    .limit(1);
+
+  if (direct.error) throw direct.error;
+  if (direct.data?.[0]) return direct.data[0].name;
+
+  const alias = await supabase
+    .from("drug_class_aliases")
+    .select("drug_class")
+    .ilike("alias", escapeLike(name))
+    .limit(1);
+
+  if (alias.error) throw alias.error;
+
+  return alias.data?.[0]?.drug_class || null;
+}
+
+async function lookupGroup(name) {
+  const direct = await supabase
+    .from("drug_class_groups")
+    .select("name")
+    .ilike("name", escapeLike(name))
+    .limit(1);
+
+  if (direct.error) throw direct.error;
+  if (direct.data?.[0]) return direct.data[0].name;
+
+  const alias = await supabase
+    .from("drug_class_group_aliases")
+    .select("drug_class_groups(name)")
+    .ilike("alias", escapeLike(name))
+    .limit(1);
+
+  if (alias.error) throw alias.error;
+
+  return alias.data?.[0]?.drug_class_groups?.name || null;
+}
+
+/* ========================================
+   PROFILES
+======================================== */
+
+export function getMedicineProfile(name) {
+  return executeRequest(
+    "getMedicineProfile",
+    () =>
+      withSavedCopy(`medicine:${name.toLowerCase()}`, async () => {
+        const { data, error } = await supabase
+          .from("medicines")
+          .select(
+            "id, name, drug_class, medicine_sections(id, section, body, review_status, sources(name))",
+          )
+          .ilike("name", escapeLike(name))
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!data) return null;
+
+        return { ...data, group: await getGroupOfClass(data.drug_class) };
+      }),
+    { query: name },
+  );
+}
+
+export function getClassProfile(name) {
+  return executeRequest(
+    "getClassProfile",
+    () =>
+      withSavedCopy(`class:${name.toLowerCase()}`, async () => {
+        const { data: drugClass, error } = await supabase
+          .from("drug_classes")
+          .select("id, name, slug, description")
+          .ilike("name", escapeLike(name))
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!drugClass) return null;
+
+        const [content, medicines, group] = await Promise.all([
+          supabase
+            .from("class_content")
+            .select("section, body, review_status, sources(name)")
+            .eq("class_id", drugClass.id),
+
+          supabase
+            .from("medicines")
+            .select("id, name")
+            .eq("class_id", drugClass.id)
+            .order("name"),
+
+          getGroupOfClass(drugClass.name),
+        ]);
+
+        if (content.error) throw content.error;
+        if (medicines.error) throw medicines.error;
+
+        return {
+          ...drugClass,
+          content: content.data || [],
+          medicines: medicines.data || [],
+          group,
+        };
+      }),
+    { query: name },
+  );
+}
+
+export function getGroupProfile(name) {
+  return executeRequest(
+    "getGroupProfile",
+    () =>
+      withSavedCopy(`group:${name.toLowerCase()}`, async () => {
+        const { data: group, error } = await supabase
+          .from("drug_class_groups")
+          .select(
+            "id, name, slug, description, drug_class_group_members(drug_class)",
+          )
+          .ilike("name", escapeLike(name))
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!group) return null;
+
+        const [content, classRows] = await Promise.all([
+          supabase
+            .from("group_content")
+            .select("section, body, review_status, sources(name)")
+            .eq("group_id", group.id),
+
+          supabase.from("drug_classes").select("id, name, medicines(count)"),
+        ]);
+
+        if (content.error) throw content.error;
+        if (classRows.error) throw classRows.error;
+
+        const wanted = new Set(
+          group.drug_class_group_members.map((member) =>
+            member.drug_class.toLowerCase(),
+          ),
+        );
+
+        const classes = classRows.data
+          .filter((item) => wanted.has(item.name.toLowerCase()))
+          .map((item) => ({
+            id: item.id,
+            name: item.name,
+            medicineCount: item.medicines?.[0]?.count ?? 0,
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        return {
+          id: group.id,
+          name: group.name,
+          slug: group.slug,
+          description: group.description,
+          content: content.data || [],
+          classes,
+        };
+      }),
+    { query: name },
+  );
+}
+
+/* ========================================
+   SEARCH
+   Results are kept for the session so going
+   back restores them without searching again.
+======================================== */
+
+const searchCache = new Map();
+
+async function runSearch(query) {
+  const key = query.trim().toLowerCase();
+
+  if (!searchCache.has(key)) {
+    searchCache.set(key, await smartSearch(query));
+  }
+
+  return searchCache.get(key);
+}
+
+// One clear winner opens its profile. Anything less clear shows a list.
+const pickDirectMatch = (found) => {
+  if (found.kind !== "medicines" || found.didYouMean) return null;
+
+  const [top, second] = found.medicines;
+
+  if (!top || top.score < DIRECT_MATCH_SCORE) return null;
+  if (second && second.score >= DIRECT_MATCH_SCORE) return null;
+
+  return top;
+};
+
+/* ========================================
+   RESOLVE
+   Turns whatever the student searched into
+   one of: a medicine, a class, a group, or
+   a list of search results.
+
+   Explicit names always win. Search only
+   runs when nothing matches exactly.
+======================================== */
+
+const PROFILE_LOADERS = {
+  medicine: getMedicineProfile,
+  class: getClassProfile,
+  group: getGroupProfile,
+};
+
+const LOOKUPS = {
+  medicine: lookupMedicine,
+  class: lookupClass,
+  group: lookupGroup,
+};
+
+export async function resolveQuery(query, kind) {
+  const kinds = LOOKUPS[kind] ? [kind] : ["medicine", "class", "group"];
+
+  const names = await Promise.all(
+    kinds.map((type) => LOOKUPS[type](query).catch(() => null)),
+  );
+
+  const index = names.findIndex(Boolean);
+
+  if (index !== -1) {
+    const type = kinds[index];
+    const data = await PROFILE_LOADERS[type](names[index]);
+
+    if (data) return { type, name: data.name, data };
+  }
+
+  const found = await runSearch(query);
+  const direct = pickDirectMatch(found);
+
+  if (direct) {
+    const data = await getMedicineProfile(direct.name);
+
+    if (data) {
+      const viaOtherName =
+        direct.matched_term &&
+        direct.matched_term.toLowerCase() !== direct.name.toLowerCase();
+
+      return {
+        type: "medicine",
+        name: data.name,
+        data,
+        openSection: found.openSection,
+        notice: found.notice,
+        matchedNote: viaOtherName
+          ? `Showing ${direct.name}, matched from "${direct.matched_term}".`
+          : null,
+      };
+    }
+  }
+
+  return { type: "search", found };
+}
+
+=== src/services/profiles.js ===
+import { supabase } from "./supabase";
+import { executeRequest } from "./diagnostics/executeRequest";
+import { smartSearch } from "./medicines";
+
+/* ========================================
+   STUDY PROFILE DATA
+   Loads one medicine, drug class or
+   therapeutic group with everything its
+   profile needs, and works out which of
+   the three a search term means.
+======================================== */
+
+const DIRECT_MATCH_SCORE = 0.95;
+
+// Escapes % and _ so names are matched literally.
+const escapeLike = (value) =>
+  String(value).trim().replace(/[\\%_]/g, (match) => "\\" + match);
+
+/* ========================================
+   SAVED COPIES (offline)
+   The last few profiles opened are kept on
+   the device so they still open without a
+   connection.
+======================================== */
+
+const CACHE_KEY = "rxct-profile-cache-v1";
+const CACHE_LIMIT = 12;
+
+const readCache = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CACHE_KEY)) || {};
+  } catch {
+    return {};
+  }
+};
+
+const writeCache = (key, value) => {
+  const all = readCache();
+
+  all[key] = { value, at: Date.now() };
+
+  Object.keys(all)
+    .sort((a, b) => all[b].at - all[a].at)
+    .slice(CACHE_LIMIT)
+    .forEach((old) => delete all[old]);
+
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(all));
+  } catch {
+    // Storage may be full. The profile still works online.
+  }
+};
+
+async function withSavedCopy(key, load) {
+  try {
+    const value = await load();
+
+    if (value) writeCache(key, value);
+
+    return value;
+  } catch (error) {
+    const saved = readCache()[key];
+
+    if (saved) return { ...saved.value, fromCache: true };
+
+    throw error;
+  }
+}
+
+/* ========================================
+   RELATIONS
+======================================== */
+
+async function getGroupOfClass(className) {
+  if (!className) return null;
+
+  const { data, error } = await supabase
+    .from("drug_class_group_members")
+    .select("drug_class_groups(id, name)")
+    .ilike("drug_class", escapeLike(className))
+    .limit(1);
+
+  if (error) throw error;
+
+  return data?.[0]?.drug_class_groups || null;
+}
+
+/* ========================================
+   LOOK-UPS
+   Light queries that only answer "does this
+   name exist, and what is it called".
+======================================== */
+
+async function lookupMedicine(name) {
+  const { data, error } = await supabase
+    .from("medicines")
+    .select("name")
+    .ilike("name", escapeLike(name))
+    .limit(1);
+
+  if (error) throw error;
+
+  return data?.[0]?.name || null;
+}
+
+async function lookupClass(name) {
+  const direct = await supabase
+    .from("drug_classes")
+    .select("name")
+    .ilike("name", escapeLike(name))
+    .limit(1);
+
+  if (direct.error) throw direct.error;
+  if (direct.data?.[0]) return direct.data[0].name;
+
+  const alias = await supabase
+    .from("drug_class_aliases")
+    .select("drug_class")
+    .ilike("alias", escapeLike(name))
+    .limit(1);
+
+  if (alias.error) throw alias.error;
+
+  return alias.data?.[0]?.drug_class || null;
+}
+
+async function lookupGroup(name) {
+  const direct = await supabase
+    .from("drug_class_groups")
+    .select("name")
+    .ilike("name", escapeLike(name))
+    .limit(1);
+
+  if (direct.error) throw direct.error;
+  if (direct.data?.[0]) return direct.data[0].name;
+
+  const alias = await supabase
+    .from("drug_class_group_aliases")
+    .select("drug_class_groups(name)")
+    .ilike("alias", escapeLike(name))
+    .limit(1);
+
+  if (alias.error) throw alias.error;
+
+  return alias.data?.[0]?.drug_class_groups?.name || null;
+}
+
+/* ========================================
+   PROFILES
+======================================== */
+
+export function getMedicineProfile(name) {
+  return executeRequest(
+    "getMedicineProfile",
+    () =>
+      withSavedCopy(`medicine:${name.toLowerCase()}`, async () => {
+        const { data, error } = await supabase
+          .from("medicines")
+          .select(
+            "id, name, drug_class, medicine_sections(id, section, body, review_status, sources(name))",
+          )
+          .ilike("name", escapeLike(name))
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!data) return null;
+
+        return { ...data, group: await getGroupOfClass(data.drug_class) };
+      }),
+    { query: name },
+  );
+}
+
+export function getClassProfile(name) {
+  return executeRequest(
+    "getClassProfile",
+    () =>
+      withSavedCopy(`class:${name.toLowerCase()}`, async () => {
+        const { data: drugClass, error } = await supabase
+          .from("drug_classes")
+          .select("id, name, slug, description")
+          .ilike("name", escapeLike(name))
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!drugClass) return null;
+
+        const [content, medicines, group] = await Promise.all([
+          supabase
+            .from("class_content")
+            .select("section, body, review_status, sources(name)")
+            .eq("class_id", drugClass.id),
+
+          supabase
+            .from("medicines")
+            .select("id, name")
+            .eq("class_id", drugClass.id)
+            .order("name"),
+
+          getGroupOfClass(drugClass.name),
+        ]);
+
+        if (content.error) throw content.error;
+        if (medicines.error) throw medicines.error;
+
+        return {
+          ...drugClass,
+          content: content.data || [],
+          medicines: medicines.data || [],
+          group,
+        };
+      }),
+    { query: name },
+  );
+}
+
+export function getGroupProfile(name) {
+  return executeRequest(
+    "getGroupProfile",
+    () =>
+      withSavedCopy(`group:${name.toLowerCase()}`, async () => {
+        const { data: group, error } = await supabase
+          .from("drug_class_groups")
+          .select(
+            "id, name, slug, description, drug_class_group_members(drug_class)",
+          )
+          .ilike("name", escapeLike(name))
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!group) return null;
+
+        const [content, classRows] = await Promise.all([
+          supabase
+            .from("group_content")
+            .select("section, body, review_status, sources(name)")
+            .eq("group_id", group.id),
+
+          supabase.from("drug_classes").select("id, name, medicines(count)"),
+        ]);
+
+        if (content.error) throw content.error;
+        if (classRows.error) throw classRows.error;
+
+        const wanted = new Set(
+          group.drug_class_group_members.map((member) =>
+            member.drug_class.toLowerCase(),
+          ),
+        );
+
+        const classes = classRows.data
+          .filter((item) => wanted.has(item.name.toLowerCase()))
+          .map((item) => ({
+            id: item.id,
+            name: item.name,
+            medicineCount: item.medicines?.[0]?.count ?? 0,
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        return {
+          id: group.id,
+          name: group.name,
+          slug: group.slug,
+          description: group.description,
+          content: content.data || [],
+          classes,
+        };
+      }),
+    { query: name },
+  );
+}
+
+/* ========================================
+   SEARCH
+   Results are kept for the session so going
+   back restores them without searching again.
+======================================== */
+
+const searchCache = new Map();
+
+async function runSearch(query) {
+  const key = query.trim().toLowerCase();
+
+  if (!searchCache.has(key)) {
+    searchCache.set(key, await smartSearch(query));
+  }
+
+  return searchCache.get(key);
+}
+
+// One clear winner opens its profile. Anything less clear shows a list.
+const pickDirectMatch = (found) => {
+  if (found.kind !== "medicines" || found.didYouMean) return null;
+
+  const [top, second] = found.medicines;
+
+  if (!top || top.score < DIRECT_MATCH_SCORE) return null;
+  if (second && second.score >= DIRECT_MATCH_SCORE) return null;
+
+  return top;
+};
+
+/* ========================================
+   RESOLVE
+   Turns whatever the student searched into
+   one of: a medicine, a class, a group, or
+   a list of search results.
+
+   Explicit names always win. Search only
+   runs when nothing matches exactly.
+======================================== */
+
+const PROFILE_LOADERS = {
+  medicine: getMedicineProfile,
+  class: getClassProfile,
+  group: getGroupProfile,
+};
+
+const LOOKUPS = {
+  medicine: lookupMedicine,
+  class: lookupClass,
+  group: lookupGroup,
+};
+
+export async function resolveQuery(query, kind) {
+  const kinds = LOOKUPS[kind] ? [kind] : ["medicine", "class", "group"];
+
+  const names = await Promise.all(
+    kinds.map((type) => LOOKUPS[type](query).catch(() => null)),
+  );
+
+  const index = names.findIndex(Boolean);
+
+  if (index !== -1) {
+    const type = kinds[index];
+    const data = await PROFILE_LOADERS[type](names[index]);
+
+    if (data) return { type, name: data.name, data };
+  }
+
+  const found = await runSearch(query);
+  const direct = pickDirectMatch(found);
+
+  if (direct) {
+    const data = await getMedicineProfile(direct.name);
+
+    if (data) {
+      const viaOtherName =
+        direct.matched_term &&
+        direct.matched_term.toLowerCase() !== direct.name.toLowerCase();
+
+      return {
+        type: "medicine",
+        name: data.name,
+        data,
+        // Only an explicit request ("metronidazole adverse effects")
+        // jumps to a section. Otherwise the full profile opens at the top.
+        openSection: ["overview", "dosage"].includes(found.intent)
+          ? ""
+          : found.openSection,
+        notice: found.notice,
+        matchedNote: viaOtherName
+          ? `Showing ${direct.name}, matched from "${direct.matched_term}".`
+          : null,
+      };
+    }
+  }
+
+  return { type: "search", found };
+}
+
+=== src/context/MedicinesWorkspace.js ===
+import { createContext } from "react";
+
+const MedicinesWorkspaceContext = createContext(null);
+
+export default MedicinesWorkspaceContext;
+=== src/context/useMedicinesWorkspace.js ===
+import { useContext } from "react";
+import MedicinesWorkspaceContext from "./MedicinesWorkspace";
+
+export function useMedicinesWorkspace() {
+  const context = useContext(MedicinesWorkspaceContext);
+
+  if (!context) {
+    throw new Error(
+      "useMedicinesWorkspace must be used within MedicinesWorkspaceProvider",
+    );
+  }
+
+  return context;
+}
+=== src/context/MedicinesWorkspaceContext.jsx ===
+import { useCallback, useState } from "react";
+import MedicinesWorkspaceContext from "./MedicinesWorkspace";
+export function MedicinesWorkspaceProvider({ children }) {
+  const [history, setHistory] = useState([
+    { type: "library" },
+  ]);
+
+  const current = history[history.length - 1];
+  const navigateTo = useCallback((destination) => {
+    setHistory((previous) => [...previous, destination]);
+  }, []);
+
+  const goBack = useCallback(() => {
+    setHistory((previous) =>
+      previous.length > 1
+        ? previous.slice(0, -1)
+        : previous,
+    );
+  }, []);
+
+  const resetWorkspace = useCallback(() => {
+    setHistory([{ type: "library" }]);
+  }, []);
+
+  const replaceWorkspace = useCallback((destination) => {
+    setHistory([destination]);
+  }, []);
+  return (
+    <MedicinesWorkspaceContext.Provider
+  value={{
+  history,
+  current,
+  navigateTo,
+  goBack,
+  resetWorkspace,
+  replaceWorkspace,
+}}
+    >
+      {children}
+    </MedicinesWorkspaceContext.Provider>
+  );
+}
+

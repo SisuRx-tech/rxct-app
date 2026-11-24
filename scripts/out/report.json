@@ -1,0 +1,2742 @@
+[
+  {
+    "name": "Paracetamol",
+    "fdaName": "ACETAMINOPHEN",
+    "status": "full",
+    "setId": "464e404a-1957-44a2-a53a-f2a9d3c15bde",
+    "effective": "20260828",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ibuprofen",
+    "fdaName": "IBUPROFEN",
+    "status": "full",
+    "setId": "2144eff0-d7ab-486d-b116-a4ff3ae2afe2",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Diclofenac",
+    "fdaName": "DICLOFENAC SODIUM",
+    "status": "full",
+    "setId": "5a852412-69af-6502-e063-6294a90a0748",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Aspirin",
+    "fdaName": "ASPIRIN",
+    "status": "partial",
+    "setId": "7ce4807e-7bd5-41f1-a9c7-1f3af6acdc09",
+    "effective": "20260909",
+    "sections": [
+      "indications"
+    ]
+  },
+  {
+    "name": "Naproxen",
+    "fdaName": "NAPROXEN",
+    "status": "full",
+    "setId": "5954565a-d9bd-9e26-e063-6294a90a03cb",
+    "effective": "20260818",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Celecoxib",
+    "fdaName": "CELECOXIB",
+    "status": "full",
+    "setId": "3a1eadd5-c0a7-473e-bde0-6b9450d11c95",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ketorolac",
+    "fdaName": "KETOROLAC TROMETHAMINE",
+    "status": "full",
+    "setId": "2a23b0fa-803c-4abb-b588-12cfe83326a9",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Meloxicam",
+    "fdaName": "MELOXICAM",
+    "status": "full",
+    "setId": "385b7cf4-976a-4a58-9ebc-def8b6e78b75",
+    "effective": "20260819",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Tramadol",
+    "fdaName": "TRAMADOL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "a6cbd5de-8ae5-49e3-b89b-e35536b115d8",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Morphine",
+    "fdaName": "MORPHINE SULFATE",
+    "status": "full",
+    "setId": "1f53de80-efc8-4930-b3e3-fba0d026af05",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Amoxicillin",
+    "fdaName": "AMOXICILLIN",
+    "status": "full",
+    "setId": "4adc198e-39d8-4b3e-bfa4-278aaf4064ae",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Amoxicillin-clavulanate",
+    "fdaName": "AMOXICILLIN AND CLAVULANATE POTASSIUM",
+    "status": "full",
+    "setId": "77b82fac-3f6e-44c9-8dcc-362f01ad7a4b",
+    "effective": "20260924",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ampicillin",
+    "fdaName": "AMPICILLIN",
+    "status": "full",
+    "setId": "4134cd79-c895-4e6e-b1d5-8e01c38bf2d1",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Benzylpenicillin",
+    "fdaName": "PENICILLIN G POTASSIUM",
+    "status": "full",
+    "setId": "efef4846-9497-41af-8dd6-518f86eca7f2",
+    "effective": "20251216",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Phenoxymethylpenicillin",
+    "fdaName": "PENICILLIN V POTASSIUM",
+    "status": "partial",
+    "setId": "dd8a48b2-9ff1-49de-a53e-db4964c2384c",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ]
+  },
+  {
+    "name": "Cefalexin",
+    "fdaName": "CEPHALEXIN",
+    "status": "full",
+    "setId": "e54df878-c235-4aa3-af33-fe5287c73138",
+    "effective": "20260914",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Cefuroxime",
+    "fdaName": "CEFUROXIME AXETIL",
+    "status": "full",
+    "setId": "76cec54f-d167-4298-951b-5411a3c47f4a",
+    "effective": "20260805",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ceftriaxone",
+    "fdaName": "CEFTRIAXONE SODIUM",
+    "status": "full",
+    "setId": "5cd2d96f-83e5-4326-ae87-d0ede4ba493a",
+    "effective": "20230115",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Cefixime",
+    "fdaName": "CEFIXIME",
+    "status": "full",
+    "setId": "3194433c-c04e-442b-9668-fbeb0a15bac7",
+    "effective": "20260805",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ciprofloxacin",
+    "fdaName": "CIPROFLOXACIN HYDROCHLORIDE",
+    "status": "full",
+    "setId": "47d1e4c5-f669-4aca-9e8c-0d6bb833b859",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Levofloxacin",
+    "fdaName": "LEVOFLOXACIN",
+    "status": "full",
+    "setId": "5a65b2bc-9edc-f193-e063-6394a90a0104",
+    "effective": "20260901",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Azithromycin",
+    "fdaName": "AZITHROMYCIN",
+    "status": "full",
+    "setId": "94e17ae5-0871-67a0-e053-2995a90ae0ae",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Erythromycin",
+    "fdaName": "ERYTHROMYCIN",
+    "status": "full",
+    "setId": "e54d66fa-93bb-4339-a75e-194a2e4488aa",
+    "effective": "20251020",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Clarithromycin",
+    "fdaName": "CLARITHROMYCIN",
+    "status": "full",
+    "setId": "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6",
+    "effective": "20260624",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Doxycycline",
+    "fdaName": "DOXYCYCLINE HYCLATE",
+    "status": "full",
+    "setId": "051654c7-8ba6-44f2-842c-72f515e9b32d",
+    "effective": "20260915",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Gentamicin",
+    "fdaName": "GENTAMICIN SULFATE",
+    "status": "partial",
+    "setId": "977180b3-a222-4282-d485-4a3217674305",
+    "effective": "20260520",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ]
+  },
+  {
+    "name": "Streptomycin",
+    "fdaName": "STREPTOMYCIN SULFATE",
+    "status": "miss"
+  },
+  {
+    "name": "Amikacin",
+    "fdaName": "AMIKACIN SULFATE",
+    "status": "partial",
+    "setId": "f260ff2a-76a0-4672-9516-91c344b67890",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ]
+  },
+  {
+    "name": "Metronidazole",
+    "fdaName": "METRONIDAZOLE",
+    "status": "full",
+    "setId": "4040db14-750f-6d20-e054-00144ff8d46c",
+    "effective": "20260826",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Clindamycin",
+    "fdaName": "CLINDAMYCIN HYDROCHLORIDE",
+    "status": "full",
+    "setId": "fa084aad-07fa-44d2-8d01-d32f40acd2f3",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Co-trimoxazole",
+    "fdaName": "SULFAMETHOXAZOLE AND TRIMETHOPRIM",
+    "status": "full",
+    "setId": "c6171b62-835c-465e-905e-97f70438186e",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Nitrofurantoin",
+    "fdaName": "NITROFURANTOIN",
+    "status": "full",
+    "setId": "87505f8f-2056-4e55-adf5-5b7309081d7c",
+    "effective": "20260901",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Chloramphenicol",
+    "fdaName": "CHLORAMPHENICOL SODIUM SUCCINATE",
+    "status": "partial",
+    "setId": "aed29594-211d-49ef-813f-131975a8d0e3",
+    "effective": "20241010",
+    "sections": [
+      "overview",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Vancomycin",
+    "fdaName": "VANCOMYCIN HYDROCHLORIDE",
+    "status": "full",
+    "setId": "bc737938-ae36-460b-a2a8-609f3fe59156",
+    "effective": "20260817",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Artemether-lumefantrine",
+    "fdaName": "ARTEMETHER AND LUMEFANTRINE",
+    "status": "full",
+    "setId": "7866ec19-dfac-47d4-a53f-511a12643cbf",
+    "effective": "20260326",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Artesunate",
+    "fdaName": "ARTESUNATE",
+    "status": "miss"
+  },
+  {
+    "name": "Chloroquine",
+    "fdaName": "CHLOROQUINE PHOSPHATE",
+    "status": "full",
+    "setId": "0a342f72-45f9-3e12-e063-6394a90ae33e",
+    "effective": "20260113",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Quinine",
+    "fdaName": "QUININE SULFATE",
+    "status": "full",
+    "setId": "1f32f05c-a215-40be-b951-e41a7b54a8a0",
+    "effective": "20251031",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Primaquine",
+    "fdaName": "PRIMAQUINE PHOSPHATE",
+    "status": "full",
+    "setId": "3f16166d-678e-51aa-e054-00144ff88e88",
+    "effective": "20260512",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Hydroxychloroquine",
+    "fdaName": "HYDROXYCHLOROQUINE SULFATE",
+    "status": "full",
+    "setId": "ebe00e35-ed3d-40f4-9a93-a37b0da01ddb",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Atovaquone-proguanil",
+    "fdaName": "ATOVAQUONE AND PROGUANIL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "ad25ab65-42aa-48f6-b5ed-247f3685d5bf",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Sulfadoxine-pyrimethamine",
+    "fdaName": "SULFADOXINE AND PYRIMETHAMINE",
+    "status": "miss"
+  },
+  {
+    "name": "Isoniazid",
+    "fdaName": "ISONIAZID",
+    "status": "full",
+    "setId": "6dab7b7b-a3a9-47ef-b423-134bc6970d8b",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Rifampicin",
+    "fdaName": "RIFAMPIN",
+    "status": "full",
+    "setId": "8be91604-d7cd-4f2b-997d-e3364e4092e5",
+    "effective": "20260505",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Pyrazinamide",
+    "fdaName": "PYRAZINAMIDE",
+    "status": "full",
+    "setId": "566db230-3d73-482f-b67d-defd0b2dc46c",
+    "effective": "20231003",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ethambutol",
+    "fdaName": "ETHAMBUTOL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "c12b3482-55f0-4324-bdcd-b129ca2dae73",
+    "effective": "20260731",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Dapsone",
+    "fdaName": "DAPSONE",
+    "status": "full",
+    "setId": "839d7440-ba0e-4c56-b648-d374b155cf03",
+    "effective": "20260720",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Tenofovir",
+    "fdaName": "TENOFOVIR DISOPROXIL FUMARATE",
+    "status": "partial",
+    "setId": "e0ae0aa2-3baa-4b75-9e85-68b5338c3c14",
+    "effective": "20260713",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Lamivudine",
+    "fdaName": "LAMIVUDINE",
+    "status": "full",
+    "setId": "6bd6b9da-df69-46db-813e-4e7f3bdecf95",
+    "effective": "20260729",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Zidovudine",
+    "fdaName": "ZIDOVUDINE",
+    "status": "full",
+    "setId": "437f55b2-f6d9-0065-e063-6294a90ab929",
+    "effective": "20260119",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Efavirenz",
+    "fdaName": "EFAVIRENZ",
+    "status": "full",
+    "setId": "13ca3456-e5bf-4bb1-af95-b1378658a358",
+    "effective": "20240628",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Dolutegravir",
+    "fdaName": "DOLUTEGRAVIR SODIUM",
+    "status": "full",
+    "setId": "485bc9db-8665-9f5a-e063-6394a90a7921",
+    "effective": "20260522",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Nevirapine",
+    "fdaName": "NEVIRAPINE",
+    "status": "full",
+    "setId": "c6e93829-7024-48f6-8023-da6ff27dfc0a",
+    "effective": "20260715",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Lopinavir-ritonavir",
+    "fdaName": "LOPINAVIR AND RITONAVIR",
+    "status": "full",
+    "setId": "115178c8-5ee2-4d96-820e-ea8264c1ac10",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Abacavir",
+    "fdaName": "ABACAVIR SULFATE",
+    "status": "full",
+    "setId": "f7633480-25aa-4326-bec9-82835b486a20",
+    "effective": "20260305",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Aciclovir",
+    "fdaName": "ACYCLOVIR",
+    "status": "full",
+    "setId": "5176c7f9-9076-4797-e054-00144ff8d46c",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Oseltamivir",
+    "fdaName": "OSELTAMIVIR PHOSPHATE",
+    "status": "full",
+    "setId": "f26154bd-374c-44a8-983a-b2724a591653",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Fluconazole",
+    "fdaName": "FLUCONAZOLE",
+    "status": "full",
+    "setId": "1c82929f-934b-4df4-b24f-1e5da090fd8a",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ketoconazole",
+    "fdaName": "KETOCONAZOLE",
+    "status": "full",
+    "setId": "1d598696-c6f3-4b7c-ad73-949d2089df35",
+    "effective": "20260810",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Nystatin",
+    "fdaName": "NYSTATIN",
+    "status": "partial",
+    "setId": "05cc72dd-8e05-bfb5-e063-6394a90a92f1",
+    "effective": "20260819",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ]
+  },
+  {
+    "name": "Terbinafine",
+    "fdaName": "TERBINAFINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "2886b2ff-815f-4621-bc28-1fea082c1920",
+    "effective": "20260709",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Albendazole",
+    "fdaName": "ALBENDAZOLE",
+    "status": "full",
+    "setId": "8de337eb-92e1-15b5-e053-2a95a90ac4f1",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Mebendazole",
+    "fdaName": "MEBENDAZOLE",
+    "status": "full",
+    "setId": "a720c424-517a-461b-8e13-6c37caf8aa3f",
+    "effective": "20211005",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ivermectin",
+    "fdaName": "IVERMECTIN",
+    "status": "full",
+    "setId": "104a5045-94b1-4022-bc49-719521f30f0d",
+    "effective": "20260303",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Praziquantel",
+    "fdaName": "PRAZIQUANTEL",
+    "status": "full",
+    "setId": "16f2b9c4-a260-4a31-bd52-e5945913246c",
+    "effective": "20260812",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Amlodipine",
+    "fdaName": "AMLODIPINE BESYLATE",
+    "status": "full",
+    "setId": "5af8493b-2b73-859c-e063-6394a90a4620",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Nifedipine",
+    "fdaName": "NIFEDIPINE",
+    "status": "full",
+    "setId": "4ee466dc-5a4e-4c77-8e94-8b510cafd61b",
+    "effective": "20260804",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Lisinopril",
+    "fdaName": "LISINOPRIL",
+    "status": "full",
+    "setId": "34bb4602-ccff-4939-91b9-26a63bfd40f7",
+    "effective": "20260804",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Enalapril",
+    "fdaName": "ENALAPRIL MALEATE",
+    "status": "full",
+    "setId": "3fbc6cce-7ad5-49d5-9705-5f66ef92d544",
+    "effective": "20260901",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ramipril",
+    "fdaName": "RAMIPRIL",
+    "status": "full",
+    "setId": "45707435-4fc8-457e-9ff2-02d7be9b4a6e",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Losartan",
+    "fdaName": "LOSARTAN POTASSIUM",
+    "status": "error",
+    "message": "read ETIMEDOUT"
+  },
+  {
+    "name": "Valsartan",
+    "fdaName": "VALSARTAN",
+    "status": "full",
+    "setId": "5a816ea6-2645-bd6e-e063-6294a90a908b",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Atenolol",
+    "fdaName": "ATENOLOL",
+    "status": "full",
+    "setId": "897e18f6-3b57-4ef0-85ff-9dfa23521eb9",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Propranolol",
+    "fdaName": "PROPRANOLOL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "5affa0ea-db84-86fd-e063-6294a90a4d16",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Bisoprolol",
+    "fdaName": "BISOPROLOL FUMARATE",
+    "status": "full",
+    "setId": "df37d337-9978-0c31-e053-2a95a90a3258",
+    "effective": "20260421",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Carvedilol",
+    "fdaName": "CARVEDILOL",
+    "status": "full",
+    "setId": "d7d6bfff-fbb6-4a1f-aa13-babbb9a1e878",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Metoprolol",
+    "fdaName": "METOPROLOL TARTRATE",
+    "status": "full",
+    "setId": "0ca72c89-82c5-4b31-b515-1a8b8e82ec59",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Hydrochlorothiazide",
+    "fdaName": "HYDROCHLOROTHIAZIDE",
+    "status": "full",
+    "setId": "8e0683e2-5473-4246-97ae-b71c21c39ac7",
+    "effective": "20260826",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Furosemide",
+    "fdaName": "FUROSEMIDE",
+    "status": "full",
+    "setId": "58cc1e38-6000-1489-e063-6394a90a5978",
+    "effective": "20260811",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Spironolactone",
+    "fdaName": "SPIRONOLACTONE",
+    "status": "full",
+    "setId": "8b76a904-6c99-485a-a05f-13a36c5f720c",
+    "effective": "20260915",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Digoxin",
+    "fdaName": "DIGOXIN",
+    "status": "full",
+    "setId": "e61d2108-d871-44c0-b12a-2e61fbb56967",
+    "effective": "20260727",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Amiodarone",
+    "fdaName": "AMIODARONE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "4c149392-a4f0-4e2d-a13f-2b94810005de",
+    "effective": "20260805",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Glyceryl trinitrate",
+    "fdaName": "NITROGLYCERIN",
+    "status": "full",
+    "setId": "5b150cd2-fac8-86ce-e063-6294a90a67b9",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Isosorbide dinitrate",
+    "fdaName": "ISOSORBIDE DINITRATE",
+    "status": "full",
+    "setId": "6df6a2fa-c56c-4eb6-a485-c16585420eb0",
+    "effective": "20260731",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Atorvastatin",
+    "fdaName": "ATORVASTATIN CALCIUM",
+    "status": "full",
+    "setId": "6600f22e-d303-4fe3-8212-accd6fb06e62",
+    "effective": "20261015",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Simvastatin",
+    "fdaName": "SIMVASTATIN",
+    "status": "full",
+    "setId": "3f6fad0b-0278-433f-86db-761b673a5803",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Rosuvastatin",
+    "fdaName": "ROSUVASTATIN CALCIUM",
+    "status": "full",
+    "setId": "cb942007-6ef1-4445-8dbd-6f4972148bf1",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Warfarin",
+    "fdaName": "WARFARIN SODIUM",
+    "status": "full",
+    "setId": "7c4deb97-9966-4c8e-9ba6-bb260b71e130",
+    "effective": "20260825",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Clopidogrel",
+    "fdaName": "CLOPIDOGREL BISULFATE",
+    "status": "full",
+    "setId": "bb3b5e96-e629-4db5-8ad5-40c17c6dae18",
+    "effective": "20260929",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Heparin",
+    "fdaName": "HEPARIN SODIUM",
+    "status": "full",
+    "setId": "c8c4edd2-ee9e-4558-6b8c-b83adc242a0a",
+    "effective": "20260825",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Enoxaparin",
+    "fdaName": "ENOXAPARIN SODIUM",
+    "status": "full",
+    "setId": "45a66675-b159-42b8-9f18-ff80f28e1503",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Hydralazine",
+    "fdaName": "HYDRALAZINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "dca82025-a4cd-4856-aa19-bdf091bf8973",
+    "effective": "20260814",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Metformin",
+    "fdaName": "METFORMIN HYDROCHLORIDE",
+    "status": "full",
+    "setId": "d5228e81-9c86-4781-b984-20feaa2ae779",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Glibenclamide",
+    "fdaName": "GLYBURIDE",
+    "status": "full",
+    "setId": "524eec41-37ee-419a-b7a1-d23e888ae6ab",
+    "effective": "20260612",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Glimepiride",
+    "fdaName": "GLIMEPIRIDE",
+    "status": "full",
+    "setId": "fc9d8495-184c-3af1-e053-6394a90a5e29",
+    "effective": "20260622",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Pioglitazone",
+    "fdaName": "PIOGLITAZONE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "d740d2a2-b26d-4b16-aedc-e4b4b1c94daa",
+    "effective": "20260619",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Sitagliptin",
+    "fdaName": "SITAGLIPTIN",
+    "status": "full",
+    "setId": "194c3718-5eb5-4cf5-85d0-2bb1ed8293b8",
+    "effective": "20260708",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Insulin",
+    "fdaName": "INSULIN HUMAN",
+    "status": "full",
+    "setId": "b60e8dd0-1d48-4dc9-87fd-e14675255e8c",
+    "effective": "20260701",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Levothyroxine",
+    "fdaName": "LEVOTHYROXINE SODIUM",
+    "status": "full",
+    "setId": "4c903249-69e9-4168-a9d1-22e6c2c1eb22",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Methimazole",
+    "fdaName": "METHIMAZOLE",
+    "status": "full",
+    "setId": "f69edfa9-0efb-4fe8-aeab-50f7baeebb6a",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Prednisolone",
+    "fdaName": "PREDNISOLONE",
+    "status": "partial",
+    "setId": "35f0b197-c3ae-445a-8da7-9ffcd4472e05",
+    "effective": "20260123",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects"
+    ]
+  },
+  {
+    "name": "Dexamethasone",
+    "fdaName": "DEXAMETHASONE",
+    "status": "full",
+    "setId": "8c5375a7-7a0d-4af0-8b86-bc87698ac3d1",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Hydrocortisone",
+    "fdaName": "HYDROCORTISONE",
+    "status": "full",
+    "setId": "506aab0d-9308-4d60-90b3-7d64952fff36",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Salbutamol",
+    "fdaName": "ALBUTEROL SULFATE",
+    "status": "full",
+    "setId": "17858afa-dcdf-4612-b475-3b6baadfb639",
+    "effective": "20260806",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Beclometasone",
+    "fdaName": "BECLOMETHASONE DIPROPIONATE",
+    "status": "partial",
+    "setId": "d853c96f-21a3-4def-931d-4d47d16acd62",
+    "effective": "20200731",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ]
+  },
+  {
+    "name": "Budesonide",
+    "fdaName": "BUDESONIDE",
+    "status": "full",
+    "setId": "3235e2a4-8e12-2d58-e063-6294a90a4936",
+    "effective": "20260716",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Montelukast",
+    "fdaName": "MONTELUKAST SODIUM",
+    "status": "full",
+    "setId": "1eeb3123-9e93-4681-8096-800a7c7acf8a",
+    "effective": "20260728",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Theophylline",
+    "fdaName": "THEOPHYLLINE",
+    "status": "full",
+    "setId": "5e64036a-ee3e-42e7-9e59-881f88a4e298",
+    "effective": "20260729",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Loratadine",
+    "fdaName": "LORATADINE",
+    "status": "partial",
+    "setId": "bc789b82-56ca-4248-b60a-252d9695636a",
+    "effective": "20260929",
+    "sections": [
+      "indications"
+    ]
+  },
+  {
+    "name": "Cetirizine",
+    "fdaName": "CETIRIZINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "7e94be37-0971-44b3-9857-f56330d810b6",
+    "effective": "20260325",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Chlorphenamine",
+    "fdaName": "CHLORPHENIRAMINE MALEATE",
+    "status": "partial",
+    "setId": "5e6623c3-6210-4c50-94d6-5554f36876d1",
+    "effective": "20260831",
+    "sections": [
+      "indications"
+    ]
+  },
+  {
+    "name": "Promethazine",
+    "fdaName": "PROMETHAZINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "5a797d11-19b0-fd33-e063-6394a90a4d58",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Diphenhydramine",
+    "fdaName": "DIPHENHYDRAMINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "d8944f3c-acef-4ebe-9633-7d641ae95edf",
+    "effective": "20260803",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Omeprazole",
+    "fdaName": "OMEPRAZOLE",
+    "status": "full",
+    "setId": "63b3982a-b541-4b0d-99d4-93a673e57d46",
+    "effective": "20260828",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Esomeprazole",
+    "fdaName": "ESOMEPRAZOLE MAGNESIUM",
+    "status": "full",
+    "setId": "f907e633-4080-44ae-829f-141497876922",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Pantoprazole",
+    "fdaName": "PANTOPRAZOLE SODIUM",
+    "status": "full",
+    "setId": "70378eba-3904-4491-9f6d-00f5d1501c4a",
+    "effective": "20260930",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Famotidine",
+    "fdaName": "FAMOTIDINE",
+    "status": "full",
+    "setId": "669fbd46-cae5-4477-884e-8eca893d2e05",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Metoclopramide",
+    "fdaName": "METOCLOPRAMIDE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "3cd4b274-6176-4e5b-9765-4f50763bd58f",
+    "effective": "20260710",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ondansetron",
+    "fdaName": "ONDANSETRON HYDROCHLORIDE",
+    "status": "full",
+    "setId": "a29b5c18-9884-4c88-8827-65d9ad5f69f6",
+    "effective": "20260821",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Loperamide",
+    "fdaName": "LOPERAMIDE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "3fdfc0e5-56a2-48a0-8ee6-390a194a29f3",
+    "effective": "20260807",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Diazepam",
+    "fdaName": "DIAZEPAM",
+    "status": "full",
+    "setId": "ba953b22-f0cd-4be5-9e0e-178bded88727",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Lorazepam",
+    "fdaName": "LORAZEPAM",
+    "status": "full",
+    "setId": "c0810422-b732-4c04-97d8-c1521c401ef4",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Carbamazepine",
+    "fdaName": "CARBAMAZEPINE",
+    "status": "full",
+    "setId": "7c1dd8ce-c490-40b4-b17a-da331df24cba",
+    "effective": "20261023",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Phenytoin",
+    "fdaName": "PHENYTOIN SODIUM",
+    "status": "full",
+    "setId": "46d5c0d1-a97b-46d9-8cf4-994780673337",
+    "effective": "20260820",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Phenobarbital",
+    "fdaName": "PHENOBARBITAL",
+    "status": "full",
+    "setId": "4e2910f2-173d-4b5c-aad3-44f4ab40d8cb",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Valproate",
+    "fdaName": "VALPROIC ACID",
+    "status": "full",
+    "setId": "1edd220d-d151-4177-9a29-9fee36489fb7",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Levetiracetam",
+    "fdaName": "LEVETIRACETAM",
+    "status": "full",
+    "setId": "e1b14939-7262-40dc-a334-2b3b72c88d47",
+    "effective": "20260810",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Haloperidol",
+    "fdaName": "HALOPERIDOL",
+    "status": "partial",
+    "setId": "a0751f2e-05ab-4ba9-9bae-7b791bf1a621",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ]
+  },
+  {
+    "name": "Chlorpromazine",
+    "fdaName": "CHLORPROMAZINE HYDROCHLORIDE",
+    "status": "partial",
+    "setId": "9709ffde-7034-42be-97be-f5f39eeacf72",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ]
+  },
+  {
+    "name": "Risperidone",
+    "fdaName": "RISPERIDONE",
+    "status": "full",
+    "setId": "4ab6d256-6590-45be-a5df-f505987f96c3",
+    "effective": "20260830",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Olanzapine",
+    "fdaName": "OLANZAPINE",
+    "status": "full",
+    "setId": "5af81f87-5582-aa23-e063-6294a90a1ee8",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Amitriptyline",
+    "fdaName": "AMITRIPTYLINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "61b29703-cfc2-45c7-ae24-7bf3b77e8587",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Fluoxetine",
+    "fdaName": "FLUOXETINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "a08dadff-f209-48dc-b597-6f085be13640",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Sertraline",
+    "fdaName": "SERTRALINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "623b9672-b41e-4ec9-b2cc-f5bb383c39ba",
+    "effective": "20261023",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Lithium",
+    "fdaName": "LITHIUM CARBONATE",
+    "status": "full",
+    "setId": "b839ff4b-f62d-41ab-a823-550a756d58ec",
+    "effective": "20260816",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ketamine",
+    "fdaName": "KETAMINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "76d6aad3-0515-49da-a6e1-3fe2a1938a24",
+    "effective": "20260908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Oxytocin",
+    "fdaName": "OXYTOCIN",
+    "status": "full",
+    "setId": "6d4b2c25-2e5d-49b5-93bc-2ae8a20916d1",
+    "effective": "20260506",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Misoprostol",
+    "fdaName": "MISOPROSTOL",
+    "status": "full",
+    "setId": "c4fe14fb-0a43-4c31-9cd6-29eb0d156705",
+    "effective": "20260825",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Methylergometrine",
+    "fdaName": "METHYLERGONOVINE MALEATE",
+    "status": "full",
+    "setId": "d8e4b8ed-3289-4611-8a61-2392a4bf6072",
+    "effective": "20260501",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Magnesium sulfate",
+    "fdaName": "MAGNESIUM SULFATE",
+    "status": "full",
+    "setId": "e175d329-315f-4f3b-bb4c-06ad4e042967",
+    "effective": "20260212",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Folic acid",
+    "fdaName": "FOLIC ACID",
+    "status": "full",
+    "setId": "bda4687e-929a-434d-ab59-909cf2ed73a2",
+    "effective": "20260911",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Phytomenadione",
+    "fdaName": "PHYTONADIONE",
+    "status": "full",
+    "setId": "e8808230-2c44-44c6-8cab-8f29b6b34051",
+    "effective": "20260809",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Tranexamic acid",
+    "fdaName": "TRANEXAMIC ACID",
+    "status": "full",
+    "setId": "fb2fcae9-6aa0-4708-b250-b0e40beb147e",
+    "effective": "20260829",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Allopurinol",
+    "fdaName": "ALLOPURINOL",
+    "status": "full",
+    "setId": "8f50e91e-66a7-4fd4-888a-9f1986aa661c",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Colchicine",
+    "fdaName": "COLCHICINE",
+    "status": "full",
+    "setId": "5a0b4246-e7dd-29e5-e063-6294a90a2871",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Methotrexate",
+    "fdaName": "METHOTREXATE",
+    "status": "full",
+    "setId": "dd035a9f-cd40-4314-b9d8-2294b8a924e2",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Tamoxifen",
+    "fdaName": "TAMOXIFEN CITRATE",
+    "status": "full",
+    "setId": "509f8ba3-214d-aec8-e063-6294a90af498",
+    "effective": "20260430",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Epinephrine",
+    "fdaName": "EPINEPHRINE",
+    "status": "full",
+    "setId": "6add7604-71f6-4d8a-9447-17ad01fa839d",
+    "effective": "20231001",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Atropine",
+    "fdaName": "ATROPINE SULFATE",
+    "status": "full",
+    "setId": "a116af5c-ba4c-408c-9a02-4bc33772aa8d",
+    "effective": "20260803",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Lidocaine",
+    "fdaName": "LIDOCAINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "6f8d20d2-6a91-4a5b-bfe8-f1baada38442",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ceftazidime",
+    "fdaName": "CEFTAZIDIME",
+    "status": "full",
+    "setId": "112c5457-8d71-49f5-b531-9761d7d38c93",
+    "effective": "20260803",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Cefpodoxime",
+    "fdaName": "CEFPODOXIME PROXETIL",
+    "status": "full",
+    "setId": "59d848e9-de7a-669b-e063-6394a90a2b35",
+    "effective": "20260825",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Cefadroxil",
+    "fdaName": "CEFADROXIL",
+    "status": "partial",
+    "setId": "57eebea5-28b6-44a3-888b-76950f6038f4",
+    "effective": "20260601",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications"
+    ]
+  },
+  {
+    "name": "Meropenem",
+    "fdaName": "MEROPENEM",
+    "status": "full",
+    "setId": "8a2a545e-b336-416a-be73-9e0a7ccf6177",
+    "effective": "20260826",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Piperacillin-tazobactam",
+    "fdaName": "PIPERACILLIN AND TAZOBACTAM",
+    "status": "full",
+    "setId": "7aebc0e6-89db-4ef0-b5ab-d6b3199bcfc4",
+    "effective": "20250908",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Linezolid",
+    "fdaName": "LINEZOLID",
+    "status": "full",
+    "setId": "3d630d3d-510d-43a4-8703-8b6234831564",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Tetracycline",
+    "fdaName": "TETRACYCLINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "00acf413-c5d2-4a54-9d0d-56266cbc9edc",
+    "effective": "20260522",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Mefloquine",
+    "fdaName": "MEFLOQUINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "09716a24-d7da-42b2-af29-c03a1b6670bd",
+    "effective": "20250926",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Emtricitabine",
+    "fdaName": "EMTRICITABINE",
+    "status": "full",
+    "setId": "a229c922-58eb-4795-9219-6cebb1779e35",
+    "effective": "20260818",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ritonavir",
+    "fdaName": "RITONAVIR",
+    "status": "full",
+    "setId": "a32cb2e3-d4e5-4bbf-9d88-20b2b249e779",
+    "effective": "20260806",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Amphotericin B",
+    "fdaName": "AMPHOTERICIN B",
+    "status": "full",
+    "setId": "02aadef1-390b-4270-b56d-33452eb89dde",
+    "effective": "20260420",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Griseofulvin",
+    "fdaName": "GRISEOFULVIN",
+    "status": "full",
+    "setId": "1c26d7a6-17d9-4a95-a4ee-cfc5fe6bb95d",
+    "effective": "20251104",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Captopril",
+    "fdaName": "CAPTOPRIL",
+    "status": "full",
+    "setId": "1395ba5b-2fc9-41ff-9c43-e0740d781dee",
+    "effective": "20260914",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Methyldopa",
+    "fdaName": "METHYLDOPA",
+    "status": "partial",
+    "setId": "9e22e1d8-04ec-4b67-92ea-b09c706f2703",
+    "effective": "20250328",
+    "sections": [
+      "overview",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Bumetanide",
+    "fdaName": "BUMETANIDE",
+    "status": "full",
+    "setId": "de008936-e8a3-4e65-bb6a-d925b68a5f50",
+    "effective": "20260909",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Telmisartan",
+    "fdaName": "TELMISARTAN",
+    "status": "full",
+    "setId": "57da6ef2-2e86-4e4d-90df-73a2a8cf97f6",
+    "effective": "20260811",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Diltiazem",
+    "fdaName": "DILTIAZEM HYDROCHLORIDE",
+    "status": "full",
+    "setId": "5a0f67ad-17d8-a3f4-e063-6394a90afb32",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Verapamil",
+    "fdaName": "VERAPAMIL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "9c89764e-ff07-4077-a40f-91eb1c179af2",
+    "effective": "20260818",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Labetalol",
+    "fdaName": "LABETALOL HYDROCHLORIDE",
+    "status": "full",
+    "setId": "63db5b00-e864-4b2d-84f2-00bf35211b9b",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Rivaroxaban",
+    "fdaName": "RIVAROXABAN",
+    "status": "full",
+    "setId": "10db92f9-2300-4a80-836b-673e1ae91610",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Adenosine",
+    "fdaName": "ADENOSINE",
+    "status": "full",
+    "setId": "9508caf5-0e3a-4d32-909d-bff7ea40ec30",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Glipizide",
+    "fdaName": "GLIPIZIDE",
+    "status": "full",
+    "setId": "00729e82-150a-464a-abe7-a3319721fbdb",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Propylthiouracil",
+    "fdaName": "PROPYLTHIOURACIL",
+    "status": "full",
+    "setId": "d819e532-09ac-434a-84a6-636c4204c7aa",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Methylprednisolone",
+    "fdaName": "METHYLPREDNISOLONE",
+    "status": "full",
+    "setId": "d2a0e52c-f724-40e6-9d2a-5f1487c104b6",
+    "effective": "20260831",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Fludrocortisone",
+    "fdaName": "FLUDROCORTISONE ACETATE",
+    "status": "full",
+    "setId": "933e28ef-05e8-419e-a786-21eab67f33a2",
+    "effective": "20260624",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Ipratropium",
+    "fdaName": "IPRATROPIUM BROMIDE",
+    "status": "full",
+    "setId": "6b730dd7-4d93-403a-bfd2-fa0efa298b75",
+    "effective": "20260724",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Fluticasone",
+    "fdaName": "FLUTICASONE PROPIONATE",
+    "status": "full",
+    "setId": "bc08915f-fa3a-4509-a01c-42b577f39b99",
+    "effective": "20260819",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Lansoprazole",
+    "fdaName": "LANSOPRAZOLE",
+    "status": "full",
+    "setId": "7daa1721-f92b-4096-b19e-4d27fc8acb51",
+    "effective": "20260824",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Sucralfate",
+    "fdaName": "SUCRALFATE",
+    "status": "full",
+    "setId": "536b8c00-13ab-4397-a754-63a1c92bf883",
+    "effective": "20260902",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Lactulose",
+    "fdaName": "LACTULOSE",
+    "status": "full",
+    "setId": "72ac130a-de85-464d-9e9b-05cac0c54db1",
+    "effective": "20260723",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Dicyclomine",
+    "fdaName": "DICYCLOMINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "6d7e73b0-3f7e-462f-92eb-cc82919c8095",
+    "effective": "20260910",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Clonazepam",
+    "fdaName": "CLONAZEPAM",
+    "status": "full",
+    "setId": "2606ecf9-3d71-4c1c-bfda-d7d98ffc6011",
+    "effective": "20260827",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Gabapentin",
+    "fdaName": "GABAPENTIN",
+    "status": "full",
+    "setId": "4a975ebe-ae0a-446a-8a3d-2ca325e28f93",
+    "effective": "20260911",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Lamotrigine",
+    "fdaName": "LAMOTRIGINE",
+    "status": "full",
+    "setId": "20e156df-a2b6-4710-b526-0419cd17dd33",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Escitalopram",
+    "fdaName": "ESCITALOPRAM OXALATE",
+    "status": "full",
+    "setId": "2db02476-325f-ee47-a7e5-b5aed56c364c",
+    "effective": "20260717",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Fentanyl",
+    "fdaName": "FENTANYL CITRATE",
+    "status": "full",
+    "setId": "bfa8018a-4cbc-434b-e09e-782872b0340a",
+    "effective": "20260824",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Pethidine",
+    "fdaName": "MEPERIDINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "b31d1308-28c3-43f4-e0a6-2f3ed76b8975",
+    "effective": "20260720",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Codeine",
+    "fdaName": "CODEINE SULFATE",
+    "status": "full",
+    "setId": "5819bdf7-300e-45b8-8f3a-447b53656293",
+    "effective": "20260116",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Midazolam",
+    "fdaName": "MIDAZOLAM HYDROCHLORIDE",
+    "status": "full",
+    "setId": "d9305142-417d-4d8c-9a23-f9a1b6771cac",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Bupivacaine",
+    "fdaName": "BUPIVACAINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "ee3b5bbe-4013-4682-b6ee-db86e7788077",
+    "effective": "20260720",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Naloxone",
+    "fdaName": "NALOXONE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "5906381c-81f4-4635-867a-e56e4d629692",
+    "effective": "20260603",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Neostigmine",
+    "fdaName": "NEOSTIGMINE METHYLSULFATE",
+    "status": "full",
+    "setId": "7a9d996f-aecb-455f-95fc-1010e461d75d",
+    "effective": "20260318",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Azathioprine",
+    "fdaName": "AZATHIOPRINE",
+    "status": "full",
+    "setId": "5116b22b-1460-5535-e063-6394a90acbe5",
+    "effective": "20260505",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Cyclophosphamide",
+    "fdaName": "CYCLOPHOSPHAMIDE",
+    "status": "full",
+    "setId": "c961a1ac-6705-4756-9abc-9d84a6fcb5c8",
+    "effective": "20260903",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Hydroxycarbamide",
+    "fdaName": "HYDROXYUREA",
+    "status": "full",
+    "setId": "e76fd60e-7644-48c5-9857-3608a045000b",
+    "effective": "20260527",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Sildenafil",
+    "fdaName": "SILDENAFIL CITRATE",
+    "status": "full",
+    "setId": "00ee09dd-2de0-4dc4-85f6-b51ed6eabd5b",
+    "effective": "20260729",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Tamsulosin",
+    "fdaName": "TAMSULOSIN HYDROCHLORIDE",
+    "status": "full",
+    "setId": "f8302a6e-b8da-4931-a279-b49e37943816",
+    "effective": "20260901",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Medroxyprogesterone",
+    "fdaName": "MEDROXYPROGESTERONE ACETATE",
+    "status": "full",
+    "setId": "a0a92717-c1cb-40eb-a95a-1c5dfd32cfc0",
+    "effective": "20260904",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Cyproheptadine",
+    "fdaName": "CYPROHEPTADINE HYDROCHLORIDE",
+    "status": "full",
+    "setId": "9c0b47c0-ecd2-450f-9dcb-c262db92866e",
+    "effective": "20260820",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  },
+  {
+    "name": "Potassium chloride",
+    "fdaName": "POTASSIUM CHLORIDE",
+    "status": "full",
+    "setId": "ea55ded1-e076-43de-ad3c-c75e7d0a4ebc",
+    "effective": "20260824",
+    "sections": [
+      "overview",
+      "indications",
+      "adverse_effects",
+      "contraindications",
+      "interactions"
+    ]
+  }
+]

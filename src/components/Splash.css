@@ -1,0 +1,4 @@
+/*
+  Critical startup splash styles now live inline in index.html. They must be
+  available before the JavaScript bundle loads; do not move them back here.
+*/

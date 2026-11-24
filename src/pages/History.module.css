@@ -1,0 +1,18 @@
+.page { width: min(100%, 920px); margin: 0 auto; color: var(--text); }
+.eyebrow { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+h1 { margin: 7px 0; font-size: clamp(28px, 4vw, 38px); letter-spacing: -1px; }
+.intro { margin: 0 0 28px; color: var(--muted); font-size: 13px; }
+.list { border-top: 1px solid var(--border); }
+.row { display: flex; align-items: center; gap: 13px; width: 100%; padding: 14px 3px; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.row:hover { background: var(--hover); }
+.icon { display: grid; width: 38px; height: 38px; flex-shrink: 0; place-items: center; border-radius: 11px; background: var(--class-bg); color: var(--primary); }
+.details { display: flex; flex: 1; flex-direction: column; gap: 3px; min-width: 0; }
+.details strong { font-size: 13px; }
+.details small, .time { color: var(--muted); font-size: 11px; }
+.time { margin-left: auto; }
+.row > i { color: var(--secondary); font-size: 11px; }
+.empty { padding: 46px 20px; border: 1px dashed var(--border); border-radius: 14px; background: var(--surface); text-align: center; }
+.empty > i { color: var(--secondary); font-size: 24px; }
+.empty h2 { margin: 12px 0 6px; font-size: 16px; }
+.empty p { margin: 0; color: var(--muted); font-size: 12px; }
+@media (max-width: 700px) { .time { display: none; } .row { padding: 13px 0; } }

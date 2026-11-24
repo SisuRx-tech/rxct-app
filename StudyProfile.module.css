@@ -1,0 +1,789 @@
+/* ========================================
+   STUDY PROFILE
+======================================== */
+
+.profile {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-bottom: calc(
+    var(--bottom-nav-height, 56px) + 110px + env(safe-area-inset-bottom, 0px)
+  );
+
+  color: var(--text);
+}
+
+
+/* ========================================
+   BACK
+======================================== */
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  min-height: 40px;
+  padding: 0;
+  margin-bottom: 8px;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--secondary);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.back:hover {
+  color: var(--blue-hover);
+}
+
+
+/* ========================================
+   HEADER
+======================================== */
+
+.header {
+  padding: 2px 0 17px;
+  margin-bottom: 13px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.eyebrow,
+.panelEyebrow {
+  display: block;
+
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.5px;
+}
+
+.eyebrow {
+  margin-bottom: 9px;
+}
+
+.header h1 {
+  margin: 0;
+
+  color: var(--primary);
+  font-size: clamp(25px, 4.5vw, 34px);
+  font-weight: 780;
+  letter-spacing: -0.9px;
+  line-height: 1.1;
+}
+
+.header p {
+  max-width: 65ch;
+  margin: 6px 0 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.trail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 10px;
+}
+
+.trail button {
+  min-height: 29px;
+  padding: 0 10px;
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-alt);
+
+  color: var(--secondary);
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.trail button:hover {
+  border-color: var(--secondary);
+  background: var(--class-hover);
+}
+
+.notice {
+  padding: 12px 16px;
+  margin: 0 0 16px;
+
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--accent);
+  border-radius: 12px;
+  background: var(--surface-alt);
+
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   STICKY SECTION NAVIGATION
+======================================== */
+
+.slot {
+  position: relative;
+  z-index: 30;
+
+  height: 52px;
+  margin-bottom: 18px;
+}
+
+.bar {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-height: 52px;
+
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.barStuck {
+  position: fixed;
+  z-index: 100;
+
+  border-color: var(--border);
+  border-radius: 0 0 13px 13px;
+  background: var(--surface);
+
+  box-shadow: 0 5px 18px rgb(0 0 0 / 8%);
+}
+
+.barTitle {
+  display: none;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  width: 100%;
+  min-height: 50px;
+  padding: 5px;
+
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 38px;
+  padding: 0 14px;
+
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tab:hover {
+  background: var(--surface-alt);
+  color: var(--primary);
+}
+
+.tabActive {
+  border-color: var(--soft);
+  background: var(--class-hover);
+
+  color: var(--primary);
+}
+
+.tabActive i {
+  color: var(--accent);
+}
+
+.tabLabel {
+  display: block;
+  white-space: nowrap;
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+
+/* ========================================
+   AT A GLANCE
+======================================== */
+
+.glance {
+  padding: 14px 16px;
+  margin-bottom: 15px;
+
+  border: 1px solid var(--soft);
+  border-radius: 16px;
+  background: var(--surface-alt);
+}
+
+.glanceTitle {
+  margin: 0;
+}
+
+.glanceTitle button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  min-height: 30px;
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+}
+
+.glanceTitle button > span:nth-child(2) {
+  flex: 1;
+}
+
+.glanceTitle button > i {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.chevron {
+  flex: 0 0 auto;
+
+  width: 8px;
+  height: 8px;
+
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 0.22s ease;
+}
+
+.glanceTitle button[aria-expanded="true"] .chevron {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+.subTitle button[aria-expanded="true"] .chevron {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+.glanceTitle button:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 4px;
+}
+
+.glanceBody {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
+
+  padding-top: 12px;
+  margin-top: 11px;
+
+  border-top: 1px solid var(--border);
+}
+
+.glanceBlock {
+  min-width: 0;
+}
+
+.glanceBlock h3 {
+  margin: 0 0 7px;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.glancePoints {
+  padding-left: 17px;
+  margin: 0 0 4px;
+
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.glancePoints li {
+  margin-bottom: 6px;
+}
+
+.glancePoints li::marker {
+  color: var(--secondary);
+}
+
+.glanceLink {
+  min-height: 32px;
+  padding: 0;
+  margin-bottom: 8px;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--secondary);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.glanceLink::after {
+  content: " →";
+  color: var(--accent);
+}
+
+
+/* ========================================
+   READING SURFACE
+======================================== */
+
+.card {
+  padding: 22px 28px 12px;
+  margin-bottom: 18px;
+
+  border: 1px solid var(--soft);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.card > h2 {
+  padding-bottom: 16px;
+  margin: 0 0 18px;
+
+  border-bottom: 1px solid var(--border);
+
+  color: var(--primary);
+  font-size: 21px;
+  font-weight: 780;
+  letter-spacing: -0.6px;
+  line-height: 1.2;
+}
+
+.sourceLine {
+  margin: 0 0 14px;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.sourceRecord {
+  padding: 0 0 18px;
+  margin: 0 0 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sourceRecord:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+.sourceRecordTitle {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.muted {
+  margin: 0 0 12px;
+
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.empty {
+  padding: 12px 0;
+  margin: 0 0 18px;
+
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+
+/* ========================================
+   SUBSECTIONS
+======================================== */
+
+.sub {
+  border-top: 1px solid var(--border);
+}
+
+.subTitle {
+  margin: 0;
+}
+
+.subTitle button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  width: 100%;
+  min-height: 50px;
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 680;
+  text-align: left;
+  cursor: pointer;
+}
+
+.subTitle button .chevron {
+  flex-shrink: 0;
+}
+
+.subBody {
+  padding-bottom: 16px;
+}
+
+
+/* ========================================
+   READING CONTENT
+======================================== */
+
+.prose {
+  max-width: 68ch;
+  margin: 0 0 14px;
+
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.bullets {
+  max-width: 72ch;
+  padding-left: 20px;
+  margin: 0 0 8px;
+
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.bullets li {
+  margin-bottom: 9px;
+}
+
+.bullets li::marker {
+  color: var(--secondary);
+}
+
+.warning li::marker {
+  color: var(--danger);
+}
+
+.showMore {
+  min-height: 40px;
+  padding: 0;
+  margin-bottom: 8px;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+
+/* ========================================
+   LABEL TEXT BLOCKS
+   Medicine records shown on class and
+   group pages.
+======================================== */
+
+.recordBlock + .recordBlock {
+  padding-top: 14px;
+  margin-top: 14px;
+
+  border-top: 1px solid var(--border);
+}
+
+.blockHeading {
+  margin: 0 0 8px;
+
+  color: var(--secondary);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.openProfile {
+  min-height: 40px;
+  padding: 0;
+  margin: 6px 0 4px;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.openProfile::after {
+  content: " →";
+  color: var(--accent);
+}
+
+
+/* ========================================
+   LINK LIST
+======================================== */
+
+.linkList {
+  padding: 0;
+  margin: 0;
+
+  list-style: none;
+}
+
+.linkList button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 4px;
+
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.linkList button:hover {
+  background: var(--hover);
+}
+
+.linkList small {
+  flex-shrink: 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+/* ========================================
+   SOURCE FOOTER
+======================================== */
+
+.sourceFooter {
+  padding-top: 14px;
+  margin-top: 6px;
+
+  border-top: 1px solid var(--border);
+}
+
+.sourceFooter p {
+  margin: 0 0 10px;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.sourceFooter a {
+  color: var(--secondary);
+  font-weight: 650;
+}
+
+
+/* ========================================
+   PAGER
+======================================== */
+
+.pager {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding-top: 16px;
+  margin-top: 18px;
+
+  border-top: 1px solid var(--border);
+}
+
+.pager button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 0;
+  min-height: 48px;
+  padding: 7px 10px;
+
+  border: 1px solid var(--soft);
+  border-radius: 10px;
+  background: var(--surface-alt);
+
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pager button:last-child {
+  margin-left: auto;
+  text-align: right;
+}
+
+.pager button:hover {
+  background: var(--hover);
+}
+
+.pager button i {
+  color: var(--accent);
+}
+
+
+/* ========================================
+   KEYBOARD FOCUS
+======================================== */
+
+.back:focus-visible,
+.trail button:focus-visible,
+.glanceLink:focus-visible,
+.subTitle button:focus-visible,
+.showMore:focus-visible,
+.linkList button:focus-visible,
+.pager button:focus-visible,
+.openProfile:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+
+/* ========================================
+   DESKTOP
+======================================== */
+
+@media (min-width: 1000px) {
+  .glance {
+    padding: 20px 24px 18px;
+  }
+
+  .card {
+    padding: 22px 36px 14px;
+  }
+}
+
+
+/* ========================================
+   PHONE
+======================================== */
+
+@media (max-width: 600px) {
+  .profile {
+    max-width: none;
+  }
+
+  .header {
+    padding-bottom: 14px;
+    margin-bottom: 11px;
+  }
+
+  .slot {
+    height: 49px;
+    margin-bottom: 14px;
+  }
+
+  .bar {
+    min-height: 49px;
+    border-radius: 11px;
+  }
+
+  .tabs {
+    min-height: 47px;
+    padding: 4px;
+  }
+
+  .tab {
+    min-height: 37px;
+    padding: 0 12px;
+    font-size: 11px;
+  }
+
+  .glance {
+    padding: 12px 13px;
+    margin-bottom: 12px;
+  }
+
+  .glanceBody {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .card {
+    padding: 17px 14px 8px;
+  }
+
+  .card > h2 {
+    font-size: 21px;
+  }
+
+  .pager button {
+    gap: 8px;
+    padding: 7px 8px;
+  }
+}
+
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .tab,
+  .chevron {
+    transition: none;
+  }
+}
