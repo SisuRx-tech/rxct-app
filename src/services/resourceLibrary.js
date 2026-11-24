@@ -223,7 +223,61 @@ export async function extractPdfText(file) {
   return { text: pages.join("\n"), pageCount: document.numPages };
 }
 
+
 export { fingerprint };
+
+export async function hashPdfContent(file) {
+  if (!file || typeof file.arrayBuffer !== "function") {
+    throw new Error("A valid PDF file is required to calculate its content hash.");
+  }
+
+  if (!globalThis.crypto?.subtle) {
+    throw new Error("Secure PDF duplicate detection is unavailable in this browser.");
+  }
+
+  const bytes = await file.arrayBuffer();
+  const digest = await globalThis.crypto.subtle.digest("SHA-256", bytes);
+
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+export async function findDuplicateResource(accountId, contentHash) {
+  const id = requireAccount(accountId);
+  if (!contentHash) return null;
+
+  const resources = await getResources(id);
+
+  for (const resource of resources) {
+    let existingHash = resource.contentHash;
+
+    // Older documents predate content hashes. Fingerprint their stored
+    // PDF once, then cache the hash without changing their other metadata.
+    if (!existingHash && resource.blob) {
+      existingHash = await hashPdfContent(resource.blob);
+      await saveResource({ ...resource, contentHash: existingHash });
+    }
+
+    if (existingHash === contentHash) return resource;
+  }
+
+  return null;
+}
+
+export async function renameDuplicateResource(accountId, resource, newName) {
+  const id = requireAccount(accountId);
+
+  if (!resource || String(resource.accountId) !== id || !resource.id) {
+    throw new Error("This document does not belong to the signed-in account.");
+  }
+
+  const cleanName = String(newName || "").trim();
+  if (!cleanName) throw new Error("A valid document name is required.");
+
+  // Preserve the existing blob, ID, course, progress, and timestamps.
+  return saveResource({ ...resource, name: cleanName });
+}
 
 const COURSE_INFO_KEY = "resource-course-descriptions";
 

@@ -240,3 +240,115 @@
   background: rgba(22, 110, 75, 0.06);
   color: #176b4b;
 }
+
+
+/* Mobile-friendly import dialog: fixed controls, independently scrolling list. */
+.modalBackdrop {
+  padding: 12px;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 520px);
+  height: auto;
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.modalHeader,
+.modal > .importUrl,
+.modalIntro,
+.selectionActions,
+.modalFeedback,
+.modalActions {
+  flex-shrink: 0;
+}
+
+.modalList {
+  flex: 1 1 auto;
+  min-height: 90px;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.selectionActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: .68rem;
+}
+
+.selectionActions > div {
+  display: flex;
+  gap: 6px;
+}
+
+.selectionActions button {
+  padding: 6px 8px;
+  font-size: .62rem;
+}
+
+.selectionActions button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.modalActions {
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 520px) {
+  .modalBackdrop {
+    padding: 8px;
+  }
+
+  .modal {
+    max-height: calc(100vh - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 14px;
+  }
+
+  .modalList {
+    min-height: 70px;
+  }
+
+  .modalActions {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+
+/* Keep import dialogs compact; scroll the document list, not the whole modal. */
+.modal {
+  max-height: min(560px, 76dvh);
+}
+
+.modalList {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 520px) {
+  .modal {
+    max-height: min(500px, calc(100dvh - 16px));
+  }
+
+  .modalList {
+    max-height: 160px;
+  }
+}
+.cardUpdated{display:inline-flex;align-items:center;gap:4px}.cardUpdated i{font-size:.58rem;color:var(--primary)}.syncButton{display:inline-flex;align-items:center;gap:4px;padding:4px 7px;border:1px solid rgba(194,122,58,.42);border-radius:5px;background:var(--accent);color:var(--text-light);font:inherit;font-size:.61rem;font-weight:750;cursor:pointer;box-shadow:0 1px 2px rgba(38,51,49,.08)}.syncButton:hover{background:#a96632}.syncButton:disabled{cursor:not-allowed;opacity:.55}.cardActions{display:flex;align-items:center;flex-wrap:wrap;gap:6px}

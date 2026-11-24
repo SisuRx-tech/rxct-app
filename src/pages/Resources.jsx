@@ -5,6 +5,9 @@ import { getCoursesForProfile, OAU_PHARMD_COURSES } from "../data/oauPharmdCours
 import {
   extractPdfText,
   fingerprint,
+  hashPdfContent,
+  findDuplicateResource,
+  renameDuplicateResource,
   getRememberedCorrection,
   getResources,
   getCourseDescriptions,
@@ -17,13 +20,19 @@ import { formatConfidence, recognizeCourse } from "../services/courseRecognition
 import { getAllNotes } from "../services/notes";
 import { normalizeUserProfile } from "../services/userProfile";
 import {
+  deleteCloudResource,
+  listCloudResources,
+  openCloudResource,
+  updateCloudResource,
+  uploadCloudPdf,
+} from "../services/cloudResources";
+import {
   createLibraryShare,
   getShareToken,
   importLibraryItems,
   resolveLibraryShare,
 } from "../services/librarySharing";
 import {
-  preloadDriveAuthorization,
   requestDriveAccess,
   listDrivePdfs,
   downloadDrivePdf,
@@ -36,6 +45,48 @@ const noteCount = (notes) => Object.values(notes || {}).reduce(
   0,
 );
 
+function progressLabel(progress, mode = "import") {
+  if (!progress) return "";
+  const { stage, completed = 0, total = 0, name } = progress;
+  const count = total ? `${completed} of ${total}` : "";
+
+  if (stage === "cancel-requested") return progress.message || "Cancellation requested…";
+  if (stage === "uploading") return `Uploading documents · ${count} complete`;
+  if (stage === "downloading") return `Downloading documents · ${count} complete`;
+  if (stage === "saving") return mode === "export"
+    ? "Saving the share manifest…"
+    : `Saving documents · ${count} complete`;
+  if (stage === "scanning") return progress.message || "Scanning Drive folder…";
+  if (stage === "connecting") return "Connecting to Google Drive…";
+  if (stage === "resolving") return "Checking the shared library link…";
+  if (stage === "manifest") return "Reading the shared library list…";
+  if (stage === "complete") return "Transfer complete.";
+  if (stage === "file") return name ? `Processing: ${name}` : progress.message || "Processing document…";
+  return progress.message || (mode === "export" ? "Preparing export…" : "Preparing import…");
+}
+
+function cloudItemToResource(item, accountId, local = null) {
+  const document = item.document || {};
+  return {
+    ...local,
+    id: local?.id || `${accountId}-cloud-${item.id}`,
+    accountId,
+    cloudItemId: item.id,
+    contentHash: document.content_hash || local?.contentHash || "",
+    name: item.display_name || local?.name || "document.pdf",
+    mimeType: document.mime_type || local?.mimeType || "application/pdf",
+    size: Number(document.file_size || local?.size || 0),
+    courseId: item.course_id || null,
+    course: item.course || local?.course || OAU_PHARMD_COURSES.find((course) => course.id === item.course_id) || null,
+    assignmentStatus: item.assignment_status || (item.course_id ? "assigned" : "unassigned"),
+    lastOpenedAt: item.last_opened_at || local?.lastOpenedAt || null,
+    lastOpenedSection: item.last_opened_section || local?.lastOpenedSection || "Document",
+    progress: item.progress || local?.progress || {},
+    createdAt: item.created_at || local?.createdAt || new Date().toISOString(),
+    updatedAt: item.updated_at || local?.updatedAt || new Date().toISOString(),
+  };
+}
+
 function Resources() {
   const { user } = useAuth();
   const fileInput = useRef(null);
@@ -45,8 +96,10 @@ function Resources() {
   const [query, setQuery] = useState("");
   const [toast, setToast] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [pendingResource, setPendingResource] = useState(null);
+  const [pendingResources, setPendingResources] = useState([]);
   const [pendingCourseId, setPendingCourseId] = useState("");
+  const [removeTarget, setRemoveTarget] = useState(null);
+  const pendingResource = pendingResources[0]?.resource || null;
   const [notes] = useState(getAllNotes);
   const [courseDescriptions, setCourseDescriptions] = useState({});
   const [shareOpen, setShareOpen] = useState(false);
@@ -63,6 +116,10 @@ function Resources() {
   const [importFeedback, setImportFeedback] = useState(null);
   const [importSource, setImportSource] = useState("rxct");
   const [driveToken, setDriveToken] = useState("");
+  const [shareProgress, setShareProgress] = useState("");
+  const exportController = useRef(null);
+  const importController = useRef(null);
+  const loadController = useRef(null);
 
   const profile = normalizeUserProfile(user);
   const accountId = user?.id;
@@ -94,10 +151,27 @@ function Resources() {
 
   const refresh = async () => {
     if (!accountId) return;
-    const [items, descriptions] = await Promise.all([
+    const [localItems, descriptions] = await Promise.all([
       getResources(accountId),
       Promise.resolve(getCourseDescriptions(accountId)),
     ]);
+    let items = localItems;
+    try {
+      const cloud = await listCloudResources();
+      const byHash = new Map(localItems.filter((item) => item.contentHash).map((item) => [item.contentHash, item]));
+      const byCloudId = new Map(localItems.filter((item) => item.cloudItemId).map((item) => [item.cloudItemId, item]));
+      const cloudItems = (cloud.items || []).map((item) => cloudItemToResource(
+        item,
+        accountId,
+        byCloudId.get(item.id) || byHash.get(item.document?.content_hash),
+      ));
+      const cloudIds = new Set(cloudItems.map((item) => item.cloudItemId));
+      const localOnly = localItems.filter((item) => !item.cloudItemId || !cloudIds.has(item.cloudItemId));
+      items = [...cloudItems, ...localOnly];
+      await Promise.all(cloudItems.map((item) => saveResource(item).catch(() => {})));
+    } catch (cloudError) {
+      notify("progress", "Cloud library unavailable. Showing your offline library.");
+    }
     setResources(items);
     setCourseDescriptions(descriptions);
   };
@@ -106,14 +180,7 @@ function Resources() {
     if (!accountId) return undefined;
     let active = true;
 
-    Promise.all([
-      getResources(accountId),
-      Promise.resolve(getCourseDescriptions(accountId)),
-    ]).then(([items, descriptions]) => {
-      if (!active) return;
-      setResources(items);
-      setCourseDescriptions(descriptions);
-    }).catch((loadError) => {
+    refresh().catch((loadError) => {
       if (active) notify("error", loadError.message || "Could not load your library.");
     });
 
@@ -127,12 +194,6 @@ function Resources() {
   }, [toast]);
 
   useEffect(() => {
-    if (!importOpen) return undefined;
-    preloadDriveAuthorization().catch(() => {});
-    return undefined;
-  }, [importOpen]);
-
-  useEffect(() => {
     const token = getShareToken();
     if (!token) return undefined;
 
@@ -142,7 +203,22 @@ function Resources() {
       setBusyImportLoad(true);
       setImportFeedback({ type: "progress", message: "Loading shared library…" });
 
-      resolveLibraryShare(token)
+      resolveLibraryShare(
+        token,
+        (progress) => {
+          setImportFeedback({
+            type: "progress",
+            stage: progress.stage,
+            message:
+              progress.stage === "resolving"
+                ? "Resolving RxCT import link…"
+                : progress.total > 0
+                  ? `Loading shared documents (${progress.completed || 0}/${progress.total})…`
+                  : "Loading shared library…",
+          });
+        },
+        loadController.current?.signal,
+      )
         .then((payload) => {
           if (!active) return;
           setImportPayload(payload);
@@ -206,6 +282,19 @@ function Resources() {
     notify("progress", `Reading ${file.name} locally…`);
 
     try {
+      const contentHash = await hashPdfContent(file);
+      const duplicate = await findDuplicateResource(accountId, contentHash);
+
+      if (duplicate) {
+        if (duplicate.cloudItemId) {
+          await updateCloudResource(duplicate.cloudItemId, { display_name: file.name });
+        }
+        await renameDuplicateResource(accountId, duplicate, file.name);
+        await refresh();
+        notify("success", `Already in your library. Renamed to ${file.name}; no second PDF was stored.`);
+        return;
+      }
+
       const { text, pageCount } = await extractPdfText(file);
       const documentFingerprint = await fingerprint(file, text);
       const recognition = recognizeCourse(text, OAU_PHARMD_COURSES);
@@ -227,6 +316,7 @@ function Resources() {
         id: `${accountId}-${documentFingerprint}`,
         accountId,
         fingerprint: documentFingerprint,
+        contentHash,
         name: file.name,
         mimeType: "application/pdf",
         size: file.size,
@@ -250,7 +340,21 @@ function Resources() {
         updatedAt: now,
       };
 
-      await saveResource(resource);
+      let cloudItem = null;
+      try {
+        const cloudResult = await uploadCloudPdf(file, assignedCourse?.id || null, {
+          last_opened_section: "Document",
+          progress: {},
+        });
+        cloudItem = cloudResult.item;
+      } catch (cloudError) {
+        notify("progress", "Saved offline. Cloud upload will be available when the connection returns.");
+      }
+
+      const savedResource = cloudItem
+        ? cloudItemToResource(cloudItem, accountId, resource)
+        : resource;
+      await saveResource(savedResource);
       await refresh();
 
       if (assignedCourse) {
@@ -259,8 +363,13 @@ function Resources() {
           `${file.name} saved and organized under ${assignedCourse.code}.`,
         );
       } else {
-        setPendingResource(resource);
-        setPendingCourseId(recognition.best?.course?.id || "");
+        setPendingResources((current) => [
+          ...current,
+          { resource: savedResource, suggestedCourseId: recognition.best?.course?.id || "" },
+        ]);
+        if (!pendingResources.length) {
+          setPendingCourseId(recognition.best?.course?.id || "");
+        }
         notify("success", `${file.name} uploaded and saved. Choose its course to organize it.`);
       }
     } catch (uploadError) {
@@ -278,13 +387,20 @@ function Resources() {
     if (!course || !accountId) return;
 
     try {
-      await saveResource({
+      const updatedResource = {
         ...resource,
         courseId,
         course,
         assignmentStatus: "manual",
         updatedAt: new Date().toISOString(),
-      });
+      };
+      await saveResource(updatedResource);
+      if (resource.cloudItemId) {
+        await updateCloudResource(resource.cloudItemId, {
+          course_id: courseId,
+          assignment_status: "manual",
+        });
+      }
 
       rememberCorrection(
         accountId,
@@ -294,8 +410,8 @@ function Resources() {
       );
 
       await refresh();
-      setPendingResource(null);
-      setPendingCourseId("");
+      setPendingResources((current) => current.slice(1));
+      setPendingCourseId(pendingResources[1]?.suggestedCourseId || "");
       notify("success", `Assigned to ${course.code}. RxCT will use this correction for similar documents.`);
     } catch (saveError) {
       notify("error", saveError.message || "Could not save that course assignment.");
@@ -304,14 +420,29 @@ function Resources() {
 
   const skipCourseAssignment = async () => {
     if (!pendingResource) return;
-    setPendingResource(null);
-    setPendingCourseId("");
-    notify("success", `${pendingResource.name} remains in Unorganized. You can assign it later.`);
+    const skippedName = pendingResource.name;
+    setPendingResources((current) => current.slice(1));
+    setPendingCourseId(pendingResources[1]?.suggestedCourseId || "");
+    notify("success", `${skippedName} remains in Unorganized. You can assign it later.`);
   };
 
-  const deleteResource = async (resource) => {
+  const skipAllCourseAssignments = () => {
+    const count = pendingResources.length;
+    setPendingResources([]);
+    setPendingCourseId("");
+    notify("success", `${count} document${count === 1 ? "" : "s"} left in Unorganized. You can assign them later.`);
+  };
+
+  const deleteResource = (resource) => setRemoveTarget(resource);
+
+  const confirmDeleteResource = async () => {
+    if (!removeTarget) return;
+    const resource = removeTarget;
     try {
+      if (resource.cloudItemId) await deleteCloudResource(resource.cloudItemId);
       await removeResource(accountId, resource.id);
+      setPendingResources((current) => current.filter((item) => item.resource.id !== resource.id));
+      setRemoveTarget(null);
       await refresh();
       notify("success", "Document removed from this account's library.");
     } catch (deleteError) {
@@ -331,19 +462,35 @@ function Resources() {
   };
 
   const openResource = async (resource) => {
-    if (!resource?.blob) {
-      notify("error", "The original PDF is unavailable on this device.");
-      return;
-    }
-
     try {
-      await saveResource({
+      let blob = resource.blob;
+      if (!blob && resource.cloudItemId) {
+        const openedCloud = await openCloudResource(resource.cloudItemId);
+        const response = await fetch(openedCloud.url);
+        if (!response.ok) throw new Error("The cloud document could not be downloaded.");
+        blob = await response.blob();
+      }
+      if (!blob) {
+        notify("error", "The original PDF is unavailable on this device.");
+        return;
+      }
+
+      const openedResource = {
         ...resource,
+        blob,
         lastOpenedAt: new Date().toISOString(),
         lastOpenedSection: resource.lastOpenedSection || "Document",
-      });
+      };
+      await saveResource(openedResource);
+      if (resource.cloudItemId) {
+        await updateCloudResource(resource.cloudItemId, {
+          last_opened_at: openedResource.lastOpenedAt,
+          last_opened_section: openedResource.lastOpenedSection,
+          progress: openedResource.progress || {},
+        });
+      }
 
-      const url = URL.createObjectURL(resource.blob);
+      const url = URL.createObjectURL(blob);
       const opened = window.open(url, "_blank", "noopener,noreferrer");
       if (!opened) {
         URL.revokeObjectURL(url);
@@ -363,15 +510,56 @@ function Resources() {
   };
 
   const makeShare = async () => {
+    if (exportController.current) return;
+
+    const controller = new AbortController();
+    exportController.current = controller;
     setBusyExport(true);
     setShareError("");
+    setShareProgress({ stage: "uploading", completed: 0, total: shareSelection.length });
 
     try {
+      const selectedResources = resources.filter((resource) => shareSelection.includes(resource.id));
+      const cloudResources = [];
+
+      for (let index = 0; index < selectedResources.length; index += 1) {
+        const resource = selectedResources[index];
+        if (resource.cloudItemId) {
+          cloudResources.push(resource);
+        } else {
+          if (!resource.blob) {
+            throw new Error(`${resource.name} is local-only and its PDF is unavailable for automatic upload.`);
+          }
+
+          setShareProgress({
+            stage: "uploading",
+            completed: index,
+            total: selectedResources.length,
+            name: resource.name,
+          });
+          const uploaded = await uploadCloudPdf(resource.blob, resource.courseId || null, {
+            last_opened_at: resource.lastOpenedAt || null,
+            last_opened_section: resource.lastOpenedSection || "Document",
+            progress: resource.progress || {},
+          });
+          const syncedResource = cloudItemToResource(uploaded.item, accountId, resource);
+          await saveResource(syncedResource);
+          cloudResources.push(syncedResource);
+        }
+      }
+
+      await refresh();
       const link = await createLibraryShare(
-        resources.filter((resource) => shareSelection.includes(resource.id)),
+        cloudResources,
         accountId,
+        (progress) => setShareProgress(progress),
+        controller.signal,
       );
+
+      if (controller.signal.aborted) return;
+
       setShareLink(link);
+      setShareProgress({ stage: "complete", completed: shareSelection.length, total: shareSelection.length });
 
       try {
         if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
@@ -381,30 +569,68 @@ function Resources() {
         notify("success", "Library link created. Use Copy link to copy it.");
       }
     } catch (shareFailure) {
-      setShareError(shareFailure.message || "Could not create the library link.");
+      if (controller.signal.aborted) {
+        setShareProgress({ stage: "cancel-requested", message: "Export cancelled. Cleaning up completed uploads…" });
+      } else {
+        setShareError(shareFailure.message || "Could not create the library link.");
+        setShareProgress("");
+      }
     } finally {
+      if (exportController.current === controller) exportController.current = null;
       setBusyExport(false);
     }
   };
 
   const importSelected = async () => {
-    if (!importPayload?.items?.length || !accountId || !importSelection.length) return;
+    if (!importPayload?.items?.length || !accountId || !importSelection.length || importController.current) return;
 
+    const controller = new AbortController();
+    importController.current = controller;
     setBusyImport(true);
-    setImportFeedback({ type: "progress", message: "Importing selected documents…" });
+    setImportFeedback({ type: "progress", message: "Preparing import…" });
+
+    const selectedItems = importPayload.items.filter((item) =>
+      importSelection.includes(item.id),
+    );
+    let importedCount = 0;
+    const failedFiles = [];
+    const unassignedResources = [];
+
+    const updateProgress = (progress) => {
+      const details = typeof progress === "string"
+        ? { message: progress }
+        : progress || {};
+      setImportFeedback({
+        type: "progress",
+        ...details,
+        message: progressLabel(details, "import"),
+      });
+    };
 
     try {
       if (importSource === "rxct") {
-        const importedCount = await importLibraryItems(
+        importedCount = await importLibraryItems(
           importPayload.items,
           importSelection,
           accountId,
           saveResource,
+          updateProgress,
+          controller.signal,
+          {
+            findDuplicate: (hash) => findDuplicateResource(accountId, hash),
+            renameDuplicate: (resource, name) =>
+              renameDuplicateResource(accountId, resource, name),
+            hashPdfContent,
+          },
         );
+
         await refresh();
+
         setImportFeedback({
-          type: "success",
-          message: `${importedCount} document${importedCount === 1 ? "" : "s"} imported successfully.`,
+          type: controller.signal.aborted ? "success" : "success",
+          message: controller.signal.aborted
+            ? `Import cancelled. ${importedCount} document${importedCount === 1 ? "" : "s"} completed before cancellation.`
+            : `${importedCount} document${importedCount === 1 ? "" : "s"} imported successfully.`,
         });
         return;
       }
@@ -413,18 +639,58 @@ function Resources() {
         throw new Error("Google Drive authorization expired. Load the link again.");
       }
 
-      const selectedItems = importPayload.items.filter((item) =>
-        importSelection.includes(item.id),
-      );
-      let importedCount = 0;
-      const failedFiles = [];
-      let unassignedResource = null;
+      for (let index = 0; index < selectedItems.length; index += 1) {
+        if (controller.signal.aborted) break;
 
-      for (const item of selectedItems) {
+        const item = selectedItems[index];
+        updateProgress({
+          stage: "file",
+          completed: importedCount,
+          total: selectedItems.length,
+          name: item.name,
+          message: `Preparing ${item.name}`,
+        });
+
         try {
-          const file = await downloadDrivePdf(item, driveToken);
+          const file = await downloadDrivePdf(item, driveToken, controller.signal);
+          if (controller.signal.aborted) break;
+
+          const contentHash = await hashPdfContent(file);
+          const duplicate = await findDuplicateResource(accountId, contentHash);
+
+          if (duplicate) {
+            await renameDuplicateResource(accountId, duplicate, file.name);
+            importedCount += 1;
+            updateProgress({
+              stage: "file",
+              completed: importedCount,
+              total: selectedItems.length,
+              name: item.name,
+              message: `Already in your library. Renamed to ${file.name}.`,
+            });
+            continue;
+          }
+
+          updateProgress({
+            stage: "file",
+            completed: importedCount,
+            total: selectedItems.length,
+            name: item.name,
+            message: `Reading PDF: ${item.name}`,
+          });
           const { text, pageCount } = await extractPdfText(file);
+          if (controller.signal.aborted) break;
+
+          updateProgress({
+            stage: "file",
+            completed: importedCount,
+            total: selectedItems.length,
+            name: item.name,
+            message: `Recognizing course: ${item.name}`,
+          });
           const documentFingerprint = await fingerprint(file, text);
+          if (controller.signal.aborted) break;
+
           const recognition = recognizeCourse(text, OAU_PHARMD_COURSES);
           const learned = getRememberedCorrection(accountId, documentFingerprint, text);
 
@@ -438,6 +704,7 @@ function Resources() {
           const resource = {
             id: `${accountId}-${documentFingerprint}`,
             accountId,
+            contentHash,
             fingerprint: documentFingerprint,
             name: file.name,
             mimeType: "application/pdf",
@@ -462,28 +729,50 @@ function Resources() {
             updatedAt: now,
           };
 
+          updateProgress({
+            stage: "file",
+            completed: importedCount,
+            total: selectedItems.length,
+            name: item.name,
+            message: `Saving ${item.name}`,
+          });
           await saveResource(resource);
           importedCount += 1;
+          updateProgress({
+            stage: "downloading",
+            completed: importedCount,
+            total: selectedItems.length,
+          });
 
           if (!assignedCourse) {
-            unassignedResource = {
+            unassignedResources.push({
               resource,
               suggestedCourseId: recognition.best?.course?.id || "",
-            };
+            });
           }
         } catch (fileError) {
+          if (controller.signal.aborted || fileError.name === "AbortError") break;
           failedFiles.push(`${item.name}: ${fileError.message || "Import failed"}`);
         }
       }
 
       await refresh();
 
-      if (unassignedResource) {
-        setPendingResource(unassignedResource.resource);
-        setPendingCourseId(unassignedResource.suggestedCourseId);
+      if (unassignedResources.length) {
+        setPendingResources((current) => {
+          if (!current.length) {
+            setPendingCourseId(unassignedResources[0].suggestedCourseId);
+          }
+          return [...current, ...unassignedResources];
+        });
       }
 
-      if (failedFiles.length) {
+      if (controller.signal.aborted) {
+        setImportFeedback({
+          type: "success",
+          message: `Import cancelled. ${importedCount} of ${selectedItems.length} selected documents completed.`,
+        });
+      } else if (failedFiles.length) {
         setImportFeedback({
           type: importedCount ? "success" : "error",
           message: `${importedCount} imported; ${failedFiles.length} failed. ${failedFiles.slice(0, 2).join("; ")}`,
@@ -497,11 +786,19 @@ function Resources() {
 
       setDriveToken("");
     } catch (importError) {
-      setImportFeedback({
-        type: "error",
-        message: importError.message || "Could not import those documents.",
-      });
+      if (controller.signal.aborted || importError.name === "AbortError") {
+        setImportFeedback({
+          type: "success",
+          message: `Import cancelled. ${importedCount} documents completed.`,
+        });
+      } else {
+        setImportFeedback({
+          type: "error",
+          message: importError.message || "Could not import those documents.",
+        });
+      }
     } finally {
+      if (importController.current === controller) importController.current = null;
       setBusyImport(false);
     }
   };
@@ -555,7 +852,7 @@ function Resources() {
 
         <div className={styles.heroAside}>
           <span className={styles.heroLabel}>
-            <i className="fa-solid fa-book-open" /> YOUR COURSES
+            <i className="fa-solid fa-book-open" /> SUGGESTIONS
           </span>
           {suggestedCourses.length ? suggestedCourses.map((course) => (
             <div className={styles.courseSuggestion} key={course.id}>
@@ -564,24 +861,26 @@ function Resources() {
             </div>
           )) : (
             <p className={styles.noSuggestions}>
-              Select your courses in your academic profile to organize this library.
+              Course suggestions will appear here.
             </p>
           )}
         </div>
       </section>
 
-      {lastResource && (
-        <section className={styles.resumeSection}>
-          <div>
-            <span className={styles.sectionKicker}>LAST RESOURCE SESSION</span>
-            <h2>Pick up where you left off</h2>
-            <p><i className="fa-solid fa-file-lines" /> {lastResource.name}</p>
-          </div>
+      <section className={styles.resumeSection}>
+        <div>
+          <span className={styles.sectionKicker}>LAST RESOURCE SESSION</span>
+          <h2>Pick up where you left off</h2>
+          {lastResource
+            ? <p><i className="fa-solid fa-file-lines" /> {lastResource.name}</p>
+            : <p>Your recent documents will appear here once you open a resource.</p>}
+        </div>
+        {lastResource && (
           <button className={styles.continueButton} type="button" onClick={() => openResource(lastResource)}>
             Open again <i className="fa-solid fa-arrow-right" />
           </button>
-        </section>
-      )}
+        )}
+      </section>
 
       <section className={`${styles.libraryShell} libraryShellRoot`} aria-label="Your resource library">
         <div className={`${styles.libraryToolbar} libraryToolbarRoot`}>
@@ -633,6 +932,7 @@ function Resources() {
             />
           ) : activeTab === "Organized" && activeCourse ? (
             <CourseFolder
+              key={activeCourse.id}
               course={activeCourse}
               resources={courseResources}
               description={courseDescriptions[activeCourse.id] || ""}
@@ -751,9 +1051,31 @@ function Resources() {
           selectedCourseId={pendingCourseId}
           setSelectedCourseId={setPendingCourseId}
           suggestions={pendingResource.suggestions || []}
+          queueCount={pendingResources.length}
           onAssign={() => assignResource(pendingResource, pendingCourseId)}
           onSkip={skipCourseAssignment}
+          onSkipAll={skipAllCourseAssignments}
         />
+      )}
+
+      {removeTarget && (
+        <div className={styles.modalBackdrop}>
+          <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="remove-resource-title">
+            <div className={styles.modalHeader}>
+              <div>
+                <span className={styles.sectionKicker}>REMOVE DOCUMENT</span>
+                <h2 id="remove-resource-title">Remove this document?</h2>
+              </div>
+            </div>
+            <p className={styles.modalIntro}>
+              <strong>{removeTarget.name}</strong> will be removed from this account's library. This cannot be undone.
+            </p>
+            <div className={styles.modalActions}>
+              <button type="button" className="resourceDeleteAction" onClick={confirmDeleteResource}>Remove document</button>
+              <button type="button" className={styles.secondaryButton} onClick={() => setRemoveTarget(null)}>Keep document</button>
+            </div>
+          </section>
+        </div>
       )}
 
       {shareOpen && (
@@ -763,55 +1085,54 @@ function Resources() {
           setSelection={setShareSelection}
           link={shareLink}
           error={shareError}
-          busy={busyExport}
+          busy={busyExport && shareProgress?.stage !== "cancel-requested"}
+          progress={shareProgress}
           onCreate={makeShare}
           onCopy={async () => {
             if (shareLink) await navigator.clipboard?.writeText(shareLink);
           }}
-          onClose={() => setShareOpen(false)}
+          onClose={() => {
+            if (busyExport && shareProgress?.stage !== "cancel-requested") {
+              exportController.current?.abort();
+              setShareProgress({ stage: "cancel-requested", message: "Cancellation requested. Stopping queued uploads and cleaning up…" });
+              return;
+            }
+            setShareOpen(false);
+          }}
         />
       )}
 
       {importOpen && (
         <ImportDialog
           payload={importPayload}
-          source={importSource}
-          setSource={(source) => {
-            setImportSource(source);
-            setImportPayload(null);
-            setImportSelection([]);
-            setImportFeedback(null);
-            setDriveToken("");
-            setImportUrl("");
-          }}
           selection={importSelection}
           setSelection={setImportSelection}
           url={importUrl}
           setUrl={setImportUrl}
-          busy={busyImport || busyImportLoad}
-          feedback={importFeedback}
+          busy={busyImport && importFeedback?.stage !== "cancel-requested"}
+          loading={busyImportLoad && importFeedback?.stage !== "cancel-requested"}          feedback={importFeedback}
           onLoad={async () => {
+            if (loadController.current) return;
+            const controller = new AbortController();
+            loadController.current = controller;
             setBusyImportLoad(true);
             setImportPayload(null);
             setImportSelection([]);
             setImportFeedback({
               type: "progress",
-              message: importSource === "drive"
-                ? "Connecting to Google Drive…"
-                : "Loading shared library…",
+              message: "Loading shared library…",
             });
 
             try {
-              let payload;
-
-              if (importSource === "drive") {
-                const token = await requestDriveAccess();
-                setDriveToken(token);
-                payload = await listDrivePdfs(importUrl, token);
-              } else {
-                const token = getShareTokenFromInput(importUrl);
-                payload = await resolveLibraryShare(token);
-              }
+              const token = getShareTokenFromInput(importUrl);
+              const payload = await resolveLibraryShare(token, (progress) => {
+                setImportFeedback({
+                  type: "progress",
+                  ...progress,
+                  message: progressLabel(progress),
+                });
+              }, controller.signal);
+              if (controller.signal.aborted) return;
 
               setImportPayload(payload);
               setImportSelection((payload.items || []).map((item) => item.id));
@@ -820,17 +1141,38 @@ function Resources() {
                 message: `${payload.items.length} document${payload.items.length === 1 ? "" : "s"} ready to import.`,
               });
             } catch (loadError) {
-              setDriveToken("");
-              setImportFeedback({
-                type: "error",
-                message: loadError.message || "That link could not be opened.",
-              });
+              if (!controller.signal.aborted) {
+                setDriveToken("");
+                setImportFeedback({
+                  type: "error",
+                  message: loadError.message || "That link could not be opened.",
+                });
+              }
             } finally {
+              if (loadController.current === controller) loadController.current = null;
               setBusyImportLoad(false);
             }
           }}
           onImport={importSelected}
           onClose={() => {
+            if (busyImport && importFeedback?.stage !== "cancel-requested") {
+              importController.current?.abort();
+              setImportFeedback({
+                type: "progress",
+                stage: "cancel-requested",
+                message: "Cancellation requested. Stopping queued documents; finishing the active document safely…",
+              });
+              return;
+            }
+            if (busyImportLoad && importFeedback?.stage !== "cancel-requested") {
+              loadController.current?.abort();
+              setImportFeedback({
+                type: "progress",
+                stage: "cancel-requested",
+                message: "Cancellation requested. Stopping the current Drive or link request…",
+              });
+              return;
+            }
             setImportOpen(false);
             setDriveToken("");
           }}
@@ -854,7 +1196,7 @@ function ResourceList({ resources, emptyTitle, emptyText, onOpen, onAssign, onDe
     <div>
       {resources.map((resource) => (
         <ResourceCard
-          key={resource.id}
+          key={`${resource.id}-${resource.courseId || "unassigned"}`}
           resource={resource}
           onOpen={onOpen}
           onAssign={onAssign}
@@ -867,8 +1209,6 @@ function ResourceList({ resources, emptyTitle, emptyText, onOpen, onAssign, onDe
 
 function CourseFolder({ course, resources, description, onBack, onSaveDescription, onOpen, onAssign, onDelete }) {
   const [draft, setDraft] = useState(description);
-
-  useEffect(() => setDraft(description), [course.id, description]);
 
   return (
     <section className="resourceCourseFolder">
@@ -909,15 +1249,13 @@ function CourseFolder({ course, resources, description, onBack, onSaveDescriptio
   );
 }
 
-function CoursePrompt({ resource, selectedCourseId, setSelectedCourseId, suggestions, onAssign, onSkip }) {
-  const suggestedIds = new Set(suggestions.map((item) => item.courseId));
-
+function CoursePrompt({ resource, selectedCourseId, setSelectedCourseId, suggestions, queueCount, onAssign, onSkip, onSkipAll }) {
   return (
     <div className={styles.modalBackdrop}>
       <section className={`${styles.modal} resourceCoursePrompt`} role="dialog" aria-modal="true" aria-labelledby="course-prompt-title">
         <div className={styles.modalHeader}>
           <div>
-            <span className={styles.sectionKicker}>COURSE ORGANIZATION</span>
+            <span className={styles.sectionKicker}>COURSE ORGANIZATION · {queueCount} UNASSIGNED</span>
             <h2 id="course-prompt-title">Where should this go?</h2>
           </div>
           <span className="resourcePromptFile"><i className="fa-regular fa-file-pdf" /></span>
@@ -959,7 +1297,8 @@ function CoursePrompt({ resource, selectedCourseId, setSelectedCourseId, suggest
           ))}
         </select>
         <div className={styles.modalActions}>
-          <button type="button" className={styles.secondaryButton} onClick={onSkip}>Skip for now</button>
+          <button type="button" className={styles.secondaryButton} onClick={onSkip}>Skip this</button>
+          <button type="button" className={styles.secondaryButton} onClick={onSkipAll}>Skip all</button>
           <button type="button" className={styles.primaryAction} disabled={!selectedCourseId} onClick={onAssign}>
             Assign course
           </button>
@@ -1015,12 +1354,7 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
   const [courseId, setCourseId] = useState(
     resource.courseId || resource.suggestions?.[0]?.courseId || "",
   );
-  const [confirming, setConfirming] = useState(false);
   const suggestions = resource.suggestions || [];
-
-  useEffect(() => {
-    setCourseId(resource.courseId || resource.suggestions?.[0]?.courseId || "");
-  }, [resource.id, resource.courseId]);
 
   return (
     <article className={styles.resourceCard}>
@@ -1031,11 +1365,8 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
         <div className={styles.cardTop}>
           <span className={styles.fileType}>PDF · {resource.pageCount || "?"} pages</span>
           <span className={styles.cardUpdated}>
-            {resource.assignmentStatus === "auto"
-              ? "Auto-organized"
-              : resource.assignmentStatus === "learned"
-                ? "Learned match"
-                : resource.courseId ? "Manually assigned" : "Needs a course"}
+            <i className={`fa-solid ${resource.cloudItemId ? "fa-cloud" : "fa-hard-drive"}`} />
+            {resource.cloudItemId ? "Cloud saved" : "Local only"}
           </span>
         </div>
         <h4>{resource.name}</h4>
@@ -1045,20 +1376,13 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
             : "Needs a course assignment"}
         </p>
         <div className={styles.cardActions}>
-          <button className={styles.openButton} type="button" disabled={!resource.blob} onClick={() => onOpen(resource)}>
-            <i className="fa-solid fa-file-arrow-up" /> {resource.blob ? "Open document" : "Source unavailable"}
+          <button className={styles.openButton} type="button" disabled={!resource.blob && !resource.cloudItemId} onClick={() => onOpen(resource)}>
+            <i className="fa-solid fa-file-arrow-up" /> {resource.blob || resource.cloudItemId ? "Open document" : "Source unavailable"}
           </button>
-          <button className={styles.deleteButton} type="button" onClick={() => setConfirming((value) => !value)}>
+          <button className={styles.deleteButton} type="button" onClick={() => onDelete(resource)}>
             <i className="fa-solid fa-trash" /> Remove
           </button>
         </div>
-        {confirming && (
-          <div className={styles.confirmRemove} role="alert">
-            <span>Remove this document from your library?</span>
-            <button type="button" onClick={() => onDelete(resource)}>Remove</button>
-            <button type="button" onClick={() => setConfirming(false)}>Keep it</button>
-          </div>
-        )}
         <details className={styles.assignment}>
           <summary>{resource.courseId ? "Change course" : "Assign a course"}</summary>
           <div className={styles.assignmentRow}>
@@ -1093,7 +1417,7 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
   );
 }
 
-function ShareDialog({ resources, selection, setSelection, link, error, busy, onCreate, onCopy, onClose }) {
+function ShareDialog({ resources, selection, setSelection, link, error, busy, progress, onCreate, onCopy, onClose }) {
   const toggle = (id) => setSelection((current) =>
     current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
   );
@@ -1125,6 +1449,20 @@ function ShareDialog({ resources, selection, setSelection, link, error, busy, on
         </div>
         <p className={styles.modalIntro}>Links expire after 7 days. Choose the whole library, one course, or individual documents.</p>
         {error && <div className="shareError" role="alert"><strong>Export could not be created</strong><p>{error}</p></div>}
+        {progress && (
+          <div className={styles.modalFeedback} role="status">
+            {busy && <i className="fa-solid fa-spinner fa-spin" />}
+            <span>{typeof progress === "string" ? progress : progressLabel(progress, "export")}</span>
+            {progress.total > 0 && (
+              <progress
+                value={progress.completed || 0}
+                max={progress.total}
+                aria-label="Export progress"
+                style={{ display: "block", width: "100%", marginTop: 9 }}
+              />
+            )}
+          </div>
+        )}
         <select
           className={styles.scopeSelect}
           aria-label="Export scope"
@@ -1153,7 +1491,7 @@ function ShareDialog({ resources, selection, setSelection, link, error, busy, on
         </div>
         {link && <div className={styles.shareResult}><input readOnly value={link} aria-label="Library share link" /><button type="button" className="copyTextButton" onClick={onCopy}>Copy link</button></div>}
         <div className={styles.modalActions}>
-          <button type="button" className={styles.secondaryButton} onClick={onClose}>Cancel</button>
+          <button type="button" className={styles.secondaryButton} onClick={onClose}>{busy ? "Cancel export" : "Close"}</button>
           <button type="button" className={styles.primaryAction} disabled={!selection.length || busy} onClick={onCreate}>
             {busy ? "Creating…" : link ? "Create again" : `Export ${selection.length} document${selection.length === 1 ? "" : "s"}`}
           </button>
@@ -1186,7 +1524,7 @@ function getShareTokenFromInput(value) {
   }
 }
 
-function ImportDialog({ payload, source, setSource, selection, setSelection, url, setUrl, busy, feedback, onLoad, onImport, onClose }) {
+function ImportDialog({ payload, selection, setSelection, url, setUrl, busy, loading, feedback, onLoad, onImport, onClose }) {
   const items = payload?.items || [];
   const toggle = (id) => setSelection((current) =>
     current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
@@ -1199,26 +1537,35 @@ function ImportDialog({ payload, source, setSource, selection, setSelection, url
           <div><span className={styles.sectionKicker}>IMPORT LIBRARY</span><h2 id="import-title">Bring in selected documents</h2></div>
           <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close"><i className="fa-solid fa-xmark" /></button>
         </div>
+        <p className={styles.modalIntro}>Paste an RxCT library link. Select the documents you want to import.</p>
         <div className={styles.importUrl}>
-          <button type="button" className={source === "rxct" ? styles.primaryAction : styles.secondaryButton} disabled={busy} onClick={() => setSource("rxct")}>RxCT link</button>
-          <button type="button" className={source === "drive" ? styles.primaryAction : styles.secondaryButton} disabled={busy} onClick={() => setSource("drive")}>Google Drive</button>
+          <input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="Paste library link" aria-label="Library link" />
+          <button type="button" className={styles.secondaryButton} disabled={!url.trim() || busy || loading} onClick={onLoad}>{loading ? "Loading…" : "Load"}</button>
         </div>
-        <p className={styles.modalIntro}>
-          {source === "drive"
-            ? "Paste a Google Drive PDF, file, or folder link. Sign in to Google when prompted."
-            : "Paste an RxCT library link. Select the documents you want to import."}
-        </p>
-        <div className={styles.importUrl}>
-          <input value={url} onChange={(event) => setUrl(event.target.value)} placeholder={source === "drive" ? "Paste Google Drive link" : "Paste library link"} aria-label={source === "drive" ? "Google Drive link" : "Library link"} />
-          <button type="button" className={styles.secondaryButton} disabled={!url.trim() || busy} onClick={onLoad}>Load</button>
-        </div>
+        {items.length > 0 && (
+          <div className={styles.selectionActions}>
+            <span>{selection.length} of {items.length} selected</span>
+            <div>
+              <button type="button" className={styles.secondaryButton}
+                disabled={busy || selection.length === items.length}
+                onClick={() => setSelection(items.map((item) => item.id))}>
+                Select all
+              </button>
+              <button type="button" className={styles.secondaryButton}
+                disabled={busy || selection.length === 0}
+                onClick={() => setSelection([])}>
+                Select none
+              </button>
+            </div>
+          </div>
+        )}
         {items.length > 0 && (
           <div className={styles.modalList}>
             {items.map((item) => (
               <label key={item.id}>
                 <input type="checkbox" checked={selection.includes(item.id)} onChange={() => toggle(item.id)} />
                 <span>{item.name}</span>
-                <small>{item.course?.code || (source === "drive" ? "Google Drive" : "Unorganized")}</small>
+                <small>{item.course?.code || "Unorganized"}</small>
               </label>
             ))}
           </div>
@@ -1232,11 +1579,19 @@ function ImportDialog({ payload, source, setSource, selection, setSelection, url
             {feedback.type === "success" && <i className="fa-solid fa-circle-check" />}
             {feedback.type === "error" && <i className="fa-solid fa-triangle-exclamation" />}
             <span>{feedback.message}</span>
+            {feedback.total > 0 && (
+              <progress
+                value={feedback.completed || 0}
+                max={feedback.total}
+                aria-label="Import progress"
+                style={{ display: "block", width: "100%", marginTop: 9 }}
+              />
+            )}
           </div>
         )}
         <div className={styles.modalActions}>
-          <button type="button" className={styles.secondaryButton} onClick={onClose}>Cancel</button>
-          <button type="button" className={styles.primaryAction} disabled={!items.length || !selection.length || busy} onClick={onImport}>
+          <button type="button" className={styles.secondaryButton} onClick={onClose}>{busy ? "Cancel import" : loading ? "Cancel loading" : "Close"}</button>
+          <button type="button" className={styles.primaryAction} disabled={!items.length || !selection.length || busy || loading} onClick={onImport}>
             {busy ? "Importing…" : `Import ${selection.length} document${selection.length === 1 ? "" : "s"}`}
           </button>
         </div>

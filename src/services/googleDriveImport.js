@@ -11,6 +11,12 @@ const EXPORTABLE_TYPES = new Set([
 
 let googleScriptPromise;
 
+function throwIfAborted(signal) {
+  if (signal?.aborted) {
+    throw new DOMException("The operation was cancelled.", "AbortError");
+  }
+}
+
 function loadGoogleIdentity() {
   if (window.google?.accounts?.oauth2) return Promise.resolve();
 
@@ -105,7 +111,7 @@ function getDriveId(input) {
   return id;
 }
 
-async function driveRequest(path, token, params = {}) {
+async function driveRequest(path, token, params = {}, signal) {
   const url = new URL(`${DRIVE_API}/${path}`);
 
   Object.entries(params).forEach(([key, value]) => {
@@ -116,6 +122,7 @@ async function driveRequest(path, token, params = {}) {
 
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
+    signal,
   });
 
   if (!response.ok) {
@@ -133,16 +140,18 @@ async function driveRequest(path, token, params = {}) {
   return response;
 }
 
-async function getFile(id, token) {
+async function getFile(id, token, signal) {
+  throwIfAborted(signal);
   const response = await driveRequest(`files/${encodeURIComponent(id)}`, token, {
     fields: "id,name,mimeType,size,modifiedTime",
     supportsAllDrives: true,
-  });
+  }, signal);
 
   return response.json();
 }
 
-async function listFolder(folderId, token) {
+async function listFolder(folderId, token, signal) {
+  throwIfAborted(signal);
   const files = [];
   let pageToken;
 
@@ -155,7 +164,7 @@ async function listFolder(folderId, token) {
       fields: "nextPageToken,files(id,name,mimeType,size,modifiedTime)",
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
-    });
+    }, signal);
 
     const data = await response.json();
     files.push(...(data.files || []));
@@ -165,15 +174,19 @@ async function listFolder(folderId, token) {
   return files;
 }
 
-export async function listDrivePdfs(input, token) {
+export async function listDrivePdfs(input, token, onProgress, signal) {
+  throwIfAborted(signal);
+  onProgress?.({ stage: "connecting", completed: 0, total: 0 });
   const rootId = getDriveId(input);
-  const root = await getFile(rootId, token);
+  const root = await getFile(rootId, token, signal);
+  throwIfAborted(signal);
 
   if (root.mimeType !== FOLDER_MIME) {
     if (root.mimeType !== PDF_MIME && !EXPORTABLE_TYPES.has(root.mimeType)) {
       throw new Error("This file cannot be imported as a PDF.");
     }
 
+    onProgress?.({ stage: "complete", completed: 1, total: 1 });
     return {
       items: [{
         id: root.id,
@@ -189,11 +202,19 @@ export async function listDrivePdfs(input, token) {
   const items = [];
 
   while (folders.length) {
+    throwIfAborted(signal);
     const folderId = folders.shift();
+    onProgress?.({
+      stage: "scanning",
+      completed: items.length,
+      total: 0,
+      message: `Scanning Drive folder ${visited.size + 1}… Found ${items.length} supported documents so far.`,
+    });
     if (visited.has(folderId)) continue;
     visited.add(folderId);
 
-    const children = await listFolder(folderId, token);
+    const children = await listFolder(folderId, token, signal);
+    throwIfAborted(signal);
 
     for (const file of children) {
       if (file.mimeType === FOLDER_MIME) {
@@ -224,10 +245,12 @@ export async function listDrivePdfs(input, token) {
     throw new Error("No PDFs or exportable Google documents were found in that folder.");
   }
 
+  throwIfAborted(signal);
+  onProgress?.({ stage: "complete", completed: items.length, total: items.length });
   return { items };
 }
 
-export async function downloadDrivePdf(item, token) {
+export async function downloadDrivePdf(item, token, signal) {
   const isGoogleDocument = EXPORTABLE_TYPES.has(item.mimeType);
   const path = isGoogleDocument
     ? `files/${encodeURIComponent(item.id)}/export`
@@ -236,6 +259,7 @@ export async function downloadDrivePdf(item, token) {
   const response = await driveRequest(path, token, isGoogleDocument
     ? { mimeType: PDF_MIME }
     : { alt: "media" },
+    signal,
   );
 
   const blob = await response.blob();
