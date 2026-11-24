@@ -91,13 +91,26 @@ export async function uploadCloudPdf(file, courseId = null, metadata = {}) {
 
 export function listCloudResources() {
   return call({ action: "list" });
+}export function createCloudShare(itemIds, driveItems = []) {
+  return call({
+    action: "share",
+    item_ids: itemIds,
+    drive_items: driveItems,
+  });
 }
 
-export function openCloudResource(itemId) {
+export function resolveCloudShare(token) {
+  return call({ action: "resolve-share", token });
+}
+
+export function importCloudShare(token, itemIds, driveItemIds = []) {
   return call({
-    action: "read",
-    item_id: itemId,
+    action: "import-share",
+    token,
+    item_ids: itemIds,
+    drive_item_ids: driveItemIds,
   });
+}
 }
 
 export function updateCloudResource(itemId, changes) {
