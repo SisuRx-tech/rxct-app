@@ -1484,7 +1484,7 @@ if (controller.signal.aborted) return;
 
       <div className={styles.libraryFooterActions}>
         <button className={styles.primaryAction} type="button" onClick={openUpload} disabled={uploading}>
-          <i className="fa-solid fa-cloud-arrow-up" /> Upload document
+          <i className="fa-solid fa-cloud-arrow-up" /> Upload documents
         </button>
         <button className={styles.toolButton} type="button" onClick={() => setImportOpen(true)}>
           <i className="fa-solid fa-file-import" /> Import library
