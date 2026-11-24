@@ -1,3 +1,4 @@
+
 const DRIVE_API = "https://www.googleapis.com/drive/v3";
 const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.readonly";
 const FOLDER_MIME = "application/vnd.google-apps.folder";
@@ -54,11 +55,15 @@ export function requestDriveAccess() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   if (!clientId) {
-    return Promise.reject(new Error("Google Drive import is not configured."));
+    return Promise.reject(
+      new Error("Google Drive import is not configured."),
+    );
   }
 
   if (!window.google?.accounts?.oauth2) {
-    return Promise.reject(new Error("Google authorization is still loading. Please try again."));
+    return Promise.reject(
+      new Error("Google authorization is still loading. Please try again."),
+    );
   }
 
   return new Promise((resolve, reject) => {
@@ -67,15 +72,22 @@ export function requestDriveAccess() {
       scope: DRIVE_SCOPE,
       callback: (response) => {
         if (response.error || !response.access_token) {
-          reject(new Error(response.error_description || "Google access was not granted."));
+          reject(
+            new Error(
+              response.error_description || "Google access was not granted.",
+            ),
+          );
           return;
         }
 
         resolve(response.access_token);
       },
-      error_callback: () => reject(
-        new Error("Google authorization was closed or blocked. Please try again."),
-      ),
+      error_callback: () =>
+        reject(
+          new Error(
+            "Google authorization was closed or blocked. Please try again.",
+          ),
+        ),
     });
 
     client.requestAccessToken({ prompt: "" });
@@ -96,13 +108,21 @@ function getDriveId(input) {
   }
 
   const segments = url.pathname.split("/").filter(Boolean);
+
   const markerIndex = segments.findIndex((part) =>
-    ["folders", "file", "document", "spreadsheets", "presentation"].includes(part),
+    [
+      "folders",
+      "file",
+      "document",
+      "spreadsheets",
+      "presentation",
+    ].includes(part),
   );
 
-  const id = markerIndex >= 0
-    ? segments[markerIndex + 1]
-    : url.searchParams.get("id");
+  const id =
+    markerIndex >= 0
+      ? segments[markerIndex + 1]
+      : url.searchParams.get("id");
 
   if (!id || !/^[\w-]+$/.test(id)) {
     throw new Error("Could not find a file or folder ID in that link.");
@@ -121,20 +141,28 @@ async function driveRequest(path, token, params = {}, signal) {
   });
 
   const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     signal,
   });
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
-      throw new Error("Google could not access that file. Check its sharing permissions and try again.");
+      throw new Error(
+        "Google could not access that file. Check its sharing permissions and try again.",
+      );
     }
 
     if (response.status === 404) {
-      throw new Error("That Drive file or folder was not found or is not accessible.");
+      throw new Error(
+        "That Drive file or folder was not found or is not accessible.",
+      );
     }
 
-    throw new Error(`Google Drive request failed (${response.status}).`);
+    throw new Error(
+      `Google Drive request failed (${response.status}).`,
+    );
   }
 
   return response;
@@ -142,31 +170,44 @@ async function driveRequest(path, token, params = {}, signal) {
 
 async function getFile(id, token, signal) {
   throwIfAborted(signal);
-  const response = await driveRequest(`files/${encodeURIComponent(id)}`, token, {
-    fields: "id,name,mimeType,size,modifiedTime",
-    supportsAllDrives: true,
-  }, signal);
+
+  const response = await driveRequest(
+    `files/${encodeURIComponent(id)}`,
+    token,
+    {
+      fields: "id,name,mimeType,size,modifiedTime",
+      supportsAllDrives: true,
+    },
+    signal,
+  );
 
   return response.json();
 }
 
 async function listFolder(folderId, token, signal) {
   throwIfAborted(signal);
+
   const files = [];
   let pageToken;
 
   do {
-    const response = await driveRequest("files", token, {
-      q: `'${folderId}' in parents and trashed = false`,
-      pageSize: 1000,
-      pageToken,
-      orderBy: "name",
-      fields: "nextPageToken,files(id,name,mimeType,size,modifiedTime)",
-      supportsAllDrives: true,
-      includeItemsFromAllDrives: true,
-    }, signal);
+    const response = await driveRequest(
+      "files",
+      token,
+      {
+        q: `'${folderId}' in parents and trashed = false`,
+        pageSize: 1000,
+        pageToken,
+        orderBy: "name",
+        fields: "nextPageToken,files(id,name,mimeType,size,modifiedTime)",
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true,
+      },
+      signal,
+    );
 
     const data = await response.json();
+
     files.push(...(data.files || []));
     pageToken = data.nextPageToken;
   } while (pageToken);
@@ -176,33 +217,57 @@ async function listFolder(folderId, token, signal) {
 
 export async function listDrivePdfs(input, token, onProgress, signal) {
   throwIfAborted(signal);
-  onProgress?.({ stage: "connecting", completed: 0, total: 0 });
+
+  onProgress?.({
+    stage: "connecting",
+    completed: 0,
+    total: 0,
+  });
+
   const rootId = getDriveId(input);
   const root = await getFile(rootId, token, signal);
+
   throwIfAborted(signal);
 
   if (root.mimeType !== FOLDER_MIME) {
-    if (root.mimeType !== PDF_MIME && !EXPORTABLE_TYPES.has(root.mimeType)) {
+    if (
+      root.mimeType !== PDF_MIME &&
+      !EXPORTABLE_TYPES.has(root.mimeType)
+    ) {
       throw new Error("This file cannot be imported as a PDF.");
     }
 
-    onProgress?.({ stage: "complete", completed: 1, total: 1 });
+    onProgress?.({
+      stage: "complete",
+      completed: 1,
+      total: 1,
+    });
+
     return {
-      items: [{
-        id: root.id,
-        name: root.name,
-        mimeType: root.mimeType,
-        size: Number(root.size) || 0,
-      }],
+      items: [
+        {
+          id: root.id,
+          name: root.name,
+          mimeType: root.mimeType,
+          size: Number(root.size) || 0,
+        },
+      ],
     };
   }
 
-  const folders = [{ id: root.id, path: root.name }];
+  const folders = [
+    {
+      id: root.id,
+      path: root.name,
+    },
+  ];
+
   const visited = new Set();
   const items = [];
 
   while (folders.length) {
     throwIfAborted(signal);
+
     const currentFolder = folders.shift();
     const folderId = currentFolder.id;
     const folderPath = currentFolder.path;
@@ -213,10 +278,13 @@ export async function listDrivePdfs(input, token, onProgress, signal) {
       total: 0,
       message: `Scanning Drive folder ${visited.size + 1}… Found ${items.length} supported documents so far.`,
     });
+
     if (visited.has(folderId)) continue;
+
     visited.add(folderId);
 
     const children = await listFolder(folderId, token, signal);
+
     throwIfAborted(signal);
 
     for (const file of children) {
@@ -231,11 +299,14 @@ export async function listDrivePdfs(input, token, onProgress, signal) {
       ) {
         items.push({
           id: file.id,
-          name: file.name.replace(/\.(docx?|xlsx?|pptx?)$/i, "") + (
-            file.mimeType === PDF_MIME || file.name.toLowerCase().endsWith(".pdf")
-              ? ""
-              : ".pdf"
-          ),
+          name:
+            file.name.replace(/\.(docx?|xlsx?|pptx?)$/i, "") +
+            (
+              file.mimeType === PDF_MIME ||
+              file.name.toLowerCase().endsWith(".pdf")
+                ? ""
+                : ".pdf"
+            ),
           folderPath,
           mimeType: file.mimeType,
           size: Number(file.size) || 0,
@@ -243,41 +314,85 @@ export async function listDrivePdfs(input, token, onProgress, signal) {
       }
 
       if (items.length > 500) {
-        throw new Error("This folder contains more than 500 supported documents. Please use a smaller folder.");
+        throw new Error(
+          "This folder contains more than 500 supported documents. Please use a smaller folder.",
+        );
       }
     }
   }
 
   if (!items.length) {
-    throw new Error("No PDFs or exportable Google documents were found in that folder.");
+    throw new Error(
+      "No PDFs or exportable Google documents were found in that folder.",
+    );
   }
 
   throwIfAborted(signal);
-  onProgress?.({ stage: "complete", completed: items.length, total: items.length });
+
+  onProgress?.({
+    stage: "complete",
+    completed: items.length,
+    total: items.length,
+  });
+
   return { items };
 }
 
 export async function downloadDrivePdf(item, token, signal) {
+  throwIfAborted(signal);
+
   const isGoogleDocument = EXPORTABLE_TYPES.has(item.mimeType);
+
   const path = isGoogleDocument
     ? `files/${encodeURIComponent(item.id)}/export`
     : `files/${encodeURIComponent(item.id)}`;
 
-  const response = await driveRequest(path, token, isGoogleDocument
-    ? { mimeType: PDF_MIME }
-    : { alt: "media" },
+  const response = await driveRequest(
+    path,
+    token,
+    isGoogleDocument
+      ? { mimeType: PDF_MIME }
+      : { alt: "media" },
     signal,
   );
+
+  throwIfAborted(signal);
 
   const blob = await response.blob();
 
   if (!blob.size) {
-    throw new Error(`${item.name} is empty or could not be downloaded.`);
+    throw new Error(
+      `${item.name} is empty or could not be downloaded.`,
+    );
   }
 
-  return new File([blob], item.name.toLowerCase().endsWith(".pdf")
+  if (
+    blob.type &&
+    blob.type !== PDF_MIME &&
+    blob.type !== "application/octet-stream"
+  ) {
+    throw new Error(
+      `${item.name} was not returned as a PDF.`,
+    );
+  }
+
+  const header = new Uint8Array(
+    await blob.slice(0, 5).arrayBuffer(),
+  );
+
+  const signature = String.fromCharCode(...header);
+
+  if (signature !== "%PDF-") {
+    throw new Error(
+      `${item.name} is not a valid PDF.`,
+    );
+  }
+
+  const fileName = item.name.toLowerCase().endsWith(".pdf")
     ? item.name
-    : `${item.name}.pdf`, {
+    : `${item.name}.pdf`;
+
+  return new File([blob], fileName, {
     type: PDF_MIME,
     lastModified: Date.now(),
   });
