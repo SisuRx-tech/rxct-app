@@ -285,8 +285,6 @@ function Resources() {
     .filter((resource) => resource.lastOpenedAt)
     .sort((a, b) => new Date(b.lastOpenedAt) - new Date(a.lastOpenedAt))[0] || null,
   [resources]);
-
- 
   const handleFile = async (event) => {
     const files = Array.from(event.target.files || []);
     event.target.value = "";
@@ -298,16 +296,163 @@ function Resources() {
         file.type === "application/pdf" ||
         file.name.toLowerCase().endsWith(".pdf"),
     );
-
-    const invalidCount = files.length - validFiles.length;
+    const unsupported = files.length - validFiles.length;
 
     if (!validFiles.length) {
-      notify("error", "Please select PDF documents.");
+      notify("error", "Please choose PDF files.");
       return;
     }
 
     setUploading(true);
 
+    let saved = 0;
+    let duplicates = 0;
+    let failed = 0;
+    const newlyPending = [];
+
+    try {
+      for (let index = 0; index < validFiles.length; index += 1) {
+        const file = validFiles[index];
+
+        notify(
+          "progress",
+          `Processing ${index + 1} of ${validFiles.length}: ${file.name}`,
+        );
+
+        try {
+          const contentHash = await hashPdfContent(file);
+          const duplicate = await findDuplicateResource(accountId, contentHash);
+
+          if (duplicate) {
+            if (duplicate.cloudItemId) {
+              await updateCloudResource(duplicate.cloudItemId, {
+                display_name: file.name,
+              });
+            }
+
+            await renameDuplicateResource(accountId, duplicate, file.name);
+            duplicates += 1;
+            continue;
+          }
+
+          const { text, pageCount } = await extractPdfText(file);
+          const documentFingerprint = await fingerprint(file, text);
+          const recognition = recognizeCourse(text, OAU_PHARMD_COURSES);
+
+          const learned = getRememberedCorrection(
+            accountId,
+            documentFingerprint,
+            text,
+          );
+
+          const learnedCourse = learned
+            ? OAU_PHARMD_COURSES.find(
+                (course) => course.id === learned.courseId,
+              )
+            : null;
+
+          const assignedCourse =
+            learnedCourse ||
+            (recognition.highConfidence ? recognition.best?.course : null);
+
+          const now = new Date().toISOString();
+
+          const resource = {
+            id: `${accountId}-${documentFingerprint}`,
+            accountId,
+            fingerprint: documentFingerprint,
+            contentHash,
+            name: file.name,
+            mimeType: "application/pdf",
+            size: file.size,
+            lastModified: file.lastModified,
+            blob: file,
+            text,
+            pageCount,
+            courseId: assignedCourse?.id || null,
+            course: assignedCourse || null,
+            assignmentStatus: learnedCourse
+              ? "learned"
+              : assignedCourse
+                ? "auto"
+                : "unassigned",
+            confidence: learned
+              ? Math.round(learned.confidence * 100)
+              : recognition.confidence,
+            suggestions: recognition.suggestions.map(({ course, score }) => ({
+              courseId: course.id,
+              score,
+            })),
+            createdAt: now,
+            updatedAt: now,
+          };
+
+          let cloudItem = null;
+
+          try {
+            const cloudResult = await uploadCloudPdf(
+              file,
+              assignedCourse?.id || null,
+              {
+                last_opened_section: "Document",
+                progress: {},
+              },
+            );
+            cloudItem = cloudResult.item;
+          } catch (cloudError) {
+            notify(
+              "progress",
+              `${file.name}: cloud upload unavailable; saving locally.`,
+            );
+          }
+
+          const savedResource = cloudItem
+            ? cloudItemToResource(cloudItem, accountId, resource)
+            : resource;
+
+          await saveResource(savedResource);
+          saved += 1;
+
+          if (!assignedCourse) {
+            newlyPending.push({
+              resource: savedResource,
+              suggestedCourseId: recognition.best?.course?.id || "",
+            });
+          }
+        } catch (fileError) {
+          failed += 1;
+          console.error(`Failed to import ${file.name}:`, fileError);
+        }
+      }
+
+      if (newlyPending.length) {
+        setPendingResources((current) => [...current, ...newlyPending]);
+
+        if (!pendingResources.length) {
+          setPendingCourseId(newlyPending[0].suggestedCourseId);
+        }
+      }
+
+      await refresh();
+
+      const summary = [
+        `${saved} saved`,
+        `${duplicates} duplicate${duplicates === 1 ? "" : "s"} skipped`,
+        ...(failed ? [`${failed} failed`] : []),
+        ...(unsupported ? [`${unsupported} unsupported file${unsupported === 1 ? "" : "s"} skipped`] : []),
+      ].join(" · ");
+
+      if (saved > 0) {
+        notify("success", `Import complete: ${summary}.`);
+      } else if (failed || unsupported) {
+        notify("error", `No PDFs were saved: ${summary}.`);
+      } else {
+        notify("success", `Import complete: ${summary}.`);
+      }
+    } finally {
+      setUploading(false);
+    }
+  };
     let savedCount = 0;
     let duplicateCount = 0;
     const failures = [];
