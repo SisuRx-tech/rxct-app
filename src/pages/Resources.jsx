@@ -36,6 +36,7 @@ import {
   preloadDriveAuthorization,
   requestDriveAccess,
   listDrivePdfs,
+  downloadDrivePdf,
 } from "../services/googleDriveImport";
 import styles from "./Resources.module.css";
 import "./ResourcesOverrides.css";
@@ -555,29 +556,75 @@ function Resources() {
     }
   };
 
+ 
+  
   const openResource = async (resource) => {
+    let driveWindow = null;
+
     try {
-      if (resource.driveUrl) {
-        const opened = window.open(resource.driveUrl, "_blank", "noopener,noreferrer");
-        if (!opened) {
+      let blob = resource.blob;
+
+      // First open of a Google Drive document: download and cache it.
+      if (!blob && resource.driveFileId) {
+        driveWindow = window.open("about:blank", "_blank");
+
+        if (!driveWindow) {
           notify("error", "Your browser blocked the document window. Allow pop-ups and try again.");
           return;
         }
-        const updated = { ...resource, lastOpenedAt: new Date().toISOString() };
-        await saveResource(updated);
+
+        driveWindow.document.title = "Loading document…";
+        driveWindow.document.body.innerHTML =
+          "<p style='font-family:sans-serif;padding:24px'>Downloading and saving your document for offline access…</p>";
+
+        const token = await requestDriveAccess();
+
+        blob = await downloadDrivePdf(
+          {
+            id: resource.driveFileId,
+            name: resource.name,
+            mimeType: resource.mimeType,
+          },
+          token,
+        );
+
+        const contentHash = await hashPdfContent(blob);
+
+        const openedResource = {
+          ...resource,
+          blob,
+          contentHash,
+          size: blob.size,
+          mimeType: "application/pdf",
+          lastOpenedAt: new Date().toISOString(),
+          lastOpenedSection: resource.lastOpenedSection || "Document",
+          updatedAt: new Date().toISOString(),
+        };
+
+        await saveResource(openedResource);
+
+        const url = URL.createObjectURL(blob);
+        driveWindow.location.replace(url);
+
         await refresh();
+        notify("success", "Document saved for offline access.");
         return;
       }
-      let blob = resource.blob;
+
+      // RxCT cloud document: retrieve it if no local copy exists.
       if (!blob && resource.cloudItemId) {
         const openedCloud = await openCloudResource(resource.cloudItemId);
         const response = await fetch(openedCloud.url);
-        if (!response.ok) throw new Error("The cloud document could not be downloaded.");
+
+        if (!response.ok) {
+          throw new Error("The cloud document could not be downloaded.");
+        }
+
         blob = await response.blob();
       }
+
       if (!blob) {
-        notify("error", "The original PDF is unavailable on this device.");
-        return;
+        throw new Error("The original PDF is unavailable on this device.");
       }
 
       const openedResource = {
@@ -586,7 +633,9 @@ function Resources() {
         lastOpenedAt: new Date().toISOString(),
         lastOpenedSection: resource.lastOpenedSection || "Document",
       };
+
       await saveResource(openedResource);
+
       if (resource.cloudItemId) {
         await updateCloudResource(resource.cloudItemId, {
           last_opened_at: openedResource.lastOpenedAt,
@@ -597,16 +646,21 @@ function Resources() {
 
       const url = URL.createObjectURL(blob);
       const opened = window.open(url, "_blank", "noopener,noreferrer");
+
       if (!opened) {
         URL.revokeObjectURL(url);
-        notify("error", "Your browser blocked the document window. Allow pop-ups and try again.");
+        throw new Error("Your browser blocked the document window. Allow pop-ups and try again.");
       }
+
       await refresh();
     } catch (openError) {
+      if (driveWindow && !driveWindow.closed) {
+        driveWindow.close();
+      }
+
       notify("error", openError.message || "Could not open this document.");
     }
   };
-
   const startShare = () => {
     setShareSelection(resources.map((resource) => resource.id));
     setShareLink("");
