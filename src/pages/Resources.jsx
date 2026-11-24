@@ -1105,6 +1105,15 @@ function Resources() {
       {importOpen && (
         <ImportDialog
           payload={importPayload}
+          source={importSource}
+          setSource={(source) => {
+            setImportSource(source);
+            setImportPayload(null);
+            setImportSelection([]);
+            setImportFeedback(null);
+            setDriveToken("");
+            setImportUrl("");
+          }}
           selection={importSelection}
           setSelection={setImportSelection}
           url={importUrl}
@@ -1120,18 +1129,35 @@ function Resources() {
             setImportSelection([]);
             setImportFeedback({
               type: "progress",
-              message: "Loading shared library…",
+              message: importSource === "drive"
+                ? "Connecting to Google Drive…"
+                : "Loading shared library…",
             });
 
             try {
-              const token = getShareTokenFromInput(importUrl);
-              const payload = await resolveLibraryShare(token, (progress) => {
-                setImportFeedback({
-                  type: "progress",
-                  ...progress,
-                  message: progressLabel(progress),
-                });
-              }, controller.signal);
+              let payload;
+
+              if (importSource === "drive") {
+                const token = await requestDriveAccess();
+                if (controller.signal.aborted) return;
+                setDriveToken(token);
+                payload = await listDrivePdfs(importUrl, token, (progress) => {
+                  setImportFeedback({
+                    type: "progress",
+                    ...progress,
+                    message: progressLabel(progress),
+                  });
+                }, controller.signal);
+              } else {
+                const token = getShareTokenFromInput(importUrl);
+                payload = await resolveLibraryShare(token, (progress) => {
+                  setImportFeedback({
+                    type: "progress",
+                    ...progress,
+                    message: progressLabel(progress),
+                  });
+                }, controller.signal);
+              }
               if (controller.signal.aborted) return;
 
               setImportPayload(payload);
@@ -1524,7 +1550,7 @@ function getShareTokenFromInput(value) {
   }
 }
 
-function ImportDialog({ payload, selection, setSelection, url, setUrl, busy, loading, feedback, onLoad, onImport, onClose }) {
+function ImportDialog({ payload, source, setSource, selection, setSelection, url, setUrl, busy, loading, feedback, onLoad, onImport, onClose }) {
   const items = payload?.items || [];
   const toggle = (id) => setSelection((current) =>
     current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
@@ -1537,9 +1563,17 @@ function ImportDialog({ payload, selection, setSelection, url, setUrl, busy, loa
           <div><span className={styles.sectionKicker}>IMPORT LIBRARY</span><h2 id="import-title">Bring in selected documents</h2></div>
           <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close"><i className="fa-solid fa-xmark" /></button>
         </div>
-        <p className={styles.modalIntro}>Paste an RxCT library link. Select the documents you want to import.</p>
         <div className={styles.importUrl}>
-          <input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="Paste library link" aria-label="Library link" />
+          <button type="button" className={source === "rxct" ? styles.primaryAction : styles.secondaryButton} disabled={busy || loading} onClick={() => setSource("rxct")}>RxCT link</button>
+          <button type="button" className={source === "drive" ? styles.primaryAction : styles.secondaryButton} disabled={busy || loading} onClick={() => setSource("drive")}>Google Drive</button>
+        </div>
+        <p className={styles.modalIntro}>
+          {source === "drive"
+            ? "Paste a Google Drive PDF, file, or folder link. Sign in to Google when prompted."
+            : "Paste an RxCT library link. Select the documents you want to import."}
+        </p>
+        <div className={styles.importUrl}>
+          <input value={url} onChange={(event) => setUrl(event.target.value)} placeholder={source === "drive" ? "Paste Google Drive link" : "Paste library link"} aria-label={source === "drive" ? "Google Drive link" : "Library link"} />
           <button type="button" className={styles.secondaryButton} disabled={!url.trim() || busy || loading} onClick={onLoad}>{loading ? "Loading…" : "Load"}</button>
         </div>
         {items.length > 0 && (
@@ -1565,7 +1599,7 @@ function ImportDialog({ payload, selection, setSelection, url, setUrl, busy, loa
               <label key={item.id}>
                 <input type="checkbox" checked={selection.includes(item.id)} onChange={() => toggle(item.id)} />
                 <span>{item.name}</span>
-                <small>{item.course?.code || "Unorganized"}</small>
+                <small>{item.course?.code || (source === "drive" ? "Google Drive" : "Unorganized")}</small>
               </label>
             ))}
           </div>
