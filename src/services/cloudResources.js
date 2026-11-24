@@ -69,6 +69,7 @@ export async function uploadCloudPdf(
   file,
   courseId = null,
   metadata = {},
+  knownContentHash = null,
 ) {
   if (
     file.type !== "application/pdf" &&
@@ -77,7 +78,7 @@ export async function uploadCloudPdf(
     throw new Error("Only PDF files are supported.");
   }
 
-  const contentHash = await sha256(file);
+  const contentHash = knownContentHash || await sha256(file);
 
   const upload = await call({
     action: "start",

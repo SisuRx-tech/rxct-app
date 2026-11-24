@@ -284,3 +284,138 @@
 @container (max-width: 600px) {
   .formGrid { grid-template-columns: 1fr; }
 }
+
+/* REFINED PROFILE EDITOR */
+
+.content {
+  max-width: 760px;
+  padding: 26px 24px 48px;
+}
+
+.section {
+  background: #faf9f5;
+  border: 1px solid #e3e9e3;
+  border-radius: 13px;
+  padding: 24px;
+  margin-bottom: 18px;
+}
+
+.identity {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e9ede8;
+}
+
+.sectionHeader {
+  margin-bottom: 20px;
+}
+
+.sectionHeader h2 {
+  color: #164a45;
+  font-size: 16px;
+}
+
+.sectionHeader p {
+  font-size: 13px;
+}
+
+.formGrid {
+  column-gap: 18px;
+  row-gap: 2px;
+}
+
+.field {
+  gap: 8px;
+  margin-top: 17px;
+}
+
+.field > span {
+  color: #52645b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.field input,
+.field select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #dce5de;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #24332f;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.field select {
+  cursor: pointer;
+}
+
+.field input::placeholder {
+  color: #9aa49d;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: #ba7d46;
+  box-shadow: 0 0 0 2px rgba(186, 125, 70, 0.12);
+}
+
+.profileHint {
+  padding-top: 14px;
+  border-top: 1px solid #e9ede8;
+  font-size: 12px;
+}
+
+.formActions {
+  margin-top: 20px;
+}
+
+.editButton {
+  min-height: 41px;
+  padding: 10px 20px;
+  border: 1px solid #164a45;
+  border-radius: 8px;
+  background: #164a45;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.editButton:hover {
+  background: #103d38;
+  border-color: #103d38;
+}
+
+@container (max-width: 600px) {
+  .content {
+    padding: 18px 14px 36px;
+  }
+
+  .section {
+    padding: 19px 16px;
+    margin-bottom: 14px;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .field {
+    margin-top: 15px;
+  }
+
+  .formActions {
+    justify-content: stretch;
+  }
+
+  .formActions .editButton {
+    width: 100%;
+  }
+}

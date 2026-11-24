@@ -319,3 +319,119 @@ body::-webkit-scrollbar-thumb:hover,
     padding: 16px;
   }
 }
+
+
+/* Persistent resource upload status */
+.global-upload-status {
+  position: fixed;
+  z-index: 90;
+  right: 20px;
+  bottom: 82px;
+  width: min(390px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 10px 32px rgba(22, 48, 43, .16);
+  font-size: .78rem;
+}
+
+.global-upload-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.global-upload-indicator {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: rgba(22, 74, 69, .09);
+  color: var(--primary);
+}
+
+.global-upload-copy {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 3px;
+}
+
+.global-upload-copy strong {
+  font-size: .8rem;
+  font-weight: 650;
+}
+
+.global-upload-copy span {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+.global-upload-heading > button {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--surface-alt);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.global-upload-progress-track {
+  height: 4px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--surface-alt);
+}
+
+.global-upload-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width .2s ease;
+}
+
+.global-upload-details {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: .7rem;
+}
+
+.global-upload-files {
+  display: grid;
+  gap: 3px;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: .69rem;
+}
+
+.global-upload-files span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.global-upload-partial .global-upload-indicator,
+.global-upload-error .global-upload-indicator {
+  background: rgba(179, 67, 47, .09);
+  color: var(--danger);
+}
+
+@media (max-width: 767px) {
+  .global-upload-status {
+    right: 12px;
+    bottom: 76px;
+    width: calc(100vw - 24px);
+  }
+}

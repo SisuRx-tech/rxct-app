@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { getSelectedCourses } from "../services/courseSelection";
 import { getCoursesForProfile, OAU_PHARMD_COURSES } from "../data/oauPharmdCourses";
@@ -19,6 +20,7 @@ import {
 import { formatConfidence, recognizeCourse } from "../services/courseRecognition";
 import { getAllNotes } from "../services/notes";
 import { normalizeUserProfile } from "../services/userProfile";
+import { getStudyTasks, interpretStudyIntent, saveStudyTask, completeStudyTask, deleteStudyTask } from "../services/studyBrain";
 import {
   deleteCloudResource,
   listCloudResources,
@@ -90,12 +92,16 @@ function cloudItemToResource(item, accountId, local = null) {
 
 function Resources() {
   const { user } = useAuth();
+  const { setUploadStatus } = useOutletContext();
   const fileInput = useRef(null);
   const [resources, setResources] = useState([]);
   const [activeTab, setActiveTab] = useState("Organized");
+  const tabsRef = useRef(null);
   const [activeCourseId, setActiveCourseId] = useState(null);
   const [query, setQuery] = useState("");
   const [toast, setToast] = useState(null);
+  const [toastClosing, setToastClosing] = useState(false);
+  const [toastPosition, setToastPosition] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [pendingResources, setPendingResources] = useState([]);
   const [pendingCourseId, setPendingCourseId] = useState("");
@@ -151,7 +157,26 @@ function Resources() {
 
   const suggestedCourses = offeredCourses.slice(0, 2);
 
-  const notify = (type, message) => setToast({ type, message });
+  const notify = (type, message) => {
+    const bell = document.querySelector('button[aria-label="Notifications"]');
+    const rect = bell?.getBoundingClientRect();
+    const toastWidth = Math.min(360, window.innerWidth - 32);
+
+    setToastPosition(
+      rect
+        ? {
+            top: rect.bottom + 12,
+            originX: rect.left + rect.width / 2 - (window.innerWidth - toastWidth) / 2,
+            originY: -(rect.height / 2 + 12),
+          }
+        : { top: 62, originX: 0, originY: 0 }
+    );
+
+    setToastClosing(false);
+    setToast({ type, message });
+  };
+
+  const dismissToast = () => setToastClosing(true);
 
   useEffect(() => {
     preloadDriveAuthorization().catch((error) => {
@@ -199,9 +224,18 @@ function Resources() {
 
   useEffect(() => {
     if (!toast) return undefined;
-    const timer = window.setTimeout(() => setToast(null), 5200);
+
+    const timer = window.setTimeout(() => {
+      if (toastClosing) {
+        setToast(null);
+        setToastClosing(false);
+      } else {
+        setToastClosing(true);
+      }
+    }, toastClosing ? 340 : 5200);
+
     return () => window.clearTimeout(timer);
-  }, [toast]);
+  }, [toast, toastClosing]);
 
   useEffect(() => {
     if (!clearAllOpen || clearCountdown <= 0 || clearingAll) return undefined;
@@ -264,6 +298,26 @@ function Resources() {
     };
   }, []);
 
+  useEffect(() => {
+    const container = tabsRef.current;
+    const selectedTab = container?.querySelector('[aria-selected="true"]');
+
+    if (!container || !selectedTab) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const tabRect = selectedTab.getBoundingClientRect();
+
+    const targetLeft =
+      container.scrollLeft +
+      (tabRect.left - containerRect.left) -
+      (container.clientWidth - tabRect.width) / 2;
+
+    container.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "smooth",
+    });
+  }, [activeTab]);
+
   const filteredResources = useMemo(() => resources.filter((resource) => {
     const searchable = [
       resource.name,
@@ -304,6 +358,14 @@ function Resources() {
     }
 
     setUploading(true);
+    setUploadStatus({
+      status: "uploading",
+      stage: "hashing",
+      completed: 0,
+      total: validFiles.length,
+      activeFiles: [],
+      message: "Checking selected PDF files…",
+    });
 
     let saved = 0;
     let duplicates = 0;
@@ -311,16 +373,85 @@ function Resources() {
     const newlyPending = [];
 
     try {
-      for (let index = 0; index < validFiles.length; index += 1) {
-        const file = validFiles[index];
+      // Stage 1: hash PDFs with limited concurrency.
+      // This also removes repeated files from the current selection before upload.
+      const hashResults = new Array(validFiles.length);
+      let nextHashIndex = 0;
+
+      const hashWorkers = Array.from(
+        { length: Math.min(3, validFiles.length) },
+        async () => {
+          while (true) {
+            const index = nextHashIndex++;
+            if (index >= validFiles.length) return;
+
+            const file = validFiles[index];
+
+            try {
+              hashResults[index] = {
+                file,
+                contentHash: await hashPdfContent(file),
+              };
+            } catch (fileError) {
+              failed += 1;
+              console.error(`Failed to hash ${file.name}:`, fileError);
+            }
+          }
+        },
+      );
+
+      await Promise.all(hashWorkers);
+
+      const uniqueFiles = [];
+      const seenBatchHashes = new Set();
+
+      for (const result of hashResults) {
+        if (!result) continue;
+
+        if (seenBatchHashes.has(result.contentHash)) {
+          duplicates += 1;
+          continue;
+        }
+
+        seenBatchHashes.add(result.contentHash);
+        uniqueFiles.push(result);
+      }
+
+      // Stage 2: process unique documents with three workers.
+      // Each worker checks existing duplicates before extracting or uploading.
+      let nextFileIndex = 0;
+
+      setUploadStatus({
+        status: "uploading",
+        stage: "processing",
+        completed: 0,
+        total: uniqueFiles.length,
+        activeFiles: [],
+        message: uniqueFiles.length
+          ? "Preparing documents for your library…"
+          : "Finishing import…",
+      });
+
+      let completedFiles = 0;
+      const activeFiles = new Set();
+
+      const processFile = async ({ file, contentHash }, index) => {
+        activeFiles.add(file.name);
+        setUploadStatus({
+          status: "uploading",
+          stage: "processing",
+          completed: completedFiles,
+          total: uniqueFiles.length,
+          activeFiles: [...activeFiles],
+          message: `Processing ${file.name}`,
+        });
 
         notify(
           "progress",
-          `Processing ${index + 1} of ${validFiles.length}: ${file.name}`,
+          `Processing ${index + 1} of ${uniqueFiles.length}: ${file.name}`,
         );
 
         try {
-          const contentHash = await hashPdfContent(file);
           const duplicate = await findDuplicateResource(accountId, contentHash);
 
           if (duplicate) {
@@ -332,7 +463,7 @@ function Resources() {
 
             await renameDuplicateResource(accountId, duplicate, file.name);
             duplicates += 1;
-            continue;
+            return;
           }
 
           const { text, pageCount } = await extractPdfText(file);
@@ -397,6 +528,7 @@ function Resources() {
                 last_opened_section: "Document",
                 progress: {},
               },
+              contentHash,
             );
             cloudItem = cloudResult.item;
           } catch (cloudError) {
@@ -422,8 +554,35 @@ function Resources() {
         } catch (fileError) {
           failed += 1;
           console.error(`Failed to import ${file.name}:`, fileError);
+        } finally {
+          completedFiles += 1;
+          activeFiles.delete(file.name);
+          setUploadStatus({
+            status: "uploading",
+            stage: "processing",
+            completed: completedFiles,
+            total: uniqueFiles.length,
+            activeFiles: [...activeFiles],
+            message: completedFiles === uniqueFiles.length
+              ? "Saving your library changes…"
+              : "Processing your documents…",
+          });
         }
-      }
+      };
+
+      const fileWorkers = Array.from(
+        { length: Math.min(3, uniqueFiles.length) },
+        async () => {
+          while (true) {
+            const index = nextFileIndex++;
+            if (index >= uniqueFiles.length) return;
+
+            await processFile(uniqueFiles[index], index);
+          }
+        },
+      );
+
+      await Promise.all(fileWorkers);
 
       if (newlyPending.length) {
         setPendingResources((current) => [...current, ...newlyPending]);
@@ -442,13 +601,43 @@ function Resources() {
         ...(unsupported ? [`${unsupported} unsupported file${unsupported === 1 ? "" : "s"} skipped`] : []),
       ].join(" · ");
 
+      const finalMessage = saved > 0
+        ? `Import complete: ${summary}.`
+        : failed || unsupported
+          ? `No PDFs were saved: ${summary}.`
+          : `Import complete: ${summary}.`;
+
+      const finalStatus = failed || unsupported
+        ? (saved > 0 || duplicates > 0 ? "partial" : "error")
+        : "complete";
+
+      setUploadStatus({
+        status: finalStatus,
+        stage: "complete",
+        completed: uniqueFiles.length,
+        total: uniqueFiles.length,
+        activeFiles: [],
+        message: finalMessage,
+      });
+
       if (saved > 0) {
-        notify("success", `Import complete: ${summary}.`);
+        notify("success", finalMessage);
       } else if (failed || unsupported) {
-        notify("error", `No PDFs were saved: ${summary}.`);
+        notify("error", finalMessage);
       } else {
-        notify("success", `Import complete: ${summary}.`);
+        notify("success", finalMessage);
       }
+    } catch (uploadError) {
+      console.error("Resource import failed:", uploadError);
+      setUploadStatus({
+        status: "error",
+        stage: "complete",
+        completed: 0,
+        total: validFiles.length,
+        activeFiles: [],
+        message: uploadError.message || "The import could not be completed.",
+      });
+      notify("error", uploadError.message || "The import could not be completed.");
     } finally {
       setUploading(false);
     }
@@ -991,7 +1180,8 @@ if (controller.signal.aborted) return;
     }
   };
 
-  const levelLabel = [profile.part || profile.level, profile.semester]
+  const levelText = profileLevel > 0 ? `${profileLevel}L` : "";
+  const levelLabel = [levelText, profile.semester]
     .filter(Boolean)
     .join(" · ");
 
@@ -1002,7 +1192,17 @@ if (controller.signal.aborted) return;
   return (
     <div className={styles.page}>
       {toast && (
-        <div className={`resourceToast resourceToast-${toast.type}`} role={toast.type === "error" ? "alert" : "status"}>
+        <div
+          className={`resourceToast resourceToast-${toast.type}${toastClosing ? " resourceToast-closing" : ""}`}
+          style={toastPosition ? {
+            top: `${toastPosition.top}px`,
+            left: "50%",
+            right: "auto",
+            "--toast-origin-x": `${toastPosition.originX}px`,
+            "--toast-origin-y": `${toastPosition.originY}px`,
+          } : undefined}
+          role={toast.type === "error" ? "alert" : "status"}
+        >
           <i className={`fa-solid ${
             toast.type === "error"
               ? "fa-triangle-exclamation"
@@ -1011,7 +1211,7 @@ if (controller.signal.aborted) return;
                 : "fa-circle-check"
           }`} />
           <span>{toast.message}</span>
-          <button type="button" onClick={() => setToast(null)} aria-label="Dismiss notification">
+          <button type="button" onClick={dismissToast} aria-label="Dismiss notification">
             <i className="fa-solid fa-xmark" />
           </button>
         </div>
@@ -1088,7 +1288,7 @@ if (controller.signal.aborted) return;
           </label>
         </div>
 
-        <div className={`${styles.libraryTabs} libraryTabsRoot`} role="tablist" aria-label="Library organization">
+        <div ref={tabsRef} className={`${styles.libraryTabs} libraryTabsRoot`} role="tablist" aria-label="Library organization">
           {[
             ["Organized", organizedResources.length],
             ["Unorganized", unorganizedResources.length],
@@ -1122,6 +1322,7 @@ if (controller.signal.aborted) return;
           ) : activeTab === "Organized" && activeCourse ? (
             <CourseFolder
               key={activeCourse.id}
+              accountId={accountId}
               course={activeCourse}
               resources={courseResources}
               description={courseDescriptions[activeCourse.id] || ""}
@@ -1134,7 +1335,12 @@ if (controller.signal.aborted) return;
           ) : activeTab === "Organized" ? (
             offeredCourses.length ? (
               <div className="resourceCourseGrid">
-                {offeredCourses.map((course) => {
+                {[...offeredCourses].sort((a, b) =>
+                  String(a.code || "").localeCompare(String(b.code || ""), undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  })
+                ).map((course) => {
                   const count = organizedResources.filter(
                     (resource) => resource.courseId === course.id,
                   ).length;
@@ -1330,7 +1536,10 @@ if (controller.signal.aborted) return;
           progress={shareProgress}
           onCreate={makeShare}
           onCopy={async () => {
-            if (shareLink) await navigator.clipboard?.writeText(shareLink);
+            if (!shareLink || !navigator.clipboard?.writeText) {
+              throw new Error("Clipboard access is unavailable.");
+            }
+            await navigator.clipboard.writeText(shareLink);
           }}
           onClose={() => {
             if (busyExport && shareProgress?.stage !== "cancel-requested") {
@@ -1474,8 +1683,78 @@ function ResourceList({ resources, emptyTitle, emptyText, onOpen, onAssign, onDe
   );
 }
 
-function CourseFolder({ course, resources, description, onBack, onSaveDescription, onOpen, onAssign, onDelete }) {
+function CourseFolder({ accountId, course, resources, description, onBack, onSaveDescription, onOpen, onAssign, onDelete }) {
   const [draft, setDraft] = useState(description);
+  const [tasks, setTasks] = useState([]);
+  const [actionTaskId, setActionTaskId] = useState(null);
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editDraft, setEditDraft] = useState("");
+  const [pendingDeleteTaskId, setPendingDeleteTaskId] = useState(null);
+  const [taskMessage, setTaskMessage] = useState("");
+  const holdTimer = useRef(null);
+
+  useEffect(() => {
+    setTasks(getStudyTasks(accountId, course.id));
+  }, [accountId, course.id]);
+
+  const finishBrainTask = (taskId) => {
+    try {
+      setTasks(completeStudyTask(accountId, course.id, taskId));
+    } catch (error) {
+      console.error("Could not update reminder:", error);
+    }
+  };
+
+  const removeBrainTask = () => {
+    if (!pendingDeleteTaskId) return;
+    try {
+      setTasks(deleteStudyTask(accountId, course.id, pendingDeleteTaskId));
+      setPendingDeleteTaskId(null);
+      setActionTaskId(null);
+      setTaskMessage("");
+    } catch (error) {
+      console.error("Could not delete reminder:", error);
+      setTaskMessage(error.message || "Could not delete this reminder.");
+    }
+  };
+
+  const editBrainTask = (task) => {
+    setEditingTaskId(task.id);
+    setEditDraft(task.sourceText || task.title);
+    setActionTaskId(null);
+  };
+
+  const saveBrainEdit = (event, task) => {
+    event.preventDefault();
+    const text = editDraft.trim();
+    if (!text) {
+      setTaskMessage("Enter a reminder before saving.");
+      return;
+    }
+
+    const interpreted = interpretStudyIntent(text);
+
+    try {
+      const updatedTask = {
+        ...task,
+        ...(interpreted || {}),
+        id: task.id,
+        title: interpreted?.title || text,
+        sourceText: text,
+        type: interpreted?.type || task.type,
+        dueAt: interpreted?.dueAt || task.dueAt || "",
+        completed: task.completed,
+      };
+
+      setTasks(saveStudyTask(accountId, course.id, updatedTask));
+      setEditingTaskId(null);
+      setEditDraft("");
+      setActionTaskId(null);
+    } catch (error) {
+      console.error("Could not edit reminder:", error);
+      setTaskMessage(error.message || "Could not save this reminder.");
+    }
+  };
 
   return (
     <section className="resourceCourseFolder">
@@ -1487,11 +1766,21 @@ function CourseFolder({ course, resources, description, onBack, onSaveDescriptio
         <div><strong>{course.code}</strong><h3>{course.title}</h3></div>
         <span>{resources.length} {resources.length === 1 ? "resource" : "resources"}</span>
       </div>
+      <section className="resourceUsefulPanel">
       <form
         className="resourceDescriptionForm"
         onSubmit={(event) => {
           event.preventDefault();
           onSaveDescription(course.id, draft);
+
+          try {
+            const interpreted = interpretStudyIntent(draft);
+            if (interpreted) {
+              setTasks([...saveStudyTask(accountId, course.id, interpreted)]);
+            }
+          } catch (error) {
+            console.error("Could not interpret course information:", error);
+          }
         }}
       >
         <label htmlFor={`course-description-${course.id}`}>Useful info <span>Optional · visible only in your library</span></label>
@@ -1504,6 +1793,101 @@ function CourseFolder({ course, resources, description, onBack, onSaveDescriptio
         />
         <button type="submit">Save</button>
       </form>
+      {tasks.length > 0 && (
+        <div className="resourceBrainTasks">
+          {tasks.map((task) => (
+            <div
+              className={`resourceBrainTask${task.completed ? " isCompleted" : ""}`}
+              key={task.id}
+              onContextMenu={(event) => {
+                event.preventDefault();
+                setActionTaskId(task.id);
+              }}
+              onTouchStart={() => {
+                holdTimer.current = setTimeout(() => setActionTaskId(task.id), 550);
+              }}
+              onTouchEnd={() => clearTimeout(holdTimer.current)}
+              onTouchMove={() => clearTimeout(holdTimer.current)}
+            >
+              {editingTaskId === task.id ? (
+                <form className="resourceBrainEdit" onSubmit={(event) => saveBrainEdit(event, task)}>
+                  <input
+                    value={editDraft}
+                    onChange={(event) => setEditDraft(event.target.value)}
+                    aria-label="Edit reminder"
+                    maxLength={240}
+                    autoFocus
+                  />
+                  <button type="submit">Save</button>
+                  <button type="button" onClick={() => setEditingTaskId(null)}>Cancel</button>
+                </form>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="resourceBrainComplete"
+                    onClick={() => finishBrainTask(task.id)}
+                    disabled={task.completed}
+                    aria-label={task.completed ? "Task completed" : "Mark task complete"}
+                  >
+                    <i className={`fa-solid ${task.completed ? "fa-check-circle" : "fa-circle"}`} />
+                  </button>
+                  <div className="resourceBrainTaskContent">
+                    <strong>{task.title}</strong>
+                    <span>
+                      {task.type === "assessment" ? "Assessment" : task.type === "study" ? "Study task" : "Reminder"}
+                      {task.dueAt && ` · Due ${new Date(`${task.dueAt}T00:00:00`).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}`}
+                    </span>
+                    {actionTaskId === task.id && (
+                      <div className="resourceBrainActions">
+                        <button type="button" onClick={() => editBrainTask(task)}>
+                          <i className="fa-regular fa-pen-to-square" /> Edit
+                        </button>
+                        <button type="button" onClick={() => { setPendingDeleteTaskId(task.id); setActionTaskId(null); setTaskMessage(""); }}>
+                          <i className="fa-regular fa-trash-can" /> Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className="resourceBrainMore"
+                    onClick={() => setActionTaskId(actionTaskId === task.id ? null : task.id)}
+                    aria-label="Reminder actions"
+                    title="Reminder actions"
+                  >
+                    <i className="fa-solid fa-ellipsis-vertical" />
+                  </button>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+        {taskMessage && (
+          <p className="resourceTaskMessage" role="status">{taskMessage}</p>
+        )}
+
+        {pendingDeleteTaskId && (
+          <div className="resourceConfirmBackdrop" onClick={() => setPendingDeleteTaskId(null)}>
+            <div
+              className="resourceConfirmDialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="resource-confirm-title"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <span className="resourceConfirmIcon"><i className="fa-regular fa-trash-can" /></span>
+              <h4 id="resource-confirm-title">Delete this reminder?</h4>
+              <p>This reminder will be permanently removed from this course.</p>
+              <div className="resourceConfirmActions">
+                <button type="button" onClick={() => setPendingDeleteTaskId(null)}>Cancel</button>
+                <button type="button" className="isDanger" onClick={removeBrainTask}>Delete reminder</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
       <ResourceList
         resources={resources}
         emptyTitle="No documents in this course yet"
@@ -1580,7 +1964,12 @@ function CourseCoverage({ courses, resources, onOpen }) {
 
   return (
     <div className={styles.coverageList}>
-      {courses.length ? courses.map((course) => {
+      {courses.length ? [...courses].sort((a, b) =>
+        String(a.code || "").localeCompare(String(b.code || ""), undefined, {
+          numeric: true,
+          sensitivity: "base",
+        })
+      ).map((course) => {
         const items = resources.filter((resource) => resource.courseId === course.id);
         const isOpen = expanded === course.id;
 
@@ -1620,7 +2009,50 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
   const [courseId, setCourseId] = useState(
     resource.courseId || resource.suggestions?.[0]?.courseId || "",
   );
+  const [assignmentOpen, setAssignmentOpen] = useState(false);
+  const [courseSearch, setCourseSearch] = useState("");
+  const assignmentRef = useRef(null);
+
+  useEffect(() => {
+    if (!assignmentOpen) return;
+
+    const handleOutsideTap = (event) => {
+      if (!assignmentRef.current?.contains(event.target)) {
+        setAssignmentOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handleOutsideTap);
+    return () => document.removeEventListener("pointerdown", handleOutsideTap);
+  }, [assignmentOpen]);
+
   const suggestions = resource.suggestions || [];
+  const normalizedCourseSearch = courseSearch.trim().toLowerCase();
+
+  const matchesCourse = (course) =>
+    `${course.code} ${course.title}`.toLowerCase().includes(normalizedCourseSearch);
+
+  const suggestedCourses = suggestions
+    .map((suggestion) =>
+      OAU_PHARMD_COURSES.find((course) => course.id === suggestion.courseId)
+    )
+    .filter((course, index, list) =>
+      course && matchesCourse(course) &&
+      list.findIndex((item) => item?.id === course.id) === index
+    );
+
+  const suggestedCourseIds = new Set(
+    suggestedCourses.map((course) => course.id)
+  );
+
+  const otherCourses = OAU_PHARMD_COURSES.filter(
+    (course) => !suggestedCourseIds.has(course.id) && matchesCourse(course)
+  );
+
+  const selectedCourse = OAU_PHARMD_COURSES.find(
+    (course) => course.id === courseId
+  );
+
   const hasDriveSource = Boolean(resource.driveUrl);
   const hasOpenSource = Boolean(
     resource.blob || resource.cloudItemId || hasDriveSource,
@@ -1649,12 +2081,14 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
                 : "Local only"}
           </span>
         </div>
+
         <h4>{resource.name}</h4>
         <p>
           {resource.course
             ? <><i className="fa-solid fa-layer-group" /> {resource.course.code} · {resource.course.title}</>
             : "Needs a course assignment"}
         </p>
+
         <div className={styles.cardActions}>
           <button
             className={styles.openButton}
@@ -1665,44 +2099,195 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
             <i className="fa-solid fa-file-arrow-up" />
             {hasOpenSource ? "Open document" : "Source unavailable"}
           </button>
-          <button className={styles.deleteButton} type="button" onClick={() => onDelete(resource)}>
+          <button
+            className={styles.deleteButton}
+            type="button"
+            onClick={() => onDelete(resource)}
+          >
             <i className="fa-solid fa-trash" /> Remove
           </button>
         </div>
-        <details className={styles.assignment}>
-          <summary>{resource.courseId ? "Change course" : "Assign a course"}</summary>
-          <div className={styles.assignmentRow}>
-            <select value={courseId} onChange={(event) => setCourseId(event.target.value)} aria-label={`Course for ${resource.name}`}>
-              <option value="">Select a course</option>
-              {suggestions.map((suggestion) => {
-                const course = OAU_PHARMD_COURSES.find((item) => item.id === suggestion.courseId);
-                return course ? (
-                  <option value={course.id} key={course.id}>
-                    Suggested · {course.code} ({formatConfidence(suggestion.score * 100)})
-                  </option>
-                ) : null;
-              })}
-              <optgroup label="All courses">
-                {OAU_PHARMD_COURSES.map((course) => (
-                  <option value={course.id} key={course.id}>{course.code} · {course.title}</option>
-                ))}
-              </optgroup>
-            </select>
-            <button
-              className={styles.assignButton}
-              type="button"
-              disabled={!courseId || courseId === resource.courseId}
-              onClick={() => onAssign(resource, courseId)}
+
+        <div className={styles.assignment} ref={assignmentRef}>
+          <button
+            className={styles.assignmentTrigger}
+            type="button"
+            aria-expanded={assignmentOpen}
+            onClick={() => {
+              setCourseSearch("");
+              setAssignmentOpen(true);
+            }}
+          >
+            <span>{resource.courseId ? "Change course" : "Assign a course"}</span>
+            <i className="fa-solid fa-chevron-down" aria-hidden="true" />
+          </button>
+
+          {assignmentOpen && (
+            <div
+              className={`${styles.modalBackdrop} ${styles.courseAssignmentBackdrop}`}
+              onClick={(event) => {
+                if (event.target === event.currentTarget) {
+                  setAssignmentOpen(false);
+                  setCourseSearch("");
+                }
+              }}
             >
-              {resource.courseId ? "Save" : "Assign"}
-            </button>
-          </div>
-        </details>
+              <section
+                className={`${styles.modal} ${styles.courseAssignmentModal}`}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={`course-assignment-title-${resource.id}`}
+              >
+                <div className={styles.modalHeader}>
+                  <div>
+                    <span className={styles.sectionKicker}>RESOURCE ORGANIZATION</span>
+                    <h2 id={`course-assignment-title-${resource.id}`}>
+                      {resource.courseId ? "Change course" : "Assign a course"}
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.closeButton}
+                    onClick={() => {
+                      setAssignmentOpen(false);
+                      setCourseSearch("");
+                    }}
+                    aria-label="Close course picker"
+                  >
+                    <i className="fa-solid fa-xmark" />
+                  </button>
+                </div>
+
+                <p className={styles.modalIntro}>
+                  Choose the course for <strong>{resource.name}</strong>.
+                </p>
+
+                <div className={styles.coursePicker}>
+                  <label className={styles.coursePickerSearch}>
+                    <i className="fa-solid fa-magnifying-glass" />
+                    <input
+                      type="search"
+                      value={courseSearch}
+                      onChange={(event) => setCourseSearch(event.target.value)}
+                      placeholder="Search course code or title"
+                      aria-label={`Search courses for ${resource.name}`}
+                    />
+                  </label>
+
+                  <div className={styles.coursePickerList}>
+                    {suggestedCourses.length > 0 && (
+                      <div className={styles.coursePickerGroup}>
+                        <span className={styles.coursePickerHeading}>
+                          Suggested for this document
+                        </span>
+
+                        {suggestedCourses.map((course) => {
+                          const suggestion = suggestions.find(
+                            (item) => item.courseId === course.id
+                          );
+
+                          return (
+                          <button
+                            type="button"
+                            key={`suggested-${course.id}`}
+                            className={`${styles.coursePickerOption} ${
+                              courseId === course.id ? styles.coursePickerSelected : ""
+                            }`}
+                            aria-pressed={courseId === course.id}
+                            onClick={() => setCourseId(course.id)}
+                          >
+                            <span>
+                              <strong>{course.code}</strong>
+                              <small>{course.title}</small>
+                            </span>
+                            <span className={styles.coursePickerMeta}>
+                              {suggestion?.score != null && (
+                                <small>{formatConfidence(suggestion.score * 100)} match</small>
+                              )}
+                              {courseId === course.id && (
+                                <i className="fa-solid fa-check" />
+                              )}
+                            </span>
+                          </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div className={styles.coursePickerGroup}>
+                      <span className={styles.coursePickerHeading}>
+                        {suggestedCourses.length ? "Other courses" : "All courses"}
+                      </span>
+
+                      {otherCourses.map((course) => (
+                        <button
+                          type="button"
+                          key={course.id}
+                          className={`${styles.coursePickerOption} ${
+                            courseId === course.id ? styles.coursePickerSelected : ""
+                          }`}
+                          aria-pressed={courseId === course.id}
+                          onClick={() => setCourseId(course.id)}
+                        >
+                          <span>
+                            <strong>{course.code}</strong>
+                            <small>{course.title}</small>
+                          </span>
+                          {courseId === course.id && (
+                            <i className="fa-solid fa-check" />
+                          )}
+                        </button>
+                      ))}
+
+                      {!suggestedCourses.length && !otherCourses.length && (
+                        <p className={styles.coursePickerEmpty}>
+                          No matching courses found.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className={styles.coursePickerFooter}>
+                    <span>
+                      {selectedCourse
+                        ? `${selectedCourse.code} selected`
+                        : "Choose a course"}
+                    </span>
+                    <button
+                      className={styles.assignButton}
+                      type="button"
+                      disabled={!courseId || courseId === resource.courseId}
+                      onClick={() => {
+                        onAssign(resource, courseId);
+                        setAssignmentOpen(false);
+                        setCourseSearch("");
+                      }}
+                    >
+                      {resource.courseId ? "Save" : "Assign"}
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </div>
+          )}
+        </div>
       </div>
     </article>
   );
 }
 function ShareDialog({ resources, selection, setSelection, link, error, busy, progress, onCreate, onCopy, onClose }) {
+  const [copied, setCopied] = useState(false);
+
+  const copyLink = async () => {
+    try {
+      await onCopy();
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
+
   const toggle = (id) => setSelection((current) =>
     current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
   );
@@ -1733,7 +2318,7 @@ function ShareDialog({ resources, selection, setSelection, link, error, busy, pr
         <div className={styles.modalHeader}>
           <div><span className={styles.sectionKicker}>EXPORT LIBRARY</span><h2 id="share-title">Create a temporary link</h2></div>
           <div className="modalHeaderActions">
-            {link && <button type="button" className="copyIconButton" onClick={onCopy} aria-label="Copy library link"><i className="fa-regular fa-copy" /></button>}
+            {link && <button type="button" className={`copyIconButton${copied ? " isCopied" : ""}`} onClick={copyLink} aria-label={copied ? "Link copied" : "Copy library link"}><i className={copied ? "fa-solid fa-check" : "fa-regular fa-copy"} /></button>}
             <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close"><i className="fa-solid fa-xmark" /></button>
           </div>
         </div>
@@ -1779,7 +2364,7 @@ function ShareDialog({ resources, selection, setSelection, link, error, busy, pr
             </label>
           ))}
         </div>
-        {link && <div className={styles.shareResult}><input readOnly value={link} aria-label="Library share link" /><button type="button" className="copyTextButton" onClick={onCopy}>Copy link</button></div>}
+        {link && <div className={styles.shareResult}><input readOnly value={link} aria-label="Library share link" /><button type="button" className="copyTextButton" onClick={copyLink}>{copied ? "Copied ✓" : "Copy link"}</button></div>}
         <div className={styles.modalActions}>
           <button type="button" className={styles.secondaryButton} onClick={onClose}>{busy ? "Cancel export" : "Close"}</button>
           <button type="button" className={styles.primaryAction} disabled={!selection.length || busy} onClick={onCreate}>
@@ -1816,6 +2401,7 @@ function getShareTokenFromInput(value) {
 
 function ImportDialog({ payload, source, setSource, selection, setSelection, url, setUrl, busy, loading, feedback, onLoad, onImport, onClose }) {
   const items = payload?.items || [];
+  const allSelected = items.length > 0 && items.every((item) => selection.includes(item.id));
   const toggle = (id) => setSelection((current) =>
     current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
   );
@@ -1843,18 +2429,17 @@ function ImportDialog({ payload, source, setSource, selection, setSelection, url
         {items.length > 0 && (
           <div className={styles.selectionActions}>
             <span>{selection.length} of {items.length} selected</span>
-            <div>
-              <button type="button" className={styles.secondaryButton}
-                disabled={busy || selection.length === items.length}
-                onClick={() => setSelection(items.map((item) => item.id))}>
-                Select all
-              </button>
-              <button type="button" className={styles.secondaryButton}
-                disabled={busy || selection.length === 0}
-                onClick={() => setSelection([])}>
-                Select none
-              </button>
-            </div>
+            <label className="selectAllCheckbox">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                disabled={busy}
+                onChange={(event) => setSelection(
+                  event.target.checked ? items.map((item) => item.id) : []
+                )}
+              />
+              <span>Select all</span>
+            </label>
           </div>
         )}
         {items.length > 0 && (
