@@ -1,3 +1,4 @@
+
 import { supabase } from "./supabase";
 
 const BUCKET = "rxct-documents";
@@ -35,14 +36,19 @@ async function call(body) {
         error.name && "type: " + error.name,
         response?.status && "status: " + response.status,
         cause && "cause: " + cause,
-      ].filter(Boolean).join(" · ");
-      detail = "RxCT could not reach rxct-document-upload"
-        + (suffix ? " (" + suffix + ")" : "")
-        + ". Check the browser network connection and the function logs.";
+      ]
+        .filter(Boolean)
+        .join(" · ");
+
+      detail =
+        "RxCT could not reach rxct-document-upload" +
+        (suffix ? " (" + suffix + ")" : "") +
+        ". Check the browser network connection and the function logs.";
     }
 
     throw new Error(detail);
   }
+
   if (data?.error) throw new Error(data.error);
 
   return data;
@@ -59,8 +65,15 @@ async function sha256(file) {
     .join("");
 }
 
-export async function uploadCloudPdf(file, courseId = null, metadata = {}) {
-  if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+export async function uploadCloudPdf(
+  file,
+  courseId = null,
+  metadata = {},
+) {
+  if (
+    file.type !== "application/pdf" &&
+    !file.name.toLowerCase().endsWith(".pdf")
+  ) {
     throw new Error("Only PDF files are supported.");
   }
 
@@ -91,7 +104,17 @@ export async function uploadCloudPdf(file, courseId = null, metadata = {}) {
 
 export function listCloudResources() {
   return call({ action: "list" });
-}export function createCloudShare(itemIds, driveItems = []) {
+}
+
+export function updateCloudResource(itemId, changes) {
+  return call({ action: "update", item_id: itemId, ...changes });
+}
+
+export function deleteCloudResource(itemId) {
+  return call({ action: "delete", item_id: itemId });
+}
+
+export function createCloudShare(itemIds, driveItems = []) {
   return call({
     action: "share",
     item_ids: itemIds,
@@ -111,26 +134,3 @@ export function importCloudShare(token, itemIds, driveItemIds = []) {
     drive_item_ids: driveItemIds,
   });
 }
-}
-
-export function updateCloudResource(itemId, changes) {
-  return call({ action: "update", item_id: itemId, ...changes });
-}
-
-export function deleteCloudResource(itemId) {
-  return call({ action: "delete", item_id: itemId });
-}
-
-export function createCloudShare(itemIds) {
-  return call({ action: "share", item_ids: itemIds });
-}
-
-export function resolveCloudShare(token) {
-  return call({ action: "resolve-share", token });
-}
-
-export function importCloudShare(token, itemIds) {
-  return call({ action: "import-share", token, item_ids: itemIds });
-}
-
-export { sha256 as hashCloudPdf };
