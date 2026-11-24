@@ -36,7 +36,6 @@ import {
   preloadDriveAuthorization,
   requestDriveAccess,
   listDrivePdfs,
-  downloadDrivePdf,
 } from "../services/googleDriveImport";
 import styles from "./Resources.module.css";
 import "./ResourcesOverrides.css";
@@ -488,6 +487,17 @@ function Resources() {
 
   const openResource = async (resource) => {
     try {
+      if (resource.driveUrl) {
+        const opened = window.open(resource.driveUrl, "_blank", "noopener,noreferrer");
+        if (!opened) {
+          notify("error", "Your browser blocked the document window. Allow pop-ups and try again.");
+          return;
+        }
+        const updated = { ...resource, lastOpenedAt: new Date().toISOString() };
+        await saveResource(updated);
+        await refresh();
+        return;
+      }
       let blob = resource.blob;
       if (!blob && resource.cloudItemId) {
         const openedCloud = await openCloudResource(resource.cloudItemId);
@@ -545,6 +555,12 @@ function Resources() {
 
     try {
       const selectedResources = resources.filter((resource) => shareSelection.includes(resource.id));
+      const driveLinked = selectedResources.find((resource) => resource.driveUrl);
+      if (driveLinked) {
+        throw new Error(
+          `${driveLinked.name} is linked from Google Drive. Share it using Google Drive's sharing controls; RxCT will not download it just to export it.`
+        );
+      }
       const cloudResources = [];
 
       for (let index = 0; index < selectedResources.length; index += 1) {
@@ -668,117 +684,37 @@ function Resources() {
         if (controller.signal.aborted) break;
 
         const item = selectedItems[index];
+        const now = new Date().toISOString();
+
+        const resource = {
+          id: `${accountId}-drive-${item.id}`,
+          accountId,
+          source: "google-drive",
+          driveFileId: item.id,
+          driveUrl: `https://drive.google.com/open?id=${encodeURIComponent(item.id)}`,
+          name: item.name,
+          mimeType: item.mimeType || "application/pdf",
+          size: Number(item.size) || 0,
+          courseId: null,
+          course: null,
+          assignmentStatus: "unassigned",
+          lastOpenedAt: null,
+          lastOpenedSection: "Document",
+          progress: {},
+          createdAt: now,
+          updatedAt: now,
+        };
+
+        await saveResource(resource);
+        importedCount += 1;
+
         updateProgress({
-          stage: "file",
+          stage: "saving",
           completed: importedCount,
           total: selectedItems.length,
           name: item.name,
-          message: `Preparing ${item.name}`,
+          message: `Added Drive reference: ${item.name}`,
         });
-
-        try {
-          const file = await downloadDrivePdf(item, driveToken, controller.signal);
-          if (controller.signal.aborted) break;
-
-          const contentHash = await hashPdfContent(file);
-          const duplicate = await findDuplicateResource(accountId, contentHash);
-
-          if (duplicate) {
-            await renameDuplicateResource(accountId, duplicate, file.name);
-            importedCount += 1;
-            updateProgress({
-              stage: "file",
-              completed: importedCount,
-              total: selectedItems.length,
-              name: item.name,
-              message: `Already in your library. Renamed to ${file.name}.`,
-            });
-            continue;
-          }
-
-          updateProgress({
-            stage: "file",
-            completed: importedCount,
-            total: selectedItems.length,
-            name: item.name,
-            message: `Reading PDF: ${item.name}`,
-          });
-          const { text, pageCount } = await extractPdfText(file);
-          if (controller.signal.aborted) break;
-
-          updateProgress({
-            stage: "file",
-            completed: importedCount,
-            total: selectedItems.length,
-            name: item.name,
-            message: `Recognizing course: ${item.name}`,
-          });
-          const documentFingerprint = await fingerprint(file, text);
-          if (controller.signal.aborted) break;
-
-          const recognition = recognizeCourse(text, OAU_PHARMD_COURSES);
-          const learned = getRememberedCorrection(accountId, documentFingerprint, text);
-
-          const learnedCourse = learned
-            ? OAU_PHARMD_COURSES.find((course) => course.id === learned.courseId)
-            : null;
-          const assignedCourse = learnedCourse
-            || (recognition.highConfidence ? recognition.best?.course : null);
-          const now = new Date().toISOString();
-
-          const resource = {
-            id: `${accountId}-${documentFingerprint}`,
-            accountId,
-            contentHash,
-            fingerprint: documentFingerprint,
-            name: file.name,
-            mimeType: "application/pdf",
-            size: file.size,
-            lastModified: file.lastModified,
-            blob: file,
-            text,
-            pageCount,
-            courseId: assignedCourse?.id || null,
-            course: assignedCourse || null,
-            assignmentStatus: learnedCourse
-              ? "learned"
-              : assignedCourse ? "auto" : "unassigned",
-            confidence: learned
-              ? Math.round(learned.confidence * 100)
-              : recognition.confidence,
-            suggestions: recognition.suggestions.map(({ course, score }) => ({
-              courseId: course.id,
-              score,
-            })),
-            createdAt: now,
-            updatedAt: now,
-          };
-
-          updateProgress({
-            stage: "file",
-            completed: importedCount,
-            total: selectedItems.length,
-            name: item.name,
-            message: `Saving ${item.name}`,
-          });
-          await saveResource(resource);
-          importedCount += 1;
-          updateProgress({
-            stage: "downloading",
-            completed: importedCount,
-            total: selectedItems.length,
-          });
-
-          if (!assignedCourse) {
-            unassignedResources.push({
-              resource,
-              suggestedCourseId: recognition.best?.course?.id || "",
-            });
-          }
-        } catch (fileError) {
-          if (controller.signal.aborted || fileError.name === "AbortError") break;
-          failedFiles.push(`${item.name}: ${fileError.message || "Import failed"}`);
-        }
       }
 
       await refresh();
