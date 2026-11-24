@@ -24,12 +24,37 @@ function getToken(value) {
 }
 
 export async function createLibraryShare(resources) {
-  const itemIds = resources.map((resource) => resource.cloudItemId).filter(Boolean);
-  if (itemIds.length !== resources.length) {
-    throw new Error("This document is still local-only. Upload it to RxCT before sharing.");
+  const cloudResources = resources.filter((resource) => resource.cloudItemId);
+  const driveResources = resources.filter(
+    (resource) => resource.driveFileId && resource.driveUrl
+  );
+
+  const unsupported = resources.filter(
+    (resource) =>
+      !resource.cloudItemId &&
+      !(resource.driveFileId && resource.driveUrl) &&
+      !resource.blob
+  );
+
+  if (unsupported.length) {
+    throw new Error(
+      `${unsupported[0].name || "A document"} is local-only and its PDF is unavailable for automatic upload.`
+    );
   }
 
-  const result = await createCloudShare(itemIds);
+  if (!resources.length) {
+    throw new Error("Select at least one document to share.");
+  }
+
+  const result = await createCloudShare(
+    cloudResources.map((resource) => resource.cloudItemId),
+    driveResources.map((resource) => ({
+      drive_file_id: resource.driveFileId,
+      display_name: resource.name,
+      course_id: resource.courseId || null,
+    }))
+  );
+
   return shareUrl(result.token);
 }
 
@@ -40,9 +65,12 @@ export function getShareToken() {
 
 export async function resolveLibraryShare(value, onProgress) {
   onProgress?.({ stage: "resolving", completed: 0, total: 0 });
+
   const result = await resolveCloudShare(getToken(value));
-  const items = (result.items || []).map((item) => ({
+
+  const cloudItems = (result.items || []).map((item) => ({
     id: item.document_id,
+    type: "rxct",
     cloudDocumentId: item.document_id,
     name: item.display_name,
     courseId: item.course_id || null,
@@ -51,9 +79,34 @@ export async function resolveLibraryShare(value, onProgress) {
     mimeType: item.document?.mime_type || "application/pdf",
     contentHash: item.document?.content_hash || "",
   }));
-  onProgress?.({ stage: "complete", completed: items.length, total: items.length });
+
+  const driveItems = (result.drive_items || []).map((item) => ({
+    id: `drive:${item.drive_file_id}`,
+    type: "google-drive",
+    driveFileId: item.drive_file_id,
+    driveUrl: `https://drive.google.com/open?id=${encodeURIComponent(item.drive_file_id)}`,
+    name: item.display_name,
+    courseId: item.course_id || null,
+    course: null,
+    size: 0,
+    mimeType: "application/pdf",
+  }));
+
+  const items = [...cloudItems, ...driveItems];
+
+  onProgress?.({
+    stage: "complete",
+    completed: items.length,
+    total: items.length,
+  });
+
   items.shareToken = result.token || getToken(value);
-  return { ...result, token: items.shareToken, items };
+
+  return {
+    ...result,
+    token: items.shareToken,
+    items,
+  };
 }
 
 export async function importLibraryItems(
@@ -64,17 +117,47 @@ export async function importLibraryItems(
   onProgress,
   signal,
 ) {
-  if (!accountId) throw new Error("Sign in before importing a library.");
-  if (signal?.aborted) throw new DOMException("The operation was cancelled.", "AbortError");
+  if (!accountId) {
+    throw new Error("Sign in before importing a library.");
+  }
+
+  if (signal?.aborted) {
+    throw new DOMException("The operation was cancelled.", "AbortError");
+  }
 
   const selected = items.filter((item) => selectedIds.includes(item.id));
   const shareToken = items.shareToken || null;
-  if (!shareToken) throw new Error("That import link is missing its share token.");
 
-  onProgress?.({ stage: "saving", completed: 0, total: selected.length });
-  const result = await importCloudShare(shareToken, selected.map((item) => item.cloudDocumentId || item.id));
-  for (const [index, item] of (result.items || []).entries()) {
-    const source = selected[index] || selected.find((candidate) => candidate.cloudDocumentId === item.document_id);
+  if (!shareToken) {
+    throw new Error("That import link is missing its share token.");
+  }
+
+  onProgress?.({
+    stage: "saving",
+    completed: 0,
+    total: selected.length,
+  });
+
+  const cloudSelected = selected.filter(
+    (item) => item.type !== "google-drive"
+  );
+  const driveSelected = selected.filter(
+    (item) => item.type === "google-drive"
+  );
+
+  const result = await importCloudShare(
+    shareToken,
+    cloudSelected.map((item) => item.cloudDocumentId || item.id),
+    driveSelected.map((item) => item.driveFileId),
+  );
+
+  let completed = 0;
+
+  for (const item of result.items || []) {
+    const source = cloudSelected.find(
+      (candidate) => candidate.cloudDocumentId === item.document_id
+    );
+
     await saveResource({
       id: `${accountId}-cloud-${item.id}`,
       accountId,
@@ -84,11 +167,50 @@ export async function importLibraryItems(
       mimeType: item.document?.mime_type || "application/pdf",
       size: item.document?.file_size || source?.size || 0,
       courseId: item.course_id || null,
-      assignmentStatus: item.assignment_status || (item.course_id ? "assigned" : "unassigned"),
+      assignmentStatus:
+        item.assignment_status || (item.course_id ? "assigned" : "unassigned"),
       createdAt: item.created_at,
       updatedAt: item.updated_at,
     });
-    onProgress?.({ stage: "saving", completed: index + 1, total: selected.length });
+
+    completed += 1;
+    onProgress?.({
+      stage: "saving",
+      completed,
+      total: selected.length,
+    });
   }
-  return result.items?.length || 0;
+
+  for (const item of driveSelected) {
+    const now = new Date().toISOString();
+
+    await saveResource({
+      id: `${accountId}-drive-${item.driveFileId}`,
+      accountId,
+      fingerprint: `drive:${item.driveFileId}`,
+      text: item.name,
+      source: "google-drive",
+      driveFileId: item.driveFileId,
+      driveUrl: item.driveUrl,
+      name: item.name,
+      mimeType: "application/pdf",
+      size: 0,
+      courseId: item.courseId || null,
+      assignmentStatus: item.courseId ? "assigned" : "unassigned",
+      lastOpenedAt: null,
+      lastOpenedSection: "Document",
+      progress: {},
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    completed += 1;
+    onProgress?.({
+      stage: "saving",
+      completed,
+      total: selected.length,
+    });
+  }
+
+  return completed;
 }
