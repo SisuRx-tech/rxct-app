@@ -134,3 +134,11 @@ export function importCloudShare(token, itemIds, driveItemIds = []) {
     drive_item_ids: driveItemIds,
   });
 }
+export function openCloudResource(itemId) {
+  return call({
+    action: "read",
+    item_id: itemId,
+  });
+}
+
+export { sha256 as hashCloudPdf };
