@@ -197,13 +197,16 @@ export async function listDrivePdfs(input, token, onProgress, signal) {
     };
   }
 
-  const folders = [root.id];
+  const folders = [{ id: root.id, path: root.name }];
   const visited = new Set();
   const items = [];
 
   while (folders.length) {
     throwIfAborted(signal);
-    const folderId = folders.shift();
+    const currentFolder = folders.shift();
+    const folderId = currentFolder.id;
+    const folderPath = currentFolder.path;
+
     onProgress?.({
       stage: "scanning",
       completed: items.length,
@@ -218,7 +221,10 @@ export async function listDrivePdfs(input, token, onProgress, signal) {
 
     for (const file of children) {
       if (file.mimeType === FOLDER_MIME) {
-        folders.push(file.id);
+        folders.push({
+          id: file.id,
+          path: `${folderPath}/${file.name}`,
+        });
       } else if (
         file.mimeType === PDF_MIME ||
         EXPORTABLE_TYPES.has(file.mimeType)
@@ -230,6 +236,7 @@ export async function listDrivePdfs(input, token, onProgress, signal) {
               ? ""
               : ".pdf"
           ),
+          folderPath,
           mimeType: file.mimeType,
           size: Number(file.size) || 0,
         });

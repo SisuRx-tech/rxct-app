@@ -99,6 +99,9 @@ function Resources() {
   const [pendingResources, setPendingResources] = useState([]);
   const [pendingCourseId, setPendingCourseId] = useState("");
   const [removeTarget, setRemoveTarget] = useState(null);
+  const [clearAllOpen, setClearAllOpen] = useState(false);
+  const [clearCountdown, setClearCountdown] = useState(3);
+  const [clearingAll, setClearingAll] = useState(false);
   const pendingResource = pendingResources[0]?.resource || null;
   const [notes] = useState(getAllNotes);
   const [courseDescriptions, setCourseDescriptions] = useState({});
@@ -198,6 +201,15 @@ function Resources() {
     const timer = window.setTimeout(() => setToast(null), 5200);
     return () => window.clearTimeout(timer);
   }, [toast]);
+
+  useEffect(() => {
+    if (!clearAllOpen || clearCountdown <= 0 || clearingAll) return undefined;
+    const timer = window.setTimeout(
+      () => setClearCountdown((current) => Math.max(0, current - 1)),
+      1000,
+    );
+    return () => window.clearTimeout(timer);
+  }, [clearAllOpen, clearCountdown, clearingAll]);
 
   useEffect(() => {
     const token = getShareToken();
@@ -474,6 +486,64 @@ function Resources() {
     }
   };
 
+  const openClearAll = () => {
+    setClearCountdown(3);
+    setClearAllOpen(true);
+  };
+
+  const clearAllResources = async () => {
+    if (!accountId || clearingAll || clearCountdown > 0) return;
+
+    setClearingAll(true);
+    const snapshot = [...resources];
+    const removedIds = new Set();
+    const failures = [];
+
+    try {
+      for (const resource of snapshot) {
+        try {
+          if (resource.cloudItemId) {
+            try {
+              await deleteCloudResource(resource.cloudItemId);
+            } catch (cloudError) {
+              const message = String(cloudError?.message || "");
+              const alreadyMissing =
+                /resource not found|not in your library|library item not found/i.test(message);
+              if (!alreadyMissing) throw cloudError;
+            }
+          }
+
+          await removeResource(accountId, resource.id);
+          removedIds.add(resource.id);
+        } catch (error) {
+          failures.push(
+            `${resource.name || "A document"}: ${error.message || "could not be removed"}`
+          );
+        }
+      }
+
+      if (removedIds.size) {
+        setPendingResources((current) =>
+          current.filter((item) => !removedIds.has(item.resource.id))
+        );
+      }
+
+      await refresh();
+      setClearAllOpen(false);
+      setClearCountdown(3);
+
+      if (failures.length) {
+        notify("error", `${removedIds.size} removed; ${failures.length} could not be cleared. ${failures[0]}`);
+      } else {
+        notify("success", `${removedIds.size} resource${removedIds.size === 1 ? "" : "s"} cleared from this account.`);
+      }
+    } catch (error) {
+      notify("error", error.message || "Could not clear the resource library.");
+    } finally {
+      setClearingAll(false);
+    }
+  };
+
   const saveDescription = async (courseId, description) => {
     try {
       const saved = saveCourseDescription(accountId, courseId, description);
@@ -557,9 +627,21 @@ function Resources() {
       const selectedResources = resources.filter((resource) => shareSelection.includes(resource.id));
       const driveLinked = selectedResources.find((resource) => resource.driveUrl);
       if (driveLinked) {
-        throw new Error(
-          `${driveLinked.name} is linked from Google Drive. Share it using Google Drive's sharing controls; RxCT will not download it just to export it.`
-        );
+        if (selectedResources.length !== 1) {
+          throw new Error("Share Google Drive documents one at a time. Select just one Drive document to create its link instantly.");
+        }
+
+        const link = driveLinked.driveUrl;
+        setShareLink(link);
+        setShareProgress({ stage: "complete", completed: 1, total: 1 });
+
+        try {
+          await navigator.clipboard.writeText(link);
+          notify("success", "Google Drive link copied. The original PDF was not uploaded again.");
+        } catch {
+          notify("success", "Google Drive link ready. Use Copy link to copy it.");
+        }
+        return;
       }
       const cloudResources = [];
 
@@ -685,19 +767,46 @@ function Resources() {
 
         const item = selectedItems[index];
         const now = new Date().toISOString();
+        const documentText = `${item.folderPath || ""} ${item.name}`;
+        const documentFingerprint = `drive:${item.id}`;
+        const recognition = recognizeCourse(documentText, OAU_PHARMD_COURSES);
+        const learned = getRememberedCorrection(
+          accountId,
+          documentFingerprint,
+          documentText,
+        );
+
+        const learnedCourse = learned
+          ? OAU_PHARMD_COURSES.find((course) => course.id === learned.courseId)
+          : null;
+
+        const assignedCourse = learnedCourse
+          || (recognition.highConfidence ? recognition.best?.course : null);
 
         const resource = {
           id: `${accountId}-drive-${item.id}`,
           accountId,
+          fingerprint: documentFingerprint,
+          text: documentText,
           source: "google-drive",
           driveFileId: item.id,
           driveUrl: `https://drive.google.com/open?id=${encodeURIComponent(item.id)}`,
           name: item.name,
+          folderPath: item.folderPath || "",
           mimeType: item.mimeType || "application/pdf",
           size: Number(item.size) || 0,
-          courseId: null,
-          course: null,
-          assignmentStatus: "unassigned",
+          courseId: assignedCourse?.id || null,
+          course: assignedCourse || null,
+          assignmentStatus: learnedCourse
+            ? "learned"
+            : assignedCourse ? "auto" : "unassigned",
+          confidence: learned
+            ? Math.round(learned.confidence * 100)
+            : recognition.confidence,
+          suggestions: recognition.suggestions.map(({ course, score }) => ({
+            courseId: course.id,
+            score,
+          })),
           lastOpenedAt: null,
           lastOpenedSection: "Document",
           progress: {},
@@ -706,6 +815,14 @@ function Resources() {
         };
 
         await saveResource(resource);
+
+        if (!assignedCourse) {
+          unassignedResources.push({
+            resource,
+            suggestedCourseId: recognition.best?.course?.id || "",
+          });
+        }
+
         importedCount += 1;
 
         updateProgress({
@@ -1005,6 +1122,58 @@ function Resources() {
           </div>
         )}
       </section>
+
+      <section className="resourceClearAllSection" aria-label="Library maintenance">
+        <div>
+          <strong>Clear all resources</strong>
+          <p>Remove this account's resource entries from this device and cloud library.</p>
+        </div>
+        <button
+          type="button"
+          className="resourceClearAllTrigger"
+          onClick={openClearAll}
+          disabled={!resources.length || clearingAll}
+        >
+          Clear library
+        </button>
+      </section>
+
+      {clearAllOpen && (
+        <div className={styles.modalBackdrop}>
+          <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="clear-all-resources-title">
+            <div className={styles.modalHeader}>
+              <div>
+                <span className={styles.sectionKicker}>DESTRUCTIVE ACTION</span>
+                <h2 id="clear-all-resources-title">Clear all resources?</h2>
+              </div>
+            </div>
+            <p className={styles.modalIntro}>
+              This will remove <strong>{resources.length} resource{resources.length === 1 ? "" : "s"}</strong> from your account's library and this device. This cannot be undone.
+            </p>
+            <p className="resourceClearAllNote">
+              Original shared PDFs, other users' copies, shared access, Jotters and course descriptions will not be deleted.
+            </p>
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className="resourceDeleteAction"
+                onClick={clearAllResources}
+                disabled={clearCountdown > 0 || clearingAll}
+              >
+                {clearingAll ? "Clearing…" : clearCountdown > 0 ? `Wait ${clearCountdown}s` : "Clear all resources"}
+              </button>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => { setClearAllOpen(false); setClearCountdown(3); }}
+                disabled={clearingAll}
+              >
+                Cancel
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
 
       {pendingResource && (
         <CoursePrompt
@@ -1434,7 +1603,7 @@ function ShareDialog({ resources, selection, setSelection, link, error, busy, pr
             <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close"><i className="fa-solid fa-xmark" /></button>
           </div>
         </div>
-        <p className={styles.modalIntro}>Links expire after 7 days. Choose the whole library, one course, or individual documents.</p>
+        <p className={styles.modalIntro}>RxCT documents use temporary library links. Google Drive documents share their original Drive link; access follows Google Drive permissions.</p>
         {error && <div className="shareError" role="alert"><strong>Export could not be created</strong><p>{error}</p></div>}
         {progress && (
           <div className={styles.modalFeedback} role="status">
