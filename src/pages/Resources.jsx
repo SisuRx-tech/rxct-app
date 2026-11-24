@@ -1598,6 +1598,11 @@ function ShareDialog({ resources, selection, setSelection, link, error, busy, pr
   const toggle = (id) => setSelection((current) =>
     current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
   );
+    const orderedResources = [...resources].sort(
+    (a, b) =>
+      Number(selection.includes(b.id)) -
+      Number(selection.includes(a.id))
+  );
   const groups = [...new Map(resources.map((resource) => [
     resource.courseId || "unorganized",
     resource.course?.code || "Unorganized",
@@ -1658,7 +1663,7 @@ function ShareDialog({ resources, selection, setSelection, link, error, busy, pr
           <option value="custom">Custom selection</option>
         </select>
         <div className={styles.modalList}>
-          {resources.map((resource) => (
+         {orderedResources.map((resource) => (
             <label key={resource.id}>
               <input type="checkbox" checked={selection.includes(resource.id)} onChange={() => toggle(resource.id)} />
               <span>{resource.name}</span>
