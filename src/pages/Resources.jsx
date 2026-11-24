@@ -1505,12 +1505,15 @@ function CourseCoverage({ courses, resources, onOpen }) {
     </div>
   );
 }
-
 function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
   const [courseId, setCourseId] = useState(
     resource.courseId || resource.suggestions?.[0]?.courseId || "",
   );
   const suggestions = resource.suggestions || [];
+  const hasDriveSource = Boolean(resource.driveUrl);
+  const hasOpenSource = Boolean(
+    resource.blob || resource.cloudItemId || hasDriveSource,
+  );
 
   return (
     <article className={styles.resourceCard}>
@@ -1521,8 +1524,18 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
         <div className={styles.cardTop}>
           <span className={styles.fileType}>PDF · {resource.pageCount || "?"} pages</span>
           <span className={styles.cardUpdated}>
-            <i className={`fa-solid ${resource.cloudItemId ? "fa-cloud" : "fa-hard-drive"}`} />
-            {resource.cloudItemId ? "Cloud saved" : "Local only"}
+            <i className={`fa-solid ${
+              hasDriveSource
+                ? "fa-cloud"
+                : resource.cloudItemId
+                  ? "fa-cloud"
+                  : "fa-hard-drive"
+            }`} />
+            {hasDriveSource
+              ? "Google Drive"
+              : resource.cloudItemId
+                ? "Cloud saved"
+                : "Local only"}
           </span>
         </div>
         <h4>{resource.name}</h4>
@@ -1532,8 +1545,14 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
             : "Needs a course assignment"}
         </p>
         <div className={styles.cardActions}>
-          <button className={styles.openButton} type="button" disabled={!resource.blob && !resource.cloudItemId} onClick={() => onOpen(resource)}>
-            <i className="fa-solid fa-file-arrow-up" /> {resource.blob || resource.cloudItemId ? "Open document" : "Source unavailable"}
+          <button
+            className={styles.openButton}
+            type="button"
+            disabled={!hasOpenSource}
+            onClick={() => onOpen(resource)}
+          >
+            <i className="fa-solid fa-file-arrow-up" />
+            {hasOpenSource ? "Open document" : "Source unavailable"}
           </button>
           <button className={styles.deleteButton} type="button" onClick={() => onDelete(resource)}>
             <i className="fa-solid fa-trash" /> Remove
@@ -1572,7 +1591,6 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
     </article>
   );
 }
-
 function ShareDialog({ resources, selection, setSelection, link, error, busy, progress, onCreate, onCopy, onClose }) {
   const toggle = (id) => setSelection((current) =>
     current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
