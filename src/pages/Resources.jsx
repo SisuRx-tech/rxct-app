@@ -33,6 +33,7 @@ import {
   resolveLibraryShare,
 } from "../services/librarySharing";
 import {
+  preloadDriveAuthorization,
   requestDriveAccess,
   listDrivePdfs,
   downloadDrivePdf,
@@ -148,6 +149,12 @@ function Resources() {
   const suggestedCourses = offeredCourses.slice(0, 2);
 
   const notify = (type, message) => setToast({ type, message });
+
+  useEffect(() => {
+    preloadDriveAuthorization().catch((error) => {
+      console.warn("Google Drive authorization preload failed:", error);
+    });
+  }, []);
 
   const refresh = async () => {
     if (!accountId) return;
