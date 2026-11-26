@@ -5,8 +5,8 @@ import { getSelectedCourses } from "../services/courseSelection";
 import { getCoursesForProfile, OAU_PHARMD_COURSES } from "../data/oauPharmdCourses";
 import {
   extractPdfText,
-  fingerprint,
   hashPdfContent,
+  validatePdfFile,
   findDuplicateResource,
   renameDuplicateResource,
   getRememberedCorrection,
@@ -191,7 +191,11 @@ function Resources() {
       getResources(accountId),
       Promise.resolve(getCourseDescriptions(accountId)),
     ]);
+    // IndexedDB is the source of truth for ordinary resources. Show it before
+    // attempting the optional legacy-cloud reconciliation.
     let items = localItems;
+    setResources(localItems);
+    setCourseDescriptions(descriptions);
     try {
       const cloud = await listCloudResources();
       const byHash = new Map(localItems.filter((item) => item.contentHash).map((item) => [item.contentHash, item]));
@@ -206,11 +210,11 @@ function Resources() {
       items = [...cloudItems, ...localOnly];
       await Promise.all(cloudItems.map((item) => saveResource(item).catch(() => {})));
     } catch {
-      notify("progress", "Cloud library unavailable. Showing your offline library.");
+      // Offline access is expected; local resources are already visible.
     }
     setResources(items);
     setCourseDescriptions(descriptions);
-  }, [accountId, notify]);
+  }, [accountId]);
 
   useEffect(() => {
     if (!accountId) return undefined;
@@ -373,8 +377,8 @@ function Resources() {
     let saved = 0;
     let duplicates = 0;
     let failed = 0;
-    let cloudFallbacks = 0;
     const newlyPending = [];
+    const recognitionJobs = [];
 
     try {
       // Process PDFs end-to-end with bounded concurrency.
@@ -405,7 +409,7 @@ function Resources() {
         });
 
         try {
-          const pdfBytes = new Uint8Array(await file.arrayBuffer());
+          const pdfBytes = await validatePdfFile(file);
           const contentHash = await hashPdfContent(file, pdfBytes);
 
           if (seenBatchHashes.has(contentHash)) {
@@ -428,30 +432,11 @@ function Resources() {
             return;
           }
 
-          const { text, pageCount } = await extractPdfText(file, pdfBytes);
-          const documentFingerprint = await fingerprint(file, text);
-          const recognition = recognizeCourse(text, OAU_PHARMD_COURSES);
-
-          const learned = getRememberedCorrection(
-            accountId,
-            documentFingerprint,
-            text,
-          );
-
-          const learnedCourse = learned
-            ? OAU_PHARMD_COURSES.find(
-                (course) => course.id === learned.courseId,
-              )
-            : null;
-
-          const assignedCourse =
-            learnedCourse ||
-            (recognition.highConfidence ? recognition.best?.course : null);
-
           const now = new Date().toISOString();
+          const documentFingerprint = `${accountId}-${contentHash}`;
 
           const resource = {
-            id: `${accountId}-${documentFingerprint}`,
+            id: `${accountId}-${contentHash}`,
             accountId,
             fingerprint: documentFingerprint,
             contentHash,
@@ -460,60 +445,28 @@ function Resources() {
             size: file.size,
             lastModified: file.lastModified,
             blob: file,
-            text,
-            pageCount,
-            courseId: assignedCourse?.id || null,
-            course: assignedCourse || null,
-            assignmentStatus: learnedCourse
-              ? "learned"
-              : assignedCourse
-                ? "auto"
-                : "unassigned",
-            confidence: learned
-              ? Math.round(learned.confidence * 100)
-              : recognition.confidence,
-            suggestions: recognition.suggestions.map(({ course, score }) => ({
-              courseId: course.id,
-              score,
-            })),
+            text: "",
+            pageCount: 0,
+            courseId: null,
+            course: null,
+            assignmentStatus: "processing",
+            recognitionStatus: "processing",
+            confidence: 0,
+            suggestions: [],
+            lastOpenedAt: null,
+            lastOpenedSection: "Document",
+            progress: {},
             createdAt: now,
             updatedAt: now,
           };
 
-          let cloudItem = null;
-
-          try {
-            const cloudResult = await uploadCloudPdf(
-              file,
-              assignedCourse?.id || null,
-              {
-                last_opened_section: "Document",
-                progress: {},
-              },
-              contentHash,
-            );
-            cloudItem = cloudResult.item;
-          } catch (cloudError) {
-            cloudFallbacks += 1;
-            console.warn(
-              `Cloud upload failed for ${file.name}; saving locally.`,
-              cloudError,
-            );
-          }
-
-          const savedResource = cloudItem
-            ? cloudItemToResource(cloudItem, accountId, resource)
-            : resource;
-
-          await saveResource(savedResource);
+          // Persistence is the critical path. Recognition is deliberately
+          // best-effort and must never make a valid local PDF disappear.
+          await saveResource(resource);
           saved += 1;
 
-          if (!assignedCourse) {
-            newlyPending.push({
-              resource: savedResource,
-              suggestedCourseId: recognition.best?.course?.id || "",
-            });
-          }
+          recognitionJobs.push({ file, pdfBytes, resource });
+
         } catch (fileError) {
           failed += 1;
           console.error(`Failed to import ${file.name}:`, fileError);
@@ -546,13 +499,59 @@ function Resources() {
 
       await Promise.all(fileWorkers);
 
-      if (newlyPending.length) {
-        setPendingResources((current) => [...current, ...newlyPending]);
-
-        if (!pendingResources.length) {
-          setPendingCourseId(newlyPending[0].suggestedCourseId);
+      // Recognition is deliberately decoupled from the persistence path. It
+      // runs in two bounded workers after the import has been acknowledged.
+      const recognizeDocument = async ({ file, pdfBytes, resource }) => {
+        try {
+          const { text, pageCount } = await extractPdfText(file, pdfBytes);
+          const recognition = recognizeCourse(text, OAU_PHARMD_COURSES);
+          const learned = getRememberedCorrection(accountId, resource.fingerprint, text);
+          const learnedCourse = learned
+            ? OAU_PHARMD_COURSES.find((course) => course.id === learned.courseId)
+            : null;
+          const assignedCourse = learnedCourse || (recognition.highConfidence ? recognition.best?.course : null);
+          const savedResource = {
+            ...resource,
+            text,
+            pageCount,
+            courseId: assignedCourse?.id || null,
+            course: assignedCourse || null,
+            assignmentStatus: learnedCourse ? "learned" : assignedCourse ? "auto" : "unassigned",
+            recognitionStatus: "ready",
+            confidence: learned ? Math.round(learned.confidence * 100) : recognition.confidence,
+            suggestions: recognition.suggestions.map(({ course, score }) => ({ courseId: course.id, score })),
+            updatedAt: new Date().toISOString(),
+          };
+          await saveResource(savedResource);
+          if (!assignedCourse) newlyPending.push({ resource: savedResource, suggestedCourseId: recognition.best?.course?.id || "" });
+        } catch (intelligenceError) {
+          console.warn(`Could not extract or recognize ${file.name}.`, intelligenceError);
+          const savedResource = {
+            ...resource,
+            assignmentStatus: "unassigned",
+            recognitionStatus: "extraction-unavailable",
+            updatedAt: new Date().toISOString(),
+          };
+          await saveResource(savedResource);
+          newlyPending.push({ resource: savedResource, suggestedCourseId: "" });
         }
-      }
+      };
+
+      let nextRecognitionIndex = 0;
+      const recognitionWorkers = Array.from({ length: Math.min(2, recognitionJobs.length) }, async () => {
+        while (nextRecognitionIndex < recognitionJobs.length) {
+          const index = nextRecognitionIndex;
+          nextRecognitionIndex += 1;
+          await recognizeDocument(recognitionJobs[index]);
+        }
+      });
+      const recognitionPromise = Promise.all(recognitionWorkers).then(async () => {
+        if (newlyPending.length) {
+          setPendingResources((current) => [...current, ...newlyPending]);
+          if (!pendingResources.length) setPendingCourseId(newlyPending[0].suggestedCourseId);
+        }
+        await refresh();
+      });
 
       await refresh();
 
@@ -560,7 +559,6 @@ function Resources() {
         `${saved} saved`,
         `${duplicates} duplicate${duplicates === 1 ? "" : "s"} skipped`,
         ...(failed ? [`${failed} failed`] : []),
-        ...(cloudFallbacks ? [`${cloudFallbacks} saved locally (cloud unavailable)`] : []),
         ...(unsupported ? [`${unsupported} unsupported file${unsupported === 1 ? "" : "s"} skipped`] : []),
       ].join(" · ");
 
@@ -582,6 +580,9 @@ function Resources() {
         activeFiles: [],
         message: finalMessage,
       });
+      // Do not hold the upload UI open for PDF.js. Any recognition failure is
+      // represented on the persisted record and remains recoverable.
+      recognitionPromise.catch((error) => console.warn("Background recognition failed.", error));
 
     } catch (uploadError) {
       console.error("Resource import failed:", uploadError);
@@ -1020,72 +1021,72 @@ if (controller.signal.aborted) return;
         if (controller.signal.aborted) break;
 
         const item = selectedItems[index];
-        const now = new Date().toISOString();
-        const documentText = `${item.folderPath || ""} ${item.name}`;
-        const documentFingerprint = `drive:${item.id}`;
-        const recognition = recognizeCourse(documentText, OAU_PHARMD_COURSES);
-        const learned = getRememberedCorrection(
-          accountId,
-          documentFingerprint,
-          documentText,
-        );
+        try {
+          updateProgress({ stage: "downloading", completed: importedCount, total: selectedItems.length, name: item.name });
+          const blob = await downloadDrivePdf(item, driveToken, controller.signal);
+          const bytes = await validatePdfFile(blob);
+          const contentHash = await hashPdfContent(blob, bytes);
+          const duplicate = await findDuplicateResource(accountId, contentHash);
 
-        const learnedCourse = learned
-          ? OAU_PHARMD_COURSES.find((course) => course.id === learned.courseId)
-          : null;
+          if (duplicate) {
+            await renameDuplicateResource(accountId, duplicate, item.name);
+            importedCount += 1;
+            continue;
+          }
 
-        const assignedCourse = learnedCourse
-          || (recognition.highConfidence ? recognition.best?.course : null);
+          const now = new Date().toISOString();
+          let documentText = `${item.folderPath || ""} ${item.name}`;
+          let pageCount = 0;
+          try {
+            const extracted = await extractPdfText(blob, bytes);
+            documentText = extracted.text || documentText;
+            pageCount = extracted.pageCount;
+          } catch (error) {
+            console.warn(`Could not extract Drive PDF ${item.name}.`, error);
+          }
 
-        const resource = {
-          id: `${accountId}-drive-${item.id}`,
-          accountId,
-          fingerprint: documentFingerprint,
-          text: documentText,
-          source: "google-drive",
-          driveFileId: item.id,
-          driveUrl: `https://drive.google.com/open?id=${encodeURIComponent(item.id)}`,
-          name: item.name,
-          folderPath: item.folderPath || "",
-          mimeType: item.mimeType || "application/pdf",
-          size: Number(item.size) || 0,
-          courseId: assignedCourse?.id || null,
-          course: assignedCourse || null,
-          assignmentStatus: learnedCourse
-            ? "learned"
-            : assignedCourse ? "auto" : "unassigned",
-          confidence: learned
-            ? Math.round(learned.confidence * 100)
-            : recognition.confidence,
-          suggestions: recognition.suggestions.map(({ course, score }) => ({
-            courseId: course.id,
-            score,
-          })),
-          lastOpenedAt: null,
-          lastOpenedSection: "Document",
-          progress: {},
-          createdAt: now,
-          updatedAt: now,
-        };
+          const documentFingerprint = `${accountId}-${contentHash}`;
+          const recognition = recognizeCourse(documentText, OAU_PHARMD_COURSES);
+          const learned = getRememberedCorrection(accountId, documentFingerprint, documentText);
+          const learnedCourse = learned
+            ? OAU_PHARMD_COURSES.find((course) => course.id === learned.courseId)
+            : null;
+          const assignedCourse = learnedCourse || (recognition.highConfidence ? recognition.best?.course : null);
+          const resource = {
+            id: `${accountId}-${contentHash}`,
+            accountId,
+            fingerprint: documentFingerprint,
+            contentHash,
+            text: documentText,
+            source: "google-drive",
+            sourceImportedAt: now,
+            name: item.name,
+            folderPath: item.folderPath || "",
+            mimeType: "application/pdf",
+            size: blob.size,
+            pageCount,
+            blob,
+            courseId: assignedCourse?.id || null,
+            course: assignedCourse || null,
+            assignmentStatus: learnedCourse ? "learned" : assignedCourse ? "auto" : "unassigned",
+            recognitionStatus: pageCount ? "ready" : "extraction-unavailable",
+            confidence: learned ? Math.round(learned.confidence * 100) : recognition.confidence,
+            suggestions: recognition.suggestions.map(({ course, score }) => ({ courseId: course.id, score })),
+            lastOpenedAt: null,
+            lastOpenedSection: "Document",
+            progress: {},
+            createdAt: now,
+            updatedAt: now,
+          };
 
-        await saveResource(resource);
-
-        if (!assignedCourse) {
-          unassignedResources.push({
-            resource,
-            suggestedCourseId: recognition.best?.course?.id || "",
-          });
+          await saveResource(resource);
+          if (!assignedCourse) unassignedResources.push({ resource, suggestedCourseId: recognition.best?.course?.id || "" });
+          importedCount += 1;
+          updateProgress({ stage: "saving", completed: importedCount, total: selectedItems.length, name: item.name, message: `Saved for offline access: ${item.name}` });
+        } catch (error) {
+          if (error.name === "AbortError") throw error;
+          failedFiles.push(`${item.name}: ${error.message || "could not be imported"}`);
         }
-
-        importedCount += 1;
-
-        updateProgress({
-          stage: "saving",
-          completed: importedCount,
-          total: selectedItems.length,
-          name: item.name,
-          message: `Added Drive reference: ${item.name}`,
-        });
       }
 
       await refresh();

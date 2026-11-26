@@ -1,11 +1,12 @@
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { readAccountStorage, writeAccountStorage } from "./accountStorage";
+import { validatePdfBytes, readAndValidatePdf } from "./resourceValidation";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 const DB_NAME = "rxct-resources";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = "documents";
 const CORRECTIONS_KEY = "resource-course-corrections";
 const STOP_WORDS = new Set([
@@ -19,12 +20,16 @@ function requireAccount(accountId) {
   return String(accountId);
 }
 
+let databasePromise;
+
 function openDatabase() {
   if (typeof indexedDB === "undefined") {
     return Promise.reject(new Error("This browser does not support local document storage."));
   }
 
-  return new Promise((resolve, reject) => {
+  if (databasePromise) return databasePromise;
+
+  databasePromise = new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
     request.onupgradeneeded = () => {
@@ -39,35 +44,52 @@ function openDatabase() {
       if (!store.indexNames.contains("updatedAt")) {
         store.createIndex("updatedAt", "updatedAt", { unique: false });
       }
+      if (!store.indexNames.contains("contentHash")) {
+        store.createIndex("contentHash", "contentHash", { unique: false });
+      }
+      if (!store.indexNames.contains("accountContentHash")) {
+        store.createIndex("accountContentHash", ["accountId", "contentHash"], { unique: false });
+      }
     };
 
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(
-      request.error || new Error("Could not open local document storage."),
-    );
+    request.onsuccess = () => {
+      const database = request.result;
+      database.onversionchange = () => database.close();
+      resolve(database);
+    };
+    request.onerror = () => {
+      databasePromise = null;
+      reject(request.error || new Error("Could not open local document storage."));
+    };
   });
+
+  return databasePromise;
 }
 
 function transactionRequest(mode, callback) {
   return openDatabase().then((database) => new Promise((resolve, reject) => {
     const transaction = database.transaction(STORE_NAME, mode);
-    const request = callback(transaction.objectStore(STORE_NAME));
     let result;
-
-    request.onsuccess = () => { result = request.result; };
-    request.onerror = () => reject(
-      request.error || new Error("Local document storage failed."),
-    );
+    try {
+      result = callback(transaction.objectStore(STORE_NAME), transaction);
+    } catch (error) {
+      transaction.abort();
+      reject(error);
+      return;
+    }
     transaction.oncomplete = () => {
-      database.close();
-      resolve(result);
+      if (result && typeof result.then === "function") {
+        result.then(resolve, reject);
+      } else if (result && typeof result.onsuccess !== "undefined") {
+        resolve(result.result);
+      } else {
+        resolve(result);
+      }
     };
     transaction.onerror = () => {
-      database.close();
       reject(transaction.error || new Error("Local document storage failed."));
     };
     transaction.onabort = () => {
-      database.close();
       reject(transaction.error || new Error("Local document storage was aborted."));
     };
   }));
@@ -83,7 +105,69 @@ export function getResources(accountId) {
   );
 }
 
-export function saveResource(resource) {
+function validateResource(resource) {
+  if (!resource || !resource.id) throw new Error("This document is missing its storage ID.");
+  requireAccount(resource.accountId);
+  if (resource.mimeType && resource.mimeType !== "application/pdf") {
+    throw new Error("Only PDF documents can be stored in the resource library.");
+  }
+}
+
+export async function saveResource(resource) {
+  validateResource(resource);
+  const id = String(resource.accountId);
+  const existing = await transactionRequest("readonly", (store) => store.get(resource.id));
+  if (existing && String(existing.accountId) !== id) {
+    throw new Error("This document does not belong to the signed-in account.");
+  }
+
+  return transactionRequest("readwrite", (store) => store.put({
+    ...resource,
+    accountId: id,
+    updatedAt: resource.updatedAt || new Date().toISOString(),
+  }));
+}
+
+export async function saveResources(resources) {
+  if (!Array.isArray(resources) || !resources.length) return [];
+  resources.forEach(validateResource);
+  const accountIds = new Set(resources.map((resource) => String(resource.accountId)));
+  if (accountIds.size !== 1) throw new Error("A bulk save must contain one account.");
+
+  const accountId = [...accountIds][0];
+  const ids = resources.map((resource) => resource.id);
+  const existing = await transactionRequest("readonly", (store) => store.getAll());
+  const existingById = new Map(existing.map((resource) => [resource.id, resource]));
+  const conflicting = ids
+    .map((id) => existingById.get(id))
+    .filter(Boolean);
+  if (conflicting.some((resource) => String(resource.accountId) !== accountId)) {
+    throw new Error("A document in this batch does not belong to the signed-in account.");
+  }
+
+  return transactionRequest("readwrite", (store) => {
+    resources.forEach((resource) => store.put({
+      ...resource,
+      accountId,
+      updatedAt: resource.updatedAt || new Date().toISOString(),
+    }));
+    return resources;
+  });
+}
+
+/* Kept separate from saveResource so callers can make the ownership boundary
+ * explicit when updating metadata without touching the stored Blob. */
+export async function updateResource(accountId, resourceId, changes) {
+  const id = requireAccount(accountId);
+  const existing = await transactionRequest("readonly", (store) => store.get(resourceId));
+  if (!existing || String(existing.accountId) !== id) {
+    throw new Error("This document does not belong to the signed-in account.");
+  }
+  return saveResource({ ...existing, ...changes, id: existing.id, accountId: id });
+}
+
+/* Legacy single-record API. */
+export function saveResourceLegacy(resource) {
   requireAccount(resource.accountId);
   if (!resource.id) throw new Error("This document is missing its storage ID.");
   return transactionRequest("readwrite", (store) => store.put(resource));
@@ -247,6 +331,11 @@ export async function findDuplicateResource(accountId, contentHash) {
   const id = requireAccount(accountId);
   if (!contentHash) return null;
 
+  const indexed = await transactionRequest("readonly", (store) =>
+    store.index("accountContentHash").getAll([id, contentHash]),
+  );
+  if (indexed[0]) return indexed[0];
+
   const resources = await getResources(id);
 
   for (const resource of resources) {
@@ -263,6 +352,29 @@ export async function findDuplicateResource(accountId, contentHash) {
   }
 
   return null;
+}
+
+export async function findDuplicateResources(accountId, contentHashes) {
+  const id = requireAccount(accountId);
+  const hashes = [...new Set((contentHashes || []).filter(Boolean))];
+  if (!hashes.length) return new Map();
+  const resources = await getResources(id);
+  const result = new Map();
+  resources.forEach((resource) => {
+    if (resource.contentHash && hashes.includes(resource.contentHash)) {
+      result.set(resource.contentHash, resource);
+    }
+  });
+  return result;
+}
+
+export async function validatePdfFile(file, existingBytes = null) {
+  if (!file || typeof file.arrayBuffer !== "function") {
+    throw new Error("A valid PDF file is required.");
+  }
+  const bytes = existingBytes || await readAndValidatePdf(file);
+  if (!validatePdfBytes(bytes)) throw new Error(`${file.name || "The file"} is not a valid PDF.`);
+  return bytes;
 }
 
 export async function renameDuplicateResource(accountId, resource, newName) {
