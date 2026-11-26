@@ -1,4 +1,5 @@
 import "./App.css";
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, Link, useLocation } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -12,10 +13,11 @@ import Splash from "./components/Splash";
 import AppLayout from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Medicines from "./pages/Medicines";
-import Resources from "./pages/Resources";
 import History from "./pages/History";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+
+const Resources = lazy(() => import("./pages/Resources"));
 
 import {
   normalizeUserProfile,
@@ -134,7 +136,28 @@ function AuthGate() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/medicines" element={<Medicines />} />
-        <Route path="/resources" element={<Resources />} />
+        <Route
+          path="/resources"
+          element={
+            <Suspense
+              fallback={
+                <main
+                  style={{
+                    minHeight: "40vh",
+                    display: "grid",
+                    placeItems: "center",
+                    color: "#164a45",
+                    fontSize: "14px",
+                  }}
+                >
+                  Loading Resources…
+                </main>
+              }
+            >
+              <Resources />
+            </Suspense>
+          }
+        />
         <Route path="/history" element={<History />} />
       </Route>
 

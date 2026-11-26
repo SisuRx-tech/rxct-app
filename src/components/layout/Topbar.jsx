@@ -29,7 +29,23 @@ function Topbar({ onOpenPanel, panelOpen }) {
   const [searchParams] = useSearchParams();
 
   const query = searchParams.get("q") || "";
-  const [text, setText] = useState(query);
+  const [searchDraft, setSearchDraft] = useState(() => ({
+    value: query,
+    pathname: location.pathname,
+    query,
+  }));
+
+  const text =
+    searchDraft.pathname === location.pathname &&
+    searchDraft.query === query
+      ? searchDraft.value
+      : query;
+
+  const setText = (value) => setSearchDraft({
+    value,
+    pathname: location.pathname,
+    query,
+  });
 
   const pageTitle =
     location.pathname === "/medicines"
@@ -48,11 +64,6 @@ function Topbar({ onOpenPanel, panelOpen }) {
         : location.pathname === "/history"
           ? "fa-clock-rotate-left"
           : "fa-table-columns";
-
-  // Synchronize search input with URL changes.
-  useEffect(() => {
-    setText(query);
-  }, [query, location.pathname]);
 
   // Close profile menu when clicking outside.
   useEffect(() => {

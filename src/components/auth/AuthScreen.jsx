@@ -97,7 +97,7 @@ export default function AuthScreen() {
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [cooldown > 0]);
+  }, [cooldown]);
 
   const clearFeedback = () => {
     setError("");

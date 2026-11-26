@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { getSelectedCourses } from "../services/courseSelection";
@@ -102,6 +102,7 @@ function Resources() {
   const [toast, setToast] = useState(null);
   const [toastClosing, setToastClosing] = useState(false);
   const [toastPosition, setToastPosition] = useState(null);
+  const toastTouchStart = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [pendingResources, setPendingResources] = useState([]);
   const [pendingCourseId, setPendingCourseId] = useState("");
@@ -157,7 +158,7 @@ function Resources() {
 
   const suggestedCourses = offeredCourses.slice(0, 2);
 
-  const notify = (type, message) => {
+  const notify = useCallback((type, message) => {
     const bell = document.querySelector('button[aria-label="Notifications"]');
     const rect = bell?.getBoundingClientRect();
     const toastWidth = Math.min(360, window.innerWidth - 32);
@@ -173,8 +174,8 @@ function Resources() {
     );
 
     setToastClosing(false);
-    setToast({ type, message });
-  };
+    setToast({ type, message, id: Date.now() });
+  }, []);
 
   const dismissToast = () => setToastClosing(true);
 
@@ -184,7 +185,7 @@ function Resources() {
     });
   }, []);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!accountId) return;
     const [localItems, descriptions] = await Promise.all([
       getResources(accountId),
@@ -204,23 +205,25 @@ function Resources() {
       const localOnly = localItems.filter((item) => !item.cloudItemId || !cloudIds.has(item.cloudItemId));
       items = [...cloudItems, ...localOnly];
       await Promise.all(cloudItems.map((item) => saveResource(item).catch(() => {})));
-    } catch (cloudError) {
+    } catch {
       notify("progress", "Cloud library unavailable. Showing your offline library.");
     }
     setResources(items);
     setCourseDescriptions(descriptions);
-  };
+  }, [accountId, notify]);
 
   useEffect(() => {
     if (!accountId) return undefined;
     let active = true;
 
-    refresh().catch((loadError) => {
-      if (active) notify("error", loadError.message || "Could not load your library.");
-    });
+    Promise.resolve()
+      .then(() => refresh())
+      .catch((loadError) => {
+        if (active) notify("error", loadError.message || "Could not load your library.");
+      });
 
     return () => { active = false; };
-  }, [accountId]);
+  }, [accountId, refresh, notify]);
 
   useEffect(() => {
     if (!toast) return undefined;
@@ -370,88 +373,47 @@ function Resources() {
     let saved = 0;
     let duplicates = 0;
     let failed = 0;
+    let cloudFallbacks = 0;
     const newlyPending = [];
 
     try {
-      // Stage 1: hash PDFs with limited concurrency.
-      // This also removes repeated files from the current selection before upload.
-      const hashResults = new Array(validFiles.length);
-      let nextHashIndex = 0;
-
-      const hashWorkers = Array.from(
-        { length: Math.min(3, validFiles.length) },
-        async () => {
-          while (true) {
-            const index = nextHashIndex++;
-            if (index >= validFiles.length) return;
-
-            const file = validFiles[index];
-
-            try {
-              hashResults[index] = {
-                file,
-                contentHash: await hashPdfContent(file),
-              };
-            } catch (fileError) {
-              failed += 1;
-              console.error(`Failed to hash ${file.name}:`, fileError);
-            }
-          }
-        },
-      );
-
-      await Promise.all(hashWorkers);
-
-      const uniqueFiles = [];
+      // Process PDFs end-to-end with bounded concurrency.
+      // Reuse one file buffer for content hashing and PDF text extraction.
       const seenBatchHashes = new Set();
-
-      for (const result of hashResults) {
-        if (!result) continue;
-
-        if (seenBatchHashes.has(result.contentHash)) {
-          duplicates += 1;
-          continue;
-        }
-
-        seenBatchHashes.add(result.contentHash);
-        uniqueFiles.push(result);
-      }
-
-      // Stage 2: process unique documents with three workers.
-      // Each worker checks existing duplicates before extracting or uploading.
       let nextFileIndex = 0;
+      let completedFiles = 0;
+      const activeFiles = new Set();
 
       setUploadStatus({
         status: "uploading",
         stage: "processing",
         completed: 0,
-        total: uniqueFiles.length,
+        total: validFiles.length,
         activeFiles: [],
-        message: uniqueFiles.length
-          ? "Preparing documents for your library…"
-          : "Finishing import…",
+        message: "Preparing documents for your library…",
       });
 
-      let completedFiles = 0;
-      const activeFiles = new Set();
-
-      const processFile = async ({ file, contentHash }, index) => {
+      const processFile = async (file) => {
         activeFiles.add(file.name);
         setUploadStatus({
           status: "uploading",
           stage: "processing",
           completed: completedFiles,
-          total: uniqueFiles.length,
+          total: validFiles.length,
           activeFiles: [...activeFiles],
           message: `Processing ${file.name}`,
         });
 
-        notify(
-          "progress",
-          `Processing ${index + 1} of ${uniqueFiles.length}: ${file.name}`,
-        );
-
         try {
+          const pdfBytes = new Uint8Array(await file.arrayBuffer());
+          const contentHash = await hashPdfContent(file, pdfBytes);
+
+          if (seenBatchHashes.has(contentHash)) {
+            duplicates += 1;
+            return;
+          }
+          seenBatchHashes.add(contentHash);
+
           const duplicate = await findDuplicateResource(accountId, contentHash);
 
           if (duplicate) {
@@ -466,7 +428,7 @@ function Resources() {
             return;
           }
 
-          const { text, pageCount } = await extractPdfText(file);
+          const { text, pageCount } = await extractPdfText(file, pdfBytes);
           const documentFingerprint = await fingerprint(file, text);
           const recognition = recognizeCourse(text, OAU_PHARMD_COURSES);
 
@@ -532,9 +494,10 @@ function Resources() {
             );
             cloudItem = cloudResult.item;
           } catch (cloudError) {
-            notify(
-              "progress",
-              `${file.name}: cloud upload unavailable; saving locally.`,
+            cloudFallbacks += 1;
+            console.warn(
+              `Cloud upload failed for ${file.name}; saving locally.`,
+              cloudError,
             );
           }
 
@@ -561,9 +524,9 @@ function Resources() {
             status: "uploading",
             stage: "processing",
             completed: completedFiles,
-            total: uniqueFiles.length,
+            total: validFiles.length,
             activeFiles: [...activeFiles],
-            message: completedFiles === uniqueFiles.length
+            message: completedFiles === validFiles.length
               ? "Saving your library changes…"
               : "Processing your documents…",
           });
@@ -571,13 +534,12 @@ function Resources() {
       };
 
       const fileWorkers = Array.from(
-        { length: Math.min(3, uniqueFiles.length) },
+        { length: Math.min(3, validFiles.length) },
         async () => {
           while (true) {
             const index = nextFileIndex++;
-            if (index >= uniqueFiles.length) return;
-
-            await processFile(uniqueFiles[index], index);
+            if (index >= validFiles.length) return;
+            await processFile(validFiles[index]);
           }
         },
       );
@@ -598,6 +560,7 @@ function Resources() {
         `${saved} saved`,
         `${duplicates} duplicate${duplicates === 1 ? "" : "s"} skipped`,
         ...(failed ? [`${failed} failed`] : []),
+        ...(cloudFallbacks ? [`${cloudFallbacks} saved locally (cloud unavailable)`] : []),
         ...(unsupported ? [`${unsupported} unsupported file${unsupported === 1 ? "" : "s"} skipped`] : []),
       ].join(" · ");
 
@@ -614,19 +577,12 @@ function Resources() {
       setUploadStatus({
         status: finalStatus,
         stage: "complete",
-        completed: uniqueFiles.length,
-        total: uniqueFiles.length,
+        completed: validFiles.length,
+        total: validFiles.length,
         activeFiles: [],
         message: finalMessage,
       });
 
-      if (saved > 0) {
-        notify("success", finalMessage);
-      } else if (failed || unsupported) {
-        notify("error", finalMessage);
-      } else {
-        notify("success", finalMessage);
-      }
     } catch (uploadError) {
       console.error("Resource import failed:", uploadError);
       setUploadStatus({
@@ -637,7 +593,6 @@ function Resources() {
         activeFiles: [],
         message: uploadError.message || "The import could not be completed.",
       });
-      notify("error", uploadError.message || "The import could not be completed.");
     } finally {
       setUploading(false);
     }
@@ -1193,7 +1148,23 @@ if (controller.signal.aborted) return;
     <div className={styles.page}>
       {toast && (
         <div
+          key={toast.id}
           className={`resourceToast resourceToast-${toast.type}${toastClosing ? " resourceToast-closing" : ""}`}
+          onTouchStart={(event) => {
+            toastTouchStart.current = {
+              x: event.touches[0].clientX,
+              y: event.touches[0].clientY,
+            };
+          }}
+          onTouchEnd={(event) => {
+            if (!toastTouchStart.current) return;
+            const dx = event.changedTouches[0].clientX - toastTouchStart.current.x;
+            const dy = event.changedTouches[0].clientY - toastTouchStart.current.y;
+            toastTouchStart.current = null;
+            if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+              dismissToast();
+            }
+          }}
           style={toastPosition ? {
             top: `${toastPosition.top}px`,
             left: "50%",
@@ -1212,6 +1183,12 @@ if (controller.signal.aborted) return;
           }`} />
           <span>{toast.message}</span>
           <button type="button" onClick={dismissToast} aria-label="Dismiss notification">
+            {!toastClosing && (
+              <svg className="resourceToast-countdown" viewBox="0 0 27 27" aria-hidden="true">
+                <circle className="resourceToast-countdown-track" cx="13.5" cy="13.5" r="11" />
+                <circle className="resourceToast-countdown-progress" cx="13.5" cy="13.5" r="11" />
+              </svg>
+            )}
             <i className="fa-solid fa-xmark" />
           </button>
         </div>
@@ -1321,7 +1298,7 @@ if (controller.signal.aborted) return;
             />
           ) : activeTab === "Organized" && activeCourse ? (
             <CourseFolder
-              key={activeCourse.id}
+              key={`${accountId}:${activeCourse.id}`}
               accountId={accountId}
               course={activeCourse}
               resources={courseResources}
@@ -1685,17 +1662,13 @@ function ResourceList({ resources, emptyTitle, emptyText, onOpen, onAssign, onDe
 
 function CourseFolder({ accountId, course, resources, description, onBack, onSaveDescription, onOpen, onAssign, onDelete }) {
   const [draft, setDraft] = useState(description);
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => getStudyTasks(accountId, course.id));
   const [actionTaskId, setActionTaskId] = useState(null);
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editDraft, setEditDraft] = useState("");
   const [pendingDeleteTaskId, setPendingDeleteTaskId] = useState(null);
   const [taskMessage, setTaskMessage] = useState("");
   const holdTimer = useRef(null);
-
-  useEffect(() => {
-    setTasks(getStudyTasks(accountId, course.id));
-  }, [accountId, course.id]);
 
   const finishBrainTask = (taskId) => {
     try {

@@ -222,14 +222,57 @@
 }
 
 .resourceToast > button {
+  position: relative;
+  display: grid;
+  place-items: center;
   flex: none;
-  width: 27px;
-  height: 27px;
+  width: 29px;
+  height: 29px;
+  padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: 50%;
   background: var(--surface-alt);
   color: var(--muted);
   cursor: pointer;
+}
+
+.resourceToast > button > i {
+  position: relative;
+  z-index: 1;
+  font-size: 12px;
+}
+
+.resourceToast-countdown {
+  position: absolute;
+  inset: 1px;
+  width: 27px;
+  height: 27px;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.resourceToast-countdown-track,
+.resourceToast-countdown-progress {
+  fill: none;
+  stroke-width: 1.8;
+}
+
+.resourceToast-countdown-track {
+  stroke: var(--line);
+}
+
+.resourceToast-countdown-progress {
+  stroke: var(--primary);
+  stroke-linecap: round;
+  stroke-dasharray: 69.12;
+  stroke-dashoffset: 0;
+  animation: resourceToastCountdown 5.2s linear forwards;
+}
+
+@keyframes resourceToastCountdown {
+  to {
+    stroke-dashoffset: 69.12;
+  }
 }
 
 .resourceToast-error {

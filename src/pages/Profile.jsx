@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import { useAuth } from "../context/useAuth";
 import {
@@ -25,17 +25,41 @@ const EMPTY_PROFILE = {
 
 function Profile() {
   const { user, updateProfile } = useAuth();
-  const [form, setForm] = useState(EMPTY_PROFILE);
+  const [profileDraft, setProfileDraft] = useState(() => ({
+    userId: user?.id,
+    values: {
+      ...EMPTY_PROFILE,
+      ...normalizeUserProfile(user),
+    },
+  }));
+
+  const form = profileDraft.userId === user?.id
+    ? profileDraft.values
+    : {
+        ...EMPTY_PROFILE,
+        ...normalizeUserProfile(user),
+      };
+
+  const setForm = (update) => {
+    setProfileDraft((current) => {
+      const currentValues = current.userId === user?.id
+        ? current.values
+        : {
+            ...EMPTY_PROFILE,
+            ...normalizeUserProfile(user),
+          };
+
+      return {
+        userId: user?.id,
+        values: typeof update === "function"
+          ? update(currentValues)
+          : update,
+      };
+    });
+  };
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    setForm({
-      ...EMPTY_PROFILE,
-      ...normalizeUserProfile(user),
-    });
-  }, [user]);
 
   const programmes =
     form.university === "OAU" ? OAU_PROGRAMMES : UI_PROGRAMMES;

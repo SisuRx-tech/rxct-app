@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import MedicinesLanding from "../components/medicines/MedicinesLanding";
@@ -36,7 +36,7 @@ import styles from "./Medicines.module.css";
 function MedicinesView() {
   const [params, setParams] = useSearchParams();
   const { user } = useAuth();
-  const academicContext = getAcademicContext(user);
+  const academicContext = useMemo(() => getAcademicContext(user), [user]);
   const navigate = useNavigate();
 
   const query = params.get("q") || "";
@@ -94,7 +94,7 @@ const [retryCount, setRetryCount] = useState(0);
     return () => {
       active = false;
     };
-}, [query, kind, queryKey, isLanding, retryCount, user?.id, academicContext.university, academicContext.programme, academicContext.level, academicContext.part, academicContext.semester]);
+}, [query, kind, queryKey, isLanding, retryCount, user?.id, academicContext]);
 
   const isLoading =
     !isLanding &&

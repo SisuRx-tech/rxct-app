@@ -209,8 +209,8 @@ async function fingerprint(file, text) {
   return source;
 }
 
-export async function extractPdfText(file) {
-  const data = new Uint8Array(await file.arrayBuffer());
+export async function extractPdfText(file, existingBytes = null) {
+  const data = existingBytes || new Uint8Array(await file.arrayBuffer());
   const document = await pdfjsLib.getDocument({ data }).promise;
   const pages = [];
 
@@ -226,7 +226,7 @@ export async function extractPdfText(file) {
 
 export { fingerprint };
 
-export async function hashPdfContent(file) {
+export async function hashPdfContent(file, existingBytes = null) {
   if (!file || typeof file.arrayBuffer !== "function") {
     throw new Error("A valid PDF file is required to calculate its content hash.");
   }
@@ -235,7 +235,7 @@ export async function hashPdfContent(file) {
     throw new Error("Secure PDF duplicate detection is unavailable in this browser.");
   }
 
-  const bytes = await file.arrayBuffer();
+  const bytes = existingBytes || await file.arrayBuffer();
   const digest = await globalThis.crypto.subtle.digest("SHA-256", bytes);
 
   return [...new Uint8Array(digest)]

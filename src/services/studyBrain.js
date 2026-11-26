@@ -43,7 +43,6 @@ function correctWords(text) {
     remeber: "remember",
     rember: "remember",
     assigment: "assignment",
-    assigment: "assignment",
     practicle: "practical",
     pharmacolgy: "pharmacology",
   };
