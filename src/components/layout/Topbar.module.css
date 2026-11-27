@@ -189,6 +189,45 @@
   font-size: 20px;
 }
 
+.activityDot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -20px 0 0 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.jobMenu {
+  position: absolute;
+  top: 48px;
+  right: 54px;
+  z-index: 10;
+  width: min(300px, calc(100vw - 32px));
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--soft);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.jobItem {
+  display: grid;
+  gap: 3px;
+  padding: 10px 0;
+  border-top: 1px solid var(--soft);
+}
+
+.jobItem small,
+.jobEmpty {
+  color: var(--muted);
+}
+
+.jobItem progress {
+  width: 100%;
+}
+
 .avatarButton {
   border-radius: 50%;
 }

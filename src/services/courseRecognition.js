@@ -26,6 +26,15 @@ function meaningfulTokens(value) {
     );
 }
 
+function tokenSimilarity(left, right) {
+  const a = new Set(left || []);
+  const b = new Set(right || []);
+  if (!a.size || !b.size) return 0;
+  let overlap = 0;
+  for (const token of a) if (b.has(token)) overlap += 1;
+  return overlap / Math.sqrt(a.size * b.size);
+}
+
 function courseText(course) {
   return [
     course.code,
@@ -210,7 +219,7 @@ function detectExternalCourseCodes(documentText, courses) {
   return [...candidates.values()];
 }
 
-export function recognizeCourse(documentText, courses) {
+export function recognizeCourse(documentText, courses, adaptivePatterns = []) {
   const availableCourses = Array.isArray(courses) ? courses : [];
 
   const intelligence = rankCourseCandidates(
@@ -225,16 +234,30 @@ export function recognizeCourse(documentText, courses) {
     ]),
   );
 
+  const adaptiveByCourse = new Map(
+    (adaptivePatterns || [])
+      .filter((pattern) => pattern.status === "active" && pattern.evidenceCount >= 3)
+      .map((pattern) => [pattern.courseId, pattern]),
+  );
+
   const ranked = availableCourses
     .map((course) => {
       const existing = scoreCourse(course, documentText);
       const inferred = intelligenceByCourse.get(course);
+      const adaptive = adaptiveByCourse.get(course.id);
+      const adaptiveMatch = adaptive
+        ? tokenSimilarity(meaningfulTokens(documentText), adaptive.tokens || [])
+        : 0;
+      const adaptiveScore = adaptiveMatch >= 0.72
+        ? Math.min(0.99, existing.score + Math.min(0.18, adaptiveMatch * 0.18))
+        : existing.score;
 
-      if (!inferred) return existing;
+      if (!inferred) return { ...existing, score: adaptiveScore, adaptiveMatch };
 
       return {
         ...existing,
-        score: inferred.score,
+        score: Math.max(inferred.score, adaptiveScore),
+        adaptiveMatch,
         intelligence: inferred,
       };
     })
@@ -246,8 +269,8 @@ export function recognizeCourse(documentText, courses) {
 
   const highConfidence = Boolean(
     best &&
-    intelligence.shouldAutoAssign &&
-    intelligence.recommendation === best.course
+    ((intelligence.shouldAutoAssign && intelligence.recommendation === best.course) ||
+      (best.adaptiveMatch >= 0.82 && adaptiveByCourse.has(best.course.id)))
   );
 
   const externalCandidates = detectExternalCourseCodes(
@@ -288,4 +311,20 @@ export function recognizeCourse(documentText, courses) {
 
 export function formatConfidence(confidence) {
   return `${Math.round(confidence)}% match`;
+}
+
+export function getRecognitionFailureSignals(documentText, recognition) {
+  const signals = [];
+  const tokens = meaningfulTokens(documentText);
+
+  if (!tokens.length || tokens.length < 8) signals.push("sparse-document-text");
+  if (recognition?.noMatch) {
+    signals.push("no-course-match", "missing-course-terminology");
+  } else if (recognition?.ambiguous) {
+    signals.push("ambiguous-academic-context", "overlapping-course-terminology");
+  }
+  if (recognition?.externalCandidates?.length) signals.push("external-or-unmapped-course-code");
+  if (recognition && recognition.confidence < 60) signals.push("low-evidence-match");
+
+  return [...new Set(signals)];
 }

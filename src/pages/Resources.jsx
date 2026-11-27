@@ -2,27 +2,43 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { getSelectedCourses } from "../services/courseSelection";
+import { readAccountStorage, writeAccountStorage } from "../services/accountStorage";
 import { getCoursesForProfile, OAU_PHARMD_COURSES } from "../data/oauPharmdCourses";
 import {
   extractPdfText,
+  fingerprint,
   hashPdfContent,
-  validatePdfFile,
-  findDuplicateResource,
   renameDuplicateResource,
   getRememberedCorrection,
+  getAdaptivePatterns,
+  recordRecognitionObservation,
   getResources,
+  recoverProcessingResources,
   getCourseDescriptions,
   saveCourseDescription,
   rememberCorrection,
   removeResource,
   saveResource,
 } from "../services/resourceLibrary";
-import { formatConfidence, recognizeCourse } from "../services/courseRecognition";
+import { importPdfDocuments } from "../services/documentImport";
+import {
+  completeBackgroundJob,
+  createBackgroundJob,
+  failBackgroundJob,
+  getBackgroundJobs,
+  updateBackgroundJob,
+} from "../services/backgroundJobs";
+import {
+  formatConfidence,
+  getRecognitionFailureSignals,
+  recognizeCourse,
+} from "../services/courseRecognition";
 import { getAllNotes } from "../services/notes";
 import { normalizeUserProfile } from "../services/userProfile";
 import { getStudyTasks, interpretStudyIntent, saveStudyTask, completeStudyTask, deleteStudyTask } from "../services/studyBrain";
 import {
   deleteCloudResource,
+  importCloudShare,
   listCloudResources,
   openCloudResource,
   updateCloudResource,
@@ -31,7 +47,6 @@ import {
 import {
   createLibraryShare,
   getShareToken,
-  importLibraryItems,
   resolveLibraryShare,
 } from "../services/librarySharing";
 import {
@@ -40,6 +55,11 @@ import {
   listDrivePdfs,
   downloadDrivePdf,
 } from "../services/googleDriveImport";
+import {
+  createPortableExport,
+  downloadPortableDocument,
+  resolvePortableExport,
+} from "../services/portableLibrary";
 import styles from "./Resources.module.css";
 import "./ResourcesOverrides.css";
 
@@ -68,6 +88,13 @@ function progressLabel(progress, mode = "import") {
   return progress.message || (mode === "export" ? "Preparing export…" : "Preparing import…");
 }
 
+function formatBytes(bytes) {
+  const value = Number(bytes) || 0;
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${Math.round(value / 1024)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 function cloudItemToResource(item, accountId, local = null) {
   const document = item.document || {};
   return {
@@ -88,6 +115,105 @@ function cloudItemToResource(item, accountId, local = null) {
     createdAt: item.created_at || local?.createdAt || new Date().toISOString(),
     updatedAt: item.updated_at || local?.updatedAt || new Date().toISOString(),
   };
+}
+
+function getCurriculumPlacement(resource, currentCourseIds) {
+  if (resource.curriculumOverride === "include") return "explicitly-included";
+  if (!resource.courseId) return "curriculum-mapping-unavailable";
+  return currentCourseIds.has(resource.courseId)
+    ? "eligible"
+    : "outside-current-curriculum";
+}
+
+function getDocumentUnderstandingStatus(recognition, assignedCourse) {
+  if (assignedCourse) return "classified";
+  if (!recognition || recognition.noMatch || recognition.ambiguous) return "recognition-uncertain";
+  return "recognized";
+}
+
+function buildImportedResource(item, contentHash, accountId, status = "processing", source = "local") {
+  const now = new Date().toISOString();
+  return {
+    id: `${accountId}-${contentHash}`,
+    accountId,
+    fingerprint: `${accountId}-${contentHash}`,
+    contentHash,
+    name: item.name,
+    mimeType: "application/pdf",
+    size: item.file.size,
+    lastModified: item.file.lastModified,
+    blob: item.file,
+    text: "",
+    pageCount: 0,
+    courseId: null,
+    course: null,
+    source,
+    sourceImportedAt: now,
+    assignmentStatus: status,
+    recognitionStatus: status,
+    confidence: 0,
+    suggestions: [],
+    lastOpenedAt: null,
+    lastOpenedSection: "Document",
+    progress: {},
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+async function understandImportedResource(resource, pdfBytes, accountId) {
+  if (resource.portableIntelligence?.text && resource.portableIntelligence.pageCount) {
+    const intelligence = resource.portableIntelligence;
+    return {
+      ...resource,
+      ...intelligence,
+      id: resource.id,
+      accountId: resource.accountId,
+      blob: resource.blob,
+      contentHash: resource.contentHash,
+      source: resource.source,
+      portableIntelligence: null,
+      recognitionStatus: intelligence.recognitionStatus || "restored",
+      assignmentStatus: intelligence.assignmentStatus || "unassigned",
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  let documentFingerprint = resource.fingerprint;
+  try {
+    const { text, pageCount } = await extractPdfText(resource.blob, pdfBytes);
+    documentFingerprint = await fingerprint(resource.blob, text);
+    const recognition = recognizeCourse(text, OAU_PHARMD_COURSES, getAdaptivePatterns(accountId));
+    if (!recognition.highConfidence) {
+      recordRecognitionObservation(accountId, {
+        fingerprint: documentFingerprint,
+        failureSignals: getRecognitionFailureSignals(text, recognition),
+        confidence: recognition.confidence,
+        candidateCourseId: recognition.best?.course?.id || null,
+      });
+    }
+    const learned = getRememberedCorrection(accountId, documentFingerprint, text);
+    const learnedCourse = learned ? OAU_PHARMD_COURSES.find((course) => course.id === learned.courseId) : null;
+    const assignedCourse = learnedCourse || (recognition.highConfidence ? recognition.best?.course : null);
+    return {
+      ...resource,
+      fingerprint: documentFingerprint,
+      text,
+      pageCount,
+      courseId: assignedCourse?.id || null,
+      course: assignedCourse || null,
+      assignmentStatus: learnedCourse ? "learned" : assignedCourse ? "auto" : "unassigned",
+      recognitionStatus: getDocumentUnderstandingStatus(recognition, assignedCourse),
+      confidence: learned ? Math.round(learned.confidence * 100) : recognition.confidence,
+      suggestions: recognition.suggestions.map(({ course, score }) => ({ courseId: course.id, score })),
+      updatedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    recordRecognitionObservation(accountId, {
+      fingerprint: documentFingerprint,
+      failureSignals: ["pdf-text-extraction-failed", "scanned-or-unreadable-document"],
+    });
+    throw error;
+  }
 }
 
 function Resources() {
@@ -128,8 +254,18 @@ function Resources() {
   const [importSource, setImportSource] = useState("rxct");
   const [driveToken, setDriveToken] = useState("");
   const [shareProgress, setShareProgress] = useState("");
+  const [portableOpen, setPortableOpen] = useState(false);
+  const [portableSelection, setPortableSelection] = useState([]);
+  const [portableLink, setPortableLink] = useState("");
+  const [portablePayload, setPortablePayload] = useState(null);
+  const [portableRestoreSelection, setPortableRestoreSelection] = useState([]);
+  const [portableProgress, setPortableProgress] = useState(null);
+  const [portableError, setPortableError] = useState("");
+  const [portableBusy, setPortableBusy] = useState(false);
+  const portableController = useRef(null);
   const exportController = useRef(null);
   const importController = useRef(null);
+  const localImportController = useRef(null);
   const loadController = useRef(null);
 
   const profile = normalizeUserProfile(user);
@@ -143,18 +279,24 @@ function Resources() {
       ? "rain"
       : "";
 
-  const profileCourses = getCoursesForProfile({
+  const profileCourses = useMemo(() => getCoursesForProfile({
     level: profileLevel,
     semester: profileSemester,
-  });
+  }), [profileLevel, profileSemester]);
 
-  const selectedCourses = accountId
-    ? getSelectedCourses(OAU_PHARMD_COURSES, accountId)
-    : [];
+  const selectedCourses = useMemo(
+    () => accountId ? getSelectedCourses(OAU_PHARMD_COURSES, accountId) : [],
+    [accountId],
+  );
 
-  const offeredCourses = selectedCourses.length
-    ? selectedCourses
-    : profileCourses;
+  const offeredCourses = useMemo(
+    () => selectedCourses.length ? selectedCourses : profileCourses,
+    [profileCourses, selectedCourses],
+  );
+  const currentCurriculumIds = useMemo(
+    () => new Set(offeredCourses.map((course) => course.id)),
+    [offeredCourses],
+  );
 
   const suggestedCourses = offeredCourses.slice(0, 2);
 
@@ -191,30 +333,54 @@ function Resources() {
       getResources(accountId),
       Promise.resolve(getCourseDescriptions(accountId)),
     ]);
+    const activeJobs = await getBackgroundJobs(accountId).catch(() => []);
+    // Do not resume PDF extraction while the page is mounting. A prior job may
+    // contain many large PDFs; running recognition here blocks Chrome's main
+    // thread before the library can paint. Preserve the PDFs and surface them
+    // as recoverable failures instead.
+    await Promise.all(activeJobs
+      .filter((job) => job.type === "import" && job.status === "running")
+      .map((job) => failBackgroundJob(
+        accountId,
+        job.id,
+        new Error("Import was interrupted. The saved PDFs are available for recovery."),
+      ).catch(() => {})));
+    const recovered = await recoverProcessingResources(accountId);
+    const currentLocalItems = recovered.length
+      ? localItems.map((item) => recovered.find((resource) => resource.id === item.id) || item)
+      : localItems;
     // IndexedDB is the source of truth for ordinary resources. Show it before
     // attempting the optional legacy-cloud reconciliation.
-    let items = localItems;
-    setResources(localItems);
+    const applyCurriculumPlacement = (itemsToPlace) => itemsToPlace.map((resource) => ({
+      ...resource,
+      curriculumStatus: getCurriculumPlacement(resource, currentCurriculumIds),
+    }));
+    const placedLocalItems = applyCurriculumPlacement(currentLocalItems);
+    let items = placedLocalItems;
+    setResources(items);
     setCourseDescriptions(descriptions);
+    await Promise.all(placedLocalItems
+      .filter((item, index) => item.curriculumStatus !== currentLocalItems[index].curriculumStatus)
+      .map((item) => saveResource(item).catch(() => {})));
     try {
       const cloud = await listCloudResources();
-      const byHash = new Map(localItems.filter((item) => item.contentHash).map((item) => [item.contentHash, item]));
-      const byCloudId = new Map(localItems.filter((item) => item.cloudItemId).map((item) => [item.cloudItemId, item]));
-      const cloudItems = (cloud.items || []).map((item) => cloudItemToResource(
+      const byHash = new Map(currentLocalItems.filter((item) => item.contentHash).map((item) => [item.contentHash, item]));
+      const byCloudId = new Map(currentLocalItems.filter((item) => item.cloudItemId).map((item) => [item.cloudItemId, item]));
+      const cloudItems = applyCurriculumPlacement((cloud.items || []).map((item) => cloudItemToResource(
         item,
         accountId,
         byCloudId.get(item.id) || byHash.get(item.document?.content_hash),
-      ));
+      )));
       const cloudIds = new Set(cloudItems.map((item) => item.cloudItemId));
-      const localOnly = localItems.filter((item) => !item.cloudItemId || !cloudIds.has(item.cloudItemId));
-      items = [...cloudItems, ...localOnly];
+      const localOnly = currentLocalItems.filter((item) => !item.cloudItemId || !cloudIds.has(item.cloudItemId));
+      items = applyCurriculumPlacement([...cloudItems, ...localOnly]);
       await Promise.all(cloudItems.map((item) => saveResource(item).catch(() => {})));
     } catch {
       // Offline access is expected; local resources are already visible.
     }
     setResources(items);
     setCourseDescriptions(descriptions);
-  }, [accountId]);
+  }, [accountId, currentCurriculumIds]);
 
   useEffect(() => {
     if (!accountId) return undefined;
@@ -228,6 +394,29 @@ function Resources() {
 
     return () => { active = false; };
   }, [accountId, refresh, notify]);
+
+  useEffect(() => {
+    if (!accountId) return;
+    const outside = resources.find(
+      (resource) => resource.curriculumStatus === "outside-current-curriculum" && resource.course,
+    );
+    if (!outside) return;
+
+    const key = "resource-curriculum-notifications";
+    const notified = readAccountStorage(key, {}, accountId) || {};
+    if (notified[outside.id]) return;
+
+    notified[outside.id] = new Date().toISOString();
+    writeAccountStorage(key, notified, accountId);
+    const levelLabel = outside.course.level ? ` ${outside.course.level} Level` : " another level";
+    const timer = window.setTimeout(() => {
+      notify(
+        "progress",
+        `Recognized as ${outside.course.code}${levelLabel}. Outside your current curriculum; found in All Documents.`,
+      );
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [accountId, notify, resources]);
 
   useEffect(() => {
     if (!toast) return undefined;
@@ -335,8 +524,12 @@ function Resources() {
     return searchable.includes(query.toLowerCase());
   }), [query, resources]);
 
-  const organizedResources = filteredResources.filter((item) => item.courseId);
-  const unorganizedResources = filteredResources.filter((item) => !item.courseId);
+  const organizedResources = filteredResources.filter((item) =>
+    item.courseId && ["eligible", "explicitly-included"].includes(item.curriculumStatus),
+  );
+  const unorganizedResources = filteredResources.filter((item) =>
+    !item.courseId || item.curriculumStatus === "curriculum-mapping-unavailable",
+  );
   const activeCourse = offeredCourses.find((course) => course.id === activeCourseId);
   const courseResources = activeCourse
     ? organizedResources.filter((item) => item.courseId === activeCourse.id)
@@ -365,6 +558,10 @@ function Resources() {
     }
 
     setUploading(true);
+    const controller = new AbortController();
+    localImportController.current = controller;
+    let job = null;
+    const importStartedAt = Date.now();
     setUploadStatus({
       status: "uploading",
       stage: "hashing",
@@ -374,20 +571,14 @@ function Resources() {
       message: "Checking selected PDF files…",
     });
 
-    let saved = 0;
-    let duplicates = 0;
-    let failed = 0;
-    const newlyPending = [];
-    const recognitionJobs = [];
-
     try {
-      // Process PDFs end-to-end with bounded concurrency.
-      // Reuse one file buffer for content hashing and PDF text extraction.
-      const seenBatchHashes = new Set();
-      let nextFileIndex = 0;
-      let completedFiles = 0;
-      const activeFiles = new Set();
-
+      job = await createBackgroundJob({
+        accountId,
+        type: "import",
+        totalItems: validFiles.length,
+        totalBytes: validFiles.reduce((sum, file) => sum + file.size, 0),
+        checkpoint: { source: "local", names: validFiles.map((file) => file.name) },
+      });
       setUploadStatus({
         status: "uploading",
         stage: "processing",
@@ -397,179 +588,72 @@ function Resources() {
         message: "Preparing documents for your library…",
       });
 
-      const processFile = async (file) => {
-        activeFiles.add(file.name);
-        setUploadStatus({
-          status: "uploading",
-          stage: "processing",
-          completed: completedFiles,
-          total: validFiles.length,
-          activeFiles: [...activeFiles],
-          message: `Processing ${file.name}`,
-        });
-
-        try {
-          const pdfBytes = await validatePdfFile(file);
-          const contentHash = await hashPdfContent(file, pdfBytes);
-
-          if (seenBatchHashes.has(contentHash)) {
-            duplicates += 1;
-            return;
-          }
-          seenBatchHashes.add(contentHash);
-
-          const duplicate = await findDuplicateResource(accountId, contentHash);
-
-          if (duplicate) {
-            if (duplicate.cloudItemId) {
-              await updateCloudResource(duplicate.cloudItemId, {
-                display_name: file.name,
-              });
-            }
-
-            await renameDuplicateResource(accountId, duplicate, file.name);
-            duplicates += 1;
-            return;
-          }
-
-          const now = new Date().toISOString();
-          const documentFingerprint = `${accountId}-${contentHash}`;
-
-          const resource = {
-            id: `${accountId}-${contentHash}`,
-            accountId,
-            fingerprint: documentFingerprint,
-            contentHash,
-            name: file.name,
-            mimeType: "application/pdf",
-            size: file.size,
-            lastModified: file.lastModified,
-            blob: file,
-            text: "",
-            pageCount: 0,
-            courseId: null,
-            course: null,
-            assignmentStatus: "processing",
-            recognitionStatus: "processing",
-            confidence: 0,
-            suggestions: [],
-            lastOpenedAt: null,
-            lastOpenedSection: "Document",
-            progress: {},
-            createdAt: now,
-            updatedAt: now,
-          };
-
-          // Persistence is the critical path. Recognition is deliberately
-          // best-effort and must never make a valid local PDF disappear.
-          await saveResource(resource);
-          saved += 1;
-
-          recognitionJobs.push({ file, pdfBytes, resource });
-
-        } catch (fileError) {
-          failed += 1;
-          console.error(`Failed to import ${file.name}:`, fileError);
-        } finally {
-          completedFiles += 1;
-          activeFiles.delete(file.name);
+      const batch = await importPdfDocuments({
+        accountId,
+        items: validFiles.map((file) => ({ file, name: file.name })),
+        signal: controller.signal,
+        onProgress: (progress) => {
           setUploadStatus({
             status: "uploading",
-            stage: "processing",
-            completed: completedFiles,
-            total: validFiles.length,
-            activeFiles: [...activeFiles],
-            message: completedFiles === validFiles.length
-              ? "Saving your library changes…"
-              : "Processing your documents…",
+            stage: progress.stage,
+            completed: progress.completed,
+            total: progress.total,
+            activeFiles: progress.name ? [progress.name] : [],
+            message: progress.name ? `Processing ${progress.name}` : "Saving your library changes…",
           });
-        }
-      };
-
-      const fileWorkers = Array.from(
-        { length: Math.min(3, validFiles.length) },
-        async () => {
-          while (true) {
-            const index = nextFileIndex++;
-            if (index >= validFiles.length) return;
-            await processFile(validFiles[index]);
-          }
+          if (job) updateBackgroundJob(accountId, job.id, {
+            stage: progress.stage,
+            processedItems: progress.completed || 0,
+            totalItems: progress.total || validFiles.length,
+            processedBytes: validFiles.slice(0, progress.completed || 0).reduce((sum, file) => sum + file.size, 0),
+            estimatedRemainingSeconds: (() => {
+              const processedBytes = validFiles.slice(0, progress.completed || 0).reduce((sum, file) => sum + file.size, 0);
+              const elapsed = Math.max(1, Date.now() - importStartedAt) / 1000;
+              const speed = processedBytes / elapsed;
+              return speed ? Math.max(0, (validFiles.reduce((sum, file) => sum + file.size, 0) - processedBytes) / speed) : null;
+            })(),
+          }).catch(() => {});
         },
-      );
-
-      await Promise.all(fileWorkers);
-
-      // Recognition is deliberately decoupled from the persistence path. It
-      // runs in two bounded workers after the import has been acknowledged.
-      const recognizeDocument = async ({ file, pdfBytes, resource }) => {
-        try {
-          const { text, pageCount } = await extractPdfText(file, pdfBytes);
-          const recognition = recognizeCourse(text, OAU_PHARMD_COURSES);
-          const learned = getRememberedCorrection(accountId, resource.fingerprint, text);
-          const learnedCourse = learned
-            ? OAU_PHARMD_COURSES.find((course) => course.id === learned.courseId)
-            : null;
-          const assignedCourse = learnedCourse || (recognition.highConfidence ? recognition.best?.course : null);
-          const savedResource = {
-            ...resource,
-            text,
-            pageCount,
-            courseId: assignedCourse?.id || null,
-            course: assignedCourse || null,
-            assignmentStatus: learnedCourse ? "learned" : assignedCourse ? "auto" : "unassigned",
-            recognitionStatus: "ready",
-            confidence: learned ? Math.round(learned.confidence * 100) : recognition.confidence,
-            suggestions: recognition.suggestions.map(({ course, score }) => ({ courseId: course.id, score })),
-            updatedAt: new Date().toISOString(),
-          };
-          await saveResource(savedResource);
-          if (!assignedCourse) newlyPending.push({ resource: savedResource, suggestedCourseId: recognition.best?.course?.id || "" });
-        } catch (intelligenceError) {
-          console.warn(`Could not extract or recognize ${file.name}.`, intelligenceError);
-          const savedResource = {
-            ...resource,
-            assignmentStatus: "unassigned",
-            recognitionStatus: "extraction-unavailable",
-            updatedAt: new Date().toISOString(),
-          };
-          await saveResource(savedResource);
-          newlyPending.push({ resource: savedResource, suggestedCourseId: "" });
-        }
-      };
-
-      let nextRecognitionIndex = 0;
-      const recognitionWorkers = Array.from({ length: Math.min(2, recognitionJobs.length) }, async () => {
-        while (nextRecognitionIndex < recognitionJobs.length) {
-          const index = nextRecognitionIndex;
-          nextRecognitionIndex += 1;
-          await recognizeDocument(recognitionJobs[index]);
-        }
+        onCheckpoint: (checkpoint) => {
+          if (job) updateBackgroundJob(accountId, job.id, {
+            stage: checkpoint.stage,
+            checkpoint: { ...job.checkpoint, ...checkpoint },
+            processedItems: checkpoint.processed || 0,
+          }).catch(() => {});
+        },
+        onDuplicate: async ({ item }, duplicate) => {
+          if (duplicate.cloudItemId) await updateCloudResource(duplicate.cloudItemId, { display_name: item.name });
+          await renameDuplicateResource(accountId, duplicate, item.name);
+        },
+        buildResource: (item, contentHash, status) => buildImportedResource(item, contentHash, accountId, status, "local"),
+        understand: (resource, pdfBytes) => understandImportedResource(resource, pdfBytes, accountId),
       });
-      const recognitionPromise = Promise.all(recognitionWorkers).then(async () => {
-        if (newlyPending.length) {
-          setPendingResources((current) => [...current, ...newlyPending]);
-          if (!pendingResources.length) setPendingCourseId(newlyPending[0].suggestedCourseId);
-        }
-        await refresh();
-      });
+
+      const newlyPending = batch.resources
+        .filter((resource) => !resource.courseId)
+        .map((resource) => ({ resource, suggestedCourseId: resource.suggestions?.[0]?.courseId || "" }));
+      if (newlyPending.length) {
+        setPendingResources((current) => [...current, ...newlyPending]);
+        setPendingCourseId((current) => current || newlyPending[0].suggestedCourseId);
+      }
 
       await refresh();
 
       const summary = [
-        `${saved} saved`,
-        `${duplicates} duplicate${duplicates === 1 ? "" : "s"} skipped`,
-        ...(failed ? [`${failed} failed`] : []),
+        `${batch.imported} saved`,
+        `${batch.duplicates} duplicate${batch.duplicates === 1 ? "" : "s"} skipped`,
+        ...(batch.failed ? [`${batch.failed} failed`] : []),
         ...(unsupported ? [`${unsupported} unsupported file${unsupported === 1 ? "" : "s"} skipped`] : []),
       ].join(" · ");
 
-      const finalMessage = saved > 0
+      const finalMessage = batch.imported > 0
         ? `Import complete: ${summary}.`
-        : failed || unsupported
+        : batch.failed || unsupported
           ? `No PDFs were saved: ${summary}.`
           : `Import complete: ${summary}.`;
 
-      const finalStatus = failed || unsupported
-        ? (saved > 0 || duplicates > 0 ? "partial" : "error")
+      const finalStatus = batch.failed || unsupported
+        ? (batch.imported > 0 || batch.duplicates > 0 ? "partial" : "error")
         : "complete";
 
       setUploadStatus({
@@ -580,10 +664,11 @@ function Resources() {
         activeFiles: [],
         message: finalMessage,
       });
-      // Do not hold the upload UI open for PDF.js. Any recognition failure is
-      // represented on the persisted record and remains recoverable.
-      recognitionPromise.catch((error) => console.warn("Background recognition failed.", error));
-
+      if (job) await completeBackgroundJob(accountId, job.id, {
+        processedItems: validFiles.length,
+        processedBytes: validFiles.reduce((sum, file) => sum + file.size, 0),
+        checkpoint: { imported: batch.imported, duplicates: batch.duplicates, failed: batch.failed },
+      });
     } catch (uploadError) {
       console.error("Resource import failed:", uploadError);
       setUploadStatus({
@@ -594,7 +679,9 @@ function Resources() {
         activeFiles: [],
         message: uploadError.message || "The import could not be completed.",
       });
+      if (job) await failBackgroundJob(accountId, job.id, uploadError).catch(() => {});
     } finally {
+      if (localImportController.current === controller) localImportController.current = null;
       setUploading(false);
     }
   };
@@ -624,6 +711,14 @@ function Resources() {
         resource.fingerprint,
         courseId,
         resource.text || "",
+        {
+          previousCourseId: resource.courseId || null,
+          previousConfidence: resource.confidence || null,
+          evidenceLevel:
+            resource.assignmentStatus === "auto" || resource.assignmentStatus === "learned"
+              ? "strong"
+              : "weak",
+        },
       );
 
       await refresh();
@@ -860,10 +955,172 @@ function Resources() {
     }
   };
   const startShare = () => {
-    setShareSelection(resources.map((resource) => resource.id));
-    setShareLink("");
-    setShareError("");
-    setShareOpen(true);
+    setPortableSelection([]);
+    setPortablePayload(null);
+    setPortableRestoreSelection([]);
+    setPortableLink("");
+    setPortableError("");
+    setPortableProgress(null);
+    setPortableOpen(true);
+  };
+
+  const createPortableBackup = async () => {
+    if (portableBusy) return;
+    const controller = new AbortController();
+    portableController.current = controller;
+    setPortableBusy(true);
+    setPortableError("");
+    const selected = resources.filter((resource) => portableSelection.includes(resource.id));
+    let job = null;
+    try {
+      job = await createBackgroundJob({
+        accountId,
+        type: "export",
+        totalItems: selected.length,
+        totalBytes: selected.reduce((sum, resource) => sum + Number(resource.blob?.size || 0), 0),
+        checkpoint: { source: "portable", resourceIds: selected.map((resource) => resource.id) },
+      });
+      const result = await createPortableExport(
+        selected,
+        (progress) => {
+          setPortableProgress(progress);
+          if (job) updateBackgroundJob(accountId, job.id, {
+            stage: progress.stage || "uploading",
+            processedBytes: progress.uploadedBytes || 0,
+            totalBytes: progress.totalBytes || selected.reduce((sum, resource) => sum + Number(resource.blob?.size || 0), 0),
+            estimatedRemainingSeconds: progress.etaSeconds ?? null,
+          }).catch(() => {});
+        },
+        controller.signal,
+      );
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://rxct.vercel.app";
+      setPortableLink(`${origin}/resources?backup=${encodeURIComponent(result.token)}`);
+      setPortableProgress({ stage: "complete", completed: selected.length, total: selected.length });
+      if (job) await completeBackgroundJob(accountId, job.id, {
+        processedItems: selected.length,
+        processedBytes: selected.reduce((sum, resource) => sum + Number(resource.blob?.size || 0), 0),
+      });
+      notify("success", "Portable backup created.");
+    } catch (error) {
+      if (error.name !== "AbortError") setPortableError(error.message || "Could not create the portable backup.");
+      if (job) await failBackgroundJob(accountId, job.id, error).catch(() => {});
+    } finally {
+      if (portableController.current === controller) portableController.current = null;
+      setPortableBusy(false);
+    }
+  };
+
+  const loadPortableBackup = useCallback(async (token) => {
+    setPortableBusy(true);
+    setPortableError("");
+    try {
+      const payload = await resolvePortableExport(token);
+      setPortablePayload(payload);
+      setPortableRestoreSelection((payload.items || []).map((item) => item.content_hash));
+      setPortableProgress(null);
+    } catch (error) {
+      setPortableError(error.message || "That portable backup could not be opened.");
+    } finally {
+      setPortableBusy(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const token = typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("backup")
+      : "";
+    if (!token) return undefined;
+    const timer = window.setTimeout(() => {
+      setPortableOpen(true);
+      loadPortableBackup(token);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [loadPortableBackup]);
+
+  const restorePortableBackup = async () => {
+    if (!portablePayload || portableBusy) return;
+    const controller = new AbortController();
+    portableController.current = controller;
+    setPortableBusy(true);
+    setPortableError("");
+    const selected = (portablePayload.items || []).filter((item) => portableRestoreSelection.includes(item.content_hash));
+    const manifestByHash = new Map((portablePayload.manifest?.documents || []).map((document) => [document.contentHash, document]));
+    let job = null;
+    try {
+      job = await createBackgroundJob({
+        accountId,
+        type: "import",
+        totalItems: selected.length,
+        totalBytes: selected.reduce((sum, item) => sum + Number(item.file_size || 0), 0),
+        checkpoint: { source: "portable", token: portablePayload.token, hashes: selected.map((item) => item.content_hash) },
+      });
+      const totalBytes = selected.reduce((sum, candidate) => sum + Number(candidate.file_size || 0), 0);
+      const startedAt = Date.now();
+      const batch = await importPdfDocuments({
+        accountId,
+        items: selected,
+        signal: controller.signal,
+        loadItem: async (item, signal) => ({
+          ...item,
+          file: await downloadPortableDocument(portablePayload.token, item, signal),
+        }),
+        validateEntry: ({ item, contentHash }) => {
+          if (contentHash !== item.content_hash) throw new Error(`${item.display_name} failed hash validation.`);
+        },
+        onProgress: (progress) => {
+          const processedBytes = selected
+            .slice(0, progress.completed || 0)
+            .reduce((sum, item) => sum + Number(item.file_size || 0), 0);
+          const elapsed = Math.max(1, Date.now() - startedAt) / 1000;
+          const speedBytesPerSecond = processedBytes / elapsed;
+          const etaSeconds = speedBytesPerSecond ? Math.max(0, (totalBytes - processedBytes) / speedBytesPerSecond) : null;
+          setPortableProgress({ ...progress, uploadedBytes: processedBytes, totalBytes, speedBytesPerSecond, etaSeconds });
+          updateBackgroundJob(accountId, job.id, {
+            stage: progress.stage,
+            processedItems: progress.completed || 0,
+            totalItems: selected.length,
+            processedBytes,
+            totalBytes,
+            estimatedRemainingSeconds: etaSeconds,
+          }).catch(() => {});
+        },
+        onCheckpoint: (checkpoint) => updateBackgroundJob(accountId, job.id, {
+          stage: checkpoint.stage,
+          checkpoint: { ...job.checkpoint, ...checkpoint },
+          processedItems: checkpoint.processed || 0,
+        }).catch(() => {}),
+        buildResource: (item, contentHash, status) => ({
+          ...buildImportedResource({ ...item, name: manifestByHash.get(contentHash)?.name || item.display_name }, contentHash, accountId, status, "portable-library"),
+          portableIntelligence: manifestByHash.get(contentHash) || null,
+          id: `${accountId}-${contentHash}`,
+          accountId,
+          name: manifestByHash.get(contentHash)?.name || item.display_name,
+          mimeType: "application/pdf",
+          size: item.file.size,
+          blob: item.file,
+          contentHash,
+          source: "portable-library",
+          assignmentStatus: status,
+          recognitionStatus: status,
+          updatedAt: new Date().toISOString(),
+        }),
+        understand: (resource, pdfBytes) => understandImportedResource(resource, pdfBytes, accountId),
+      });
+      const restored = batch.imported;
+      await refresh();
+      await completeBackgroundJob(accountId, job.id, {
+        processedItems: selected.length,
+        processedBytes: totalBytes,
+        checkpoint: { imported: batch.imported, duplicates: batch.duplicates, failed: batch.failed },
+      });
+      notify("success", `${restored} document${restored === 1 ? "" : "s"} restored.`);
+    } catch (error) {
+      if (error.name !== "AbortError") setPortableError(error.message || "Could not restore that backup.");
+      if (job) await failBackgroundJob(accountId, job.id, error).catch(() => {});
+    } finally {
+      if (portableController.current === controller) portableController.current = null;
+      setPortableBusy(false);
+    }
   };
 
   const makeShare = async () => {
@@ -874,11 +1131,19 @@ function Resources() {
     setBusyExport(true);
     setShareError("");
     setShareProgress({ stage: "uploading", completed: 0, total: shareSelection.length });
+    let job = null;
 
     try {
-            const selectedResources = resources.filter((resource) =>
+      const selectedResources = resources.filter((resource) =>
         shareSelection.includes(resource.id)
       );
+      job = await createBackgroundJob({
+        accountId,
+        type: "export",
+        totalItems: selectedResources.length,
+        totalBytes: selectedResources.reduce((sum, resource) => sum + Number(resource.blob?.size || resource.size || 0), 0),
+        checkpoint: { source: "legacy-cloud-share", resourceIds: selectedResources.map((resource) => resource.id) },
+      });
 
       const shareResources = [];
 
@@ -910,6 +1175,11 @@ function Resources() {
           total: selectedResources.length,
           name: resource.name,
         });
+        await updateBackgroundJob(accountId, job.id, {
+          stage: "uploading",
+          processedItems: index,
+          processedBytes: selectedResources.slice(0, index).reduce((sum, item) => sum + Number(item.blob?.size || item.size || 0), 0),
+        }).catch(() => {});
 
         const uploaded = await uploadCloudPdf(
           resource.blob,
@@ -938,6 +1208,7 @@ const link = await createLibraryShare(shareResources);
 if (controller.signal.aborted) return;
       setShareLink(link);
       setShareProgress({ stage: "complete", completed: shareSelection.length, total: shareSelection.length });
+      await completeBackgroundJob(accountId, job.id, { processedItems: selectedResources.length });
 
       try {
         if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
@@ -953,6 +1224,7 @@ if (controller.signal.aborted) return;
         setShareError(shareFailure.message || "Could not create the library link.");
         setShareProgress("");
       }
+      if (job) await failBackgroundJob(accountId, job.id, shareFailure).catch(() => {});
     } finally {
       if (exportController.current === controller) exportController.current = null;
       setBusyExport(false);
@@ -973,6 +1245,8 @@ if (controller.signal.aborted) return;
     let importedCount = 0;
     const failedFiles = [];
     const unassignedResources = [];
+    let job = null;
+    const importStartedAt = Date.now();
 
     const updateProgress = (progress) => {
       const details = typeof progress === "string"
@@ -987,107 +1261,141 @@ if (controller.signal.aborted) return;
 
     try {
       if (importSource === "rxct") {
-        importedCount = await importLibraryItems(
-          importPayload.items,
-          importSelection,
+        job = await createBackgroundJob({
           accountId,
-          saveResource,
-          updateProgress,
-          controller.signal,
-          {
-            findDuplicate: (hash) => findDuplicateResource(accountId, hash),
-            renameDuplicate: (resource, name) =>
-              renameDuplicateResource(accountId, resource, name),
-            hashPdfContent,
-          },
+          type: "import",
+          totalItems: selectedItems.length,
+          totalBytes: selectedItems.reduce((sum, item) => sum + Number(item.size || 0), 0),
+          checkpoint: { source: "legacy-cloud-share", itemIds: selectedItems.map((item) => item.id) },
+        });
+        const cloudSelected = selectedItems.filter((item) => item.type !== "google-drive");
+        const driveSelected = selectedItems.filter((item) => item.type === "google-drive");
+        const shareToken = importPayload.token || importPayload.items.shareToken;
+        const shared = await importCloudShare(
+          shareToken,
+          cloudSelected.map((item) => item.cloudDocumentId || item.id),
+          driveSelected.map((item) => item.driveFileId),
         );
+        const sharedItems = (shared.items || []).map((item) => {
+          const source = cloudSelected.find((candidate) => candidate.cloudDocumentId === item.document_id);
+          return {
+            ...item,
+            id: item.id || item.document_id,
+            name: item.display_name || source?.name || "document.pdf",
+            mimeType: item.document?.mime_type || source?.mimeType || "application/pdf",
+            type: source ? "rxct" : "google-drive",
+            driveFileId: item.drive_file_id,
+          };
+        });
+        const sharedDriveToken = driveSelected.length ? (driveToken || await requestDriveAccess()) : null;
+        const batch = await importPdfDocuments({
+          accountId,
+          items: sharedItems,
+          signal: controller.signal,
+          loadItem: async (item, signal) => {
+            if (item.type === "google-drive") {
+              return {
+                ...item,
+                file: await downloadDrivePdf({ id: item.driveFileId, name: item.name, mimeType: item.mimeType }, sharedDriveToken, signal),
+              };
+            }
+            const opened = await openCloudResource(item.id);
+            const response = await fetch(opened.url, { signal });
+            if (!response.ok) throw new Error(`Could not download ${item.name}.`);
+            const blob = await response.blob();
+            return { ...item, file: new File([blob], item.name, { type: "application/pdf", lastModified: Date.now() }) };
+          },
+          onProgress: (progress) => {
+            updateProgress(progress);
+            updateBackgroundJob(accountId, job.id, {
+              stage: progress.stage,
+              processedItems: progress.completed || 0,
+              totalItems: sharedItems.length,
+            }).catch(() => {});
+          },
+          onCheckpoint: (checkpoint) => updateBackgroundJob(accountId, job.id, {
+            stage: checkpoint.stage,
+            checkpoint: { ...job.checkpoint, ...checkpoint },
+            processedItems: checkpoint.processed || 0,
+          }).catch(() => {}),
+          buildResource: (item, contentHash, status) => buildImportedResource(item, contentHash, accountId, status, "shared-library"),
+          understand: (resource, pdfBytes) => understandImportedResource(resource, pdfBytes, accountId),
+        });
+        importedCount = batch.imported;
+        failedFiles.push(...batch.failures.map(({ item, error }) => `${item.name}: ${error.message || "could not be imported"}`));
+        unassignedResources.push(...batch.resources
+          .filter((resource) => !resource.courseId)
+          .map((resource) => ({ resource, suggestedCourseId: resource.suggestions?.[0]?.courseId || "" })));
+
+        await completeBackgroundJob(accountId, job.id, {
+          processedItems: importedCount,
+          checkpoint: { imported: importedCount, failed: failedFiles.length },
+        });
 
         await refresh();
 
         setImportFeedback({
-          type: controller.signal.aborted ? "success" : "success",
-          message: controller.signal.aborted
-            ? `Import cancelled. ${importedCount} document${importedCount === 1 ? "" : "s"} completed before cancellation.`
-            : `${importedCount} document${importedCount === 1 ? "" : "s"} imported successfully.`,
+          type: failedFiles.length ? "success" : "success",
+          message: failedFiles.length
+            ? `${importedCount} imported; ${failedFiles.length} failed.`
+            : `${importedCount} document${importedCount === 1 ? "" : "s"} downloaded and imported successfully.`,
         });
         return;
       }
 
-      if (!driveToken) {
-        throw new Error("Google Drive authorization expired. Load the link again.");
-      }
+      const activeDriveToken = driveToken || await requestDriveAccess();
+      job = await createBackgroundJob({
+        accountId,
+        type: "import",
+        totalItems: selectedItems.length,
+        totalBytes: selectedItems.reduce((sum, item) => sum + Number(item.size || 0), 0),
+        checkpoint: { source: "google-drive", itemIds: selectedItems.map((item) => item.id) },
+      });
 
-      for (let index = 0; index < selectedItems.length; index += 1) {
-        if (controller.signal.aborted) break;
+      const batch = await importPdfDocuments({
+        accountId,
+        items: selectedItems,
+        signal: controller.signal,
+        loadItem: async (item, signal) => ({
+          ...item,
+          file: await downloadDrivePdf(item, activeDriveToken, signal),
+        }),
+        onProgress: (progress) => {
+          updateProgress(progress);
+          updateBackgroundJob(accountId, job.id, {
+            stage: progress.stage,
+            processedItems: progress.completed || 0,
+            totalItems: progress.total || selectedItems.length,
+            processedBytes: progress.uploadedBytes || 0,
+            estimatedRemainingSeconds: progress.etaSeconds ?? (() => {
+              const processedBytes = progress.uploadedBytes || 0;
+              const elapsed = Math.max(1, Date.now() - importStartedAt) / 1000;
+              const speed = processedBytes / elapsed;
+              const totalBytes = selectedItems.reduce((sum, item) => sum + Number(item.size || 0), 0);
+              return speed ? Math.max(0, (totalBytes - processedBytes) / speed) : null;
+            })(),
+          }).catch(() => {});
+        },
+        onCheckpoint: (checkpoint) => updateBackgroundJob(accountId, job.id, {
+          stage: checkpoint.stage,
+          checkpoint: { ...job.checkpoint, ...checkpoint },
+          processedItems: checkpoint.processed || 0,
+        }).catch(() => {}),
+        onDuplicate: async ({ item }, duplicate) => {
+          await renameDuplicateResource(accountId, duplicate, item.name);
+        },
+        buildResource: (item, contentHash, status) => ({
+          ...buildImportedResource(item, contentHash, accountId, status, "google-drive"),
+          folderPath: item.folderPath || "",
+        }),
+        understand: (resource, pdfBytes) => understandImportedResource(resource, pdfBytes, accountId),
+      });
 
-        const item = selectedItems[index];
-        try {
-          updateProgress({ stage: "downloading", completed: importedCount, total: selectedItems.length, name: item.name });
-          const blob = await downloadDrivePdf(item, driveToken, controller.signal);
-          const bytes = await validatePdfFile(blob);
-          const contentHash = await hashPdfContent(blob, bytes);
-          const duplicate = await findDuplicateResource(accountId, contentHash);
-
-          if (duplicate) {
-            await renameDuplicateResource(accountId, duplicate, item.name);
-            importedCount += 1;
-            continue;
-          }
-
-          const now = new Date().toISOString();
-          let documentText = `${item.folderPath || ""} ${item.name}`;
-          let pageCount = 0;
-          try {
-            const extracted = await extractPdfText(blob, bytes);
-            documentText = extracted.text || documentText;
-            pageCount = extracted.pageCount;
-          } catch (error) {
-            console.warn(`Could not extract Drive PDF ${item.name}.`, error);
-          }
-
-          const documentFingerprint = `${accountId}-${contentHash}`;
-          const recognition = recognizeCourse(documentText, OAU_PHARMD_COURSES);
-          const learned = getRememberedCorrection(accountId, documentFingerprint, documentText);
-          const learnedCourse = learned
-            ? OAU_PHARMD_COURSES.find((course) => course.id === learned.courseId)
-            : null;
-          const assignedCourse = learnedCourse || (recognition.highConfidence ? recognition.best?.course : null);
-          const resource = {
-            id: `${accountId}-${contentHash}`,
-            accountId,
-            fingerprint: documentFingerprint,
-            contentHash,
-            text: documentText,
-            source: "google-drive",
-            sourceImportedAt: now,
-            name: item.name,
-            folderPath: item.folderPath || "",
-            mimeType: "application/pdf",
-            size: blob.size,
-            pageCount,
-            blob,
-            courseId: assignedCourse?.id || null,
-            course: assignedCourse || null,
-            assignmentStatus: learnedCourse ? "learned" : assignedCourse ? "auto" : "unassigned",
-            recognitionStatus: pageCount ? "ready" : "extraction-unavailable",
-            confidence: learned ? Math.round(learned.confidence * 100) : recognition.confidence,
-            suggestions: recognition.suggestions.map(({ course, score }) => ({ courseId: course.id, score })),
-            lastOpenedAt: null,
-            lastOpenedSection: "Document",
-            progress: {},
-            createdAt: now,
-            updatedAt: now,
-          };
-
-          await saveResource(resource);
-          if (!assignedCourse) unassignedResources.push({ resource, suggestedCourseId: recognition.best?.course?.id || "" });
-          importedCount += 1;
-          updateProgress({ stage: "saving", completed: importedCount, total: selectedItems.length, name: item.name, message: `Saved for offline access: ${item.name}` });
-        } catch (error) {
-          if (error.name === "AbortError") throw error;
-          failedFiles.push(`${item.name}: ${error.message || "could not be imported"}`);
-        }
-      }
+      importedCount = batch.imported;
+      failedFiles.push(...batch.failures.map(({ item, error }) => `${item.name}: ${error.message || "could not be imported"}`));
+      unassignedResources.push(...batch.resources
+        .filter((resource) => !resource.courseId)
+        .map((resource) => ({ resource, suggestedCourseId: resource.suggestions?.[0]?.courseId || "" })));
 
       await refresh();
 
@@ -1117,6 +1425,12 @@ if (controller.signal.aborted) return;
         });
       }
 
+      await completeBackgroundJob(accountId, job.id, {
+        processedItems: selectedItems.length,
+        processedBytes: selectedItems.reduce((sum, item) => sum + Number(item.size || 0), 0),
+        checkpoint: { imported: importedCount, failed: failedFiles.length },
+      });
+
       setDriveToken("");
     } catch (importError) {
       if (controller.signal.aborted || importError.name === "AbortError") {
@@ -1130,6 +1444,7 @@ if (controller.signal.aborted) return;
           message: importError.message || "Could not import those documents.",
         });
       }
+      if (job) await failBackgroundJob(accountId, job.id, importError).catch(() => {});
     } finally {
       if (importController.current === controller) importController.current = null;
       setBusyImport(false);
@@ -1294,7 +1609,7 @@ if (controller.signal.aborted) return;
           {activeTab === "Coverage" ? (
             <CourseCoverage
               courses={offeredCourses}
-              resources={resources}
+              resources={organizedResources}
               onOpen={openResource}
             />
           ) : activeTab === "Organized" && activeCourse ? (
@@ -1526,6 +1841,31 @@ if (controller.signal.aborted) return;
               return;
             }
             setShareOpen(false);
+          }}
+        />
+      )}
+
+      {portableOpen && (
+        <PortableDialog
+          resources={resources}
+          selection={portableSelection}
+          setSelection={setPortableSelection}
+          link={portableLink}
+          payload={portablePayload}
+          restoreSelection={portableRestoreSelection}
+          setRestoreSelection={setPortableRestoreSelection}
+          progress={portableProgress}
+          error={portableError}
+          busy={portableBusy}
+          onCreate={createPortableBackup}
+          onLoad={loadPortableBackup}
+          onRestore={restorePortableBackup}
+          onClose={() => {
+            if (portableBusy) {
+              portableController.current?.abort();
+              return;
+            }
+            setPortableOpen(false);
           }}
         />
       )}
@@ -2062,6 +2402,12 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
             ? <><i className="fa-solid fa-layer-group" /> {resource.course.code} · {resource.course.title}</>
             : "Needs a course assignment"}
         </p>
+        {resource.curriculumStatus === "outside-current-curriculum" && (
+          <small className={styles.cardUpdated}>Outside current curriculum · All Documents</small>
+        )}
+        {resource.curriculumStatus === "curriculum-mapping-unavailable" && resource.courseId && (
+          <small className={styles.cardUpdated}>Curriculum placement unavailable · All Documents</small>
+        )}
 
         <div className={styles.cardActions}>
           <button
@@ -2249,6 +2595,100 @@ function ResourceCard({ resource, onOpen, onAssign, onDelete }) {
     </article>
   );
 }
+function PortableDialog({ resources, selection, setSelection, link, payload, restoreSelection, setRestoreSelection, progress, error, busy, onCreate, onLoad, onRestore, onClose }) {
+  const [token, setToken] = useState("");
+  const items = payload?.items || [];
+  const allSelected = resources.length > 0 && resources.every((resource) => selection.includes(resource.id));
+  const allRestoreSelected = items.length > 0 && items.every((item) => restoreSelection.includes(item.content_hash));
+  const selectedBytes = resources
+    .filter((resource) => selection.includes(resource.id) && resource.blob)
+    .reduce((sum, resource) => sum + resource.blob.size, 0);
+  const restoreBytes = items
+    .filter((item) => restoreSelection.includes(item.content_hash))
+    .reduce((sum, item) => sum + item.file_size, 0);
+
+  const toggle = (id) => setSelection((current) => current.includes(id)
+    ? current.filter((item) => item !== id)
+    : [...current, id]);
+  const toggleRestore = (hash) => setRestoreSelection((current) => current.includes(hash)
+    ? current.filter((item) => item !== hash)
+    : [...current, hash]);
+
+  return (
+    <div className={styles.modalBackdrop}>
+      <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="portable-title">
+        <div className={styles.modalHeader}>
+          <div><span className={styles.sectionKicker}>PORTABLE LIBRARY</span><h2 id="portable-title">Share or restore library</h2></div>
+          <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close"><i className="fa-solid fa-xmark" /></button>
+        </div>
+        <p className={styles.modalIntro}>Portable packages preserve PDFs and document metadata. Share links expire after seven days of inactivity.</p>
+        {error && <div className="shareError" role="alert"><strong>Backup unavailable</strong><p>{error}</p></div>}
+        {progress && (
+          <div className={styles.modalFeedback} role="status">
+            <span>{progress.name ? `${progress.stage === "downloading" ? "Restoring" : "Uploading"} ${progress.name}` : progressLabel(progress, "export")}</span>
+            {progress.totalBytes > 0 && (
+              <small>{formatBytes(progress.uploadedBytes || 0)} of {formatBytes(progress.totalBytes)}
+                {progress.speedBytesPerSecond ? ` · ${formatBytes(progress.speedBytesPerSecond)}/s` : ""}
+                {progress.etaSeconds ? ` · about ${Math.ceil(progress.etaSeconds)}s left` : ""}
+              </small>
+            )}
+            {progress.total > 0 && <progress value={progress.completed || 0} max={progress.total} aria-label="Backup progress" style={{ display: "block", width: "100%", marginTop: 9 }} />}
+          </div>
+        )}
+        <div className={styles.selectionActions}>
+          <span>{selection.filter((id) => resources.some((resource) => resource.id === id)).length} selected · {formatBytes(selectedBytes)}</span>
+          <label className="selectAllCheckbox">
+            <input type="checkbox" checked={allSelected} disabled={busy} onChange={(event) => setSelection(event.target.checked ? resources.map((resource) => resource.id) : [])} />
+            <span>Select all</span>
+          </label>
+        </div>
+        <div className={styles.modalList}>
+          {resources.map((resource) => (
+            <label key={resource.id}>
+              <input type="checkbox" checked={selection.includes(resource.id)} disabled={!resource.blob || busy} onChange={() => toggle(resource.id)} />
+              <span>{resource.name}</span>
+              <small>{resource.blob ? `${Math.round((resource.blob.size || 0) / 1024)} KB` : "PDF unavailable"}</small>
+            </label>
+          ))}
+        </div>
+        <div className={styles.importUrl}>
+          <input value={token} onChange={(event) => setToken(event.target.value)} placeholder="Paste backup link or token to restore" aria-label="Portable backup link" />
+          <button type="button" className={styles.secondaryButton} disabled={!token.trim() || busy} onClick={() => onLoad(token.trim())}>Load package</button>
+        </div>
+        {items.length > 0 && (
+          <>
+            <div className={styles.selectionActions}>
+              <span>{restoreSelection.length} of {items.length} selected · {formatBytes(restoreBytes)}</span>
+              <label className="selectAllCheckbox">
+                <input type="checkbox" checked={allRestoreSelected} disabled={busy} onChange={(event) => setRestoreSelection(event.target.checked ? items.map((item) => item.content_hash) : [])} />
+                <span>Select all</span>
+              </label>
+            </div>
+            <div className={styles.modalList}>
+              {items.map((item) => (
+                <label key={item.content_hash}>
+                  <input type="checkbox" checked={restoreSelection.includes(item.content_hash)} disabled={busy} onChange={() => toggleRestore(item.content_hash)} />
+                  <span>{item.display_name}</span>
+                  <small>
+                    {Math.round(item.file_size / 1024)} KB
+                    {item.text || item.course_id || item.course ? " · intelligence included" : " · PDF only"}
+                  </small>
+                </label>
+              ))}
+            </div>
+          </>
+        )}
+        {link && <div className={styles.shareResult}><input readOnly value={link} aria-label="Portable backup link" /></div>}
+        <div className={styles.modalActions}>
+          <button type="button" className={styles.secondaryButton} onClick={onClose}>{busy ? "Cancel" : "Close"}</button>
+          {items.length > 0 && <button type="button" className={styles.secondaryButton} disabled={!restoreSelection.length || busy} onClick={onRestore}>{busy ? "Restoring…" : `Restore ${restoreSelection.length}`}</button>}
+          <button type="button" className={styles.primaryAction} disabled={!selection.some((id) => resources.find((resource) => resource.id === id)?.blob) || busy} onClick={onCreate}>{busy ? "Creating…" : `Create package (${selection.length})`}</button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function ShareDialog({ resources, selection, setSelection, link, error, busy, progress, onCreate, onCopy, onClose }) {
   const [copied, setCopied] = useState(false);
 

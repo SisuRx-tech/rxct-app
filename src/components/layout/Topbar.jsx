@@ -13,13 +13,28 @@ import {
 
 import { searchSuggestions } from "../../services/medicines";
 import InstallButton from "./InstallButton";
+import { getBackgroundJobProgress } from "../../services/backgroundJobs";
 
-function Topbar({ onOpenPanel, panelOpen }) {
+function formatBytes(bytes) {
+  const value = Number(bytes) || 0;
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${Math.round(value / 1024)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatEta(seconds) {
+  if (!Number.isFinite(seconds) || seconds <= 0) return "calculating time";
+  if (seconds < 60) return `about ${Math.ceil(seconds)}s left`;
+  return `about ${Math.ceil(seconds / 60)}m left`;
+}
+
+function Topbar({ onOpenPanel, panelOpen, backgroundJobs = [] }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [jobsOpen, setJobsOpen] = useState(false);
 
   const menuRef = useRef(null);
   const searchRef = useRef(null);
@@ -260,10 +275,32 @@ function Topbar({ onOpenPanel, panelOpen }) {
             <button
               className={styles.iconButton}
               aria-label="Notifications"
+              aria-expanded={jobsOpen}
               type="button"
+              onClick={() => setJobsOpen((open) => !open)}
             >
               <i className="fa-solid fa-bell"></i>
+              {backgroundJobs.length > 0 && <span className={styles.activityDot} aria-label={`${backgroundJobs.length} active jobs`} />}
             </button>
+            {jobsOpen && (
+              <div className={styles.jobMenu} role="status">
+                <strong>Background activity</strong>
+                {backgroundJobs.length ? backgroundJobs.slice(0, 4).map((job) => {
+                  const { percentage, processedBytes, totalBytes, etaSeconds } = getBackgroundJobProgress(job);
+                  return (
+                    <div className={styles.jobItem} key={job.id}>
+                      <span>{job.type === "export" ? "Portable export" : "Document import"}</span>
+                      <small>
+                        {job.stage} · {percentage}%
+                        {totalBytes > 0 ? ` · ${formatBytes(processedBytes)} / ${formatBytes(totalBytes)}` : ""}
+                        {job.status === "running" ? ` · ${formatEta(etaSeconds)}` : ""}
+                      </small>
+                      <progress value={percentage} max="100" />
+                    </div>
+                  );
+                }) : <span className={styles.jobEmpty}>No active jobs</span>}
+              </div>
+            )}
           </>
         )}
       </div>

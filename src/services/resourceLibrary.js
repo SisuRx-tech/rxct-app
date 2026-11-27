@@ -105,6 +105,22 @@ export function getResources(accountId) {
   );
 }
 
+export async function recoverProcessingResources(accountId) {
+  const resources = await getResources(accountId);
+  const interrupted = resources
+    .filter((resource) => resource.recognitionStatus === "processing")
+    .map((resource) => ({
+      ...resource,
+      assignmentStatus: "unassigned",
+      recognitionStatus: "recognition-failed",
+      processingError: resource.processingError || "Import was interrupted before document understanding completed.",
+      updatedAt: new Date().toISOString(),
+    }));
+
+  if (interrupted.length) await saveResources(interrupted);
+  return interrupted;
+}
+
 function validateResource(resource) {
   if (!resource || !resource.id) throw new Error("This document is missing its storage ID.");
   requireAccount(resource.accountId);
@@ -136,7 +152,9 @@ export async function saveResources(resources) {
 
   const accountId = [...accountIds][0];
   const ids = resources.map((resource) => resource.id);
-  const existing = await transactionRequest("readonly", (store) => store.getAll());
+  const existing = await transactionRequest("readonly", (store) =>
+    store.index("accountId").getAll(accountId),
+  );
   const existingById = new Map(existing.map((resource) => [resource.id, resource]));
   const conflicting = ids
     .map((id) => existingById.get(id))
@@ -221,6 +239,25 @@ export function getRememberedCorrection(accountId, documentFingerprint, document
   const tokens = normalizeTokens(documentText);
   if (tokens.length < 8) return null;
 
+  const adaptive = (corrections.patterns || [])
+    .filter((pattern) => pattern.status === "active" && pattern.evidenceCount >= 3)
+    .map((pattern) => ({
+      ...pattern,
+      confidence: tokenSimilarity(tokens, pattern.tokens),
+    }))
+    .filter((pattern) => pattern.confidence >= 0.72)
+    .sort((a, b) => b.confidence - a.confidence)[0];
+
+  if (adaptive) {
+    return {
+      courseId: adaptive.courseId,
+      source: "adaptive",
+      patternId: adaptive.id,
+      confidence: Math.min(0.97, adaptive.confidence * adaptive.ruleConfidence),
+      evidenceCount: adaptive.evidenceCount,
+    };
+  }
+
   const matches = (corrections.examples || [])
     .map((example) => ({
       ...example,
@@ -246,17 +283,97 @@ export function getRememberedCorrection(accountId, documentFingerprint, document
   };
 }
 
+function promotePatterns(corrections) {
+  const examples = corrections.examples || [];
+  const groups = [];
+
+  for (const example of examples) {
+    let group = groups.find((candidate) =>
+      candidate.courseId === example.courseId &&
+      tokenSimilarity(candidate.tokens, example.tokens) >= 0.68,
+    );
+
+    if (!group) {
+      group = {
+        courseId: example.courseId,
+        tokens: [...example.tokens],
+        fingerprints: new Set(),
+        examples: [],
+      };
+      groups.push(group);
+    }
+
+    group.fingerprints.add(example.fingerprint);
+    group.examples.push(example);
+    // Keep the representative vocabulary compact and evidence-based.
+    group.tokens = [...new Set([...group.tokens, ...example.tokens])].slice(0, 80);
+  }
+
+  const previous = new Map((corrections.patterns || []).map((pattern) => [pattern.id, pattern]));
+  corrections.patterns = groups
+    .filter((group) => group.fingerprints.size >= 3)
+    .map((group) => {
+      const id = `course:${group.courseId}:${[...group.tokens].slice(0, 8).join("-")}`;
+      const old = previous.get(id);
+      return {
+        id,
+        courseId: group.courseId,
+        tokens: group.tokens,
+        evidenceCount: group.fingerprints.size,
+        ruleConfidence: Math.min(1, 0.78 + group.fingerprints.size * 0.04),
+        scope: "account",
+        status: old?.status === "retired" &&
+          group.fingerprints.size <= (old.evidenceCount || 0)
+          ? "retired"
+          : "active",
+        evidenceFingerprints: [...group.fingerprints],
+        origin: "verified-account-corrections",
+        createdAt: old?.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        history: [
+          ...(old?.history || []),
+          {
+            evidenceCount: group.fingerprints.size,
+            updatedAt: new Date().toISOString(),
+          },
+        ].slice(-20),
+      };
+    });
+
+  return corrections.patterns;
+}
+
 export function rememberCorrection(
   accountId,
   documentFingerprint,
   courseId,
   documentText = "",
+  metadata = {},
 ) {
   const id = requireAccount(accountId);
   if (!documentFingerprint || !courseId) return false;
 
   const corrections = readCorrections(id);
+  const evidenceLevel = metadata.evidenceLevel || "strong";
   corrections.exact = corrections.exact || {};
+  corrections.events = corrections.events || [];
+  corrections.events.unshift({
+    type: "course-correction",
+    fingerprint: documentFingerprint,
+    courseId,
+    previousCourseId: metadata.previousCourseId || null,
+    previousConfidence: metadata.previousConfidence || null,
+    evidenceLevel,
+    source: "user-confirmed",
+    validated: evidenceLevel === "strong",
+    observedAt: new Date().toISOString(),
+  });
+  corrections.events = corrections.events.slice(0, 200);
+
+  // A placement made while the document is unclassified is useful context,
+  // but it is not enough evidence to teach a reusable recognition rule.
+  if (evidenceLevel !== "strong") return writeAccountStorage(CORRECTIONS_KEY, corrections, id);
+
   corrections.exact[documentFingerprint] = courseId;
 
   const tokens = normalizeTokens(documentText);
@@ -276,6 +393,42 @@ export function rememberCorrection(
     corrections.examples = corrections.examples.slice(0, 80);
   }
 
+  promotePatterns(corrections);
+
+  return writeAccountStorage(CORRECTIONS_KEY, corrections, id);
+}
+
+export function recordRecognitionObservation(accountId, observation = {}) {
+  const id = requireAccount(accountId);
+  const corrections = readCorrections(id);
+  corrections.events = corrections.events || [];
+  corrections.events.unshift({
+    type: "recognition-observation",
+    fingerprint: observation.fingerprint || null,
+    failureSignals: observation.failureSignals || [],
+    confidence: Number(observation.confidence) || 0,
+    candidateCourseId: observation.candidateCourseId || null,
+    observedAt: new Date().toISOString(),
+  });
+  corrections.events = corrections.events.slice(0, 200);
+  return writeAccountStorage(CORRECTIONS_KEY, corrections, id);
+}
+
+export function getAdaptivePatterns(accountId) {
+  return readCorrections(requireAccount(accountId)).patterns || [];
+}
+
+export function rollbackAdaptivePattern(accountId, patternId) {
+  const id = requireAccount(accountId);
+  const corrections = readCorrections(id);
+  const pattern = (corrections.patterns || []).find((item) => item.id === patternId);
+  if (!pattern) return false;
+  pattern.status = "retired";
+  pattern.retiredAt = new Date().toISOString();
+  pattern.history = [
+    ...(pattern.history || []),
+    { status: "retired", updatedAt: pattern.retiredAt },
+  ].slice(-20);
   return writeAccountStorage(CORRECTIONS_KEY, corrections, id);
 }
 
@@ -358,13 +511,29 @@ export async function findDuplicateResources(accountId, contentHashes) {
   const id = requireAccount(accountId);
   const hashes = [...new Set((contentHashes || []).filter(Boolean))];
   if (!hashes.length) return new Map();
-  const resources = await getResources(id);
   const result = new Map();
-  resources.forEach((resource) => {
-    if (resource.contentHash && hashes.includes(resource.contentHash)) {
-      result.set(resource.contentHash, resource);
+  const matches = await Promise.all(hashes.map((contentHash) =>
+    transactionRequest("readonly", (store) =>
+      store.index("accountContentHash").getAll([id, contentHash]),
+    ),
+  ));
+  matches.flat().forEach((resource) => result.set(resource.contentHash, resource));
+
+  // Older records may not have a contentHash index entry. Only scan and hash
+  // when the indexed lookup did not find every requested hash.
+  if (result.size < hashes.length) {
+    const resources = await getResources(id);
+    for (const resource of resources) {
+      if (result.has(resource.contentHash) || !resource.blob) continue;
+      const existingHash = await hashPdfContent(resource.blob);
+      if (hashes.includes(existingHash)) {
+        const updated = { ...resource, contentHash: existingHash };
+        await saveResource(updated);
+        result.set(existingHash, updated);
+      }
     }
-  });
+  }
+
   return result;
 }
 
