@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "../../assets/rxct-logo.png";
 import Topbar from "./Topbar";
 import { navItems } from "../../config/navigation";
@@ -6,8 +6,12 @@ import { MedicinesWorkspaceProvider } from "../../context/MedicinesWorkspaceCont
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Profile from "../../pages/Profile";
 import Settings from "../../pages/Settings";
+import { useAuth } from "../../context/useAuth";
+import { getBackgroundJobs, subscribeToBackgroundJobs } from "../../services/backgroundJobs";
 function AppLayout() {
   const [uploadStatus, setUploadStatus] = useState(null);
+  const [backgroundJobs, setBackgroundJobs] = useState([]);
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const openPanel = (panel) => {
@@ -25,10 +29,23 @@ function AppLayout() {
       replace: true,
     });
   };
+  useEffect(() => {
+    if (!user?.id) {
+      return undefined;
+    }
+    let active = true;
+    const refreshJobs = () => getBackgroundJobs(user.id).then((jobs) => {
+      if (active) setBackgroundJobs(jobs);
+    }).catch(() => {});
+    refreshJobs();
+    return subscribeToBackgroundJobs((job) => {
+      if (job.accountId === user.id) refreshJobs();
+    });
+  }, [user?.id]);
   return (
     <MedicinesWorkspaceProvider>
       <div className={panelOpen ? "app-layout panel-open" : "app-layout"}>
-        <Topbar onOpenPanel={openPanel} panelOpen={panelOpen} />
+        <Topbar onOpenPanel={openPanel} panelOpen={panelOpen} backgroundJobs={user?.id ? backgroundJobs : []} />
         <aside className="sidebar">
           <div className="brand">
             <img className="logo" src={logo} alt="RxCT" />
